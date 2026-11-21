@@ -36,7 +36,7 @@ describe('shakeOffset', () => {
 
 describe('phaseFlash', () => {
   it('단계 시작 800ms 동안만 글자가 있다', () => {
-    expect(phaseFlash(0)?.text).toBe('WARM-UP');
+    expect(phaseFlash(0)).toBeNull();
     expect(phaseFlash(15100)?.text).toBe('LIVE');
     expect(phaseFlash(40000)?.text).toBe('CLUTCH');
     expect(phaseFlash(5000)).toBeNull();

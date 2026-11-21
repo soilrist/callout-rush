@@ -37,9 +37,10 @@ export function shakeOffset(j: Judgement | null, now: number): number {
   return Math.sin((age / SHAKE_MS) * Math.PI * 4) * SHAKE_PX * (1 - age / SHAKE_MS);
 }
 
-/** 단계 이름 번쩍: 지금 번쩍이는 단계 글자와 투명도(0~1). 없으면 null. */
+/** 단계 전환 번쩍(LIVE·CLUTCH): 지금 번쩍이는 단계 글자와 투명도(0~1). 없으면 null. */
 export function phaseFlash(elapsedMs: number): { text: string; alpha: number } | null {
-  for (let i = 0; i < PHASES.length; i++) {
+  // 첫 단계(WARM-UP)는 전환이 아니다 — 판 시작에 맵을 가리지 않게 2·3단계만.
+  for (let i = 1; i < PHASES.length; i++) {
     const age = elapsedMs - (PHASES[i]?.fromMs ?? 0);
     if (age >= 0 && age < PHASE_FLASH_MS) return { text: PHASE_TEXT[i] ?? '', alpha: 1 - age / PHASE_FLASH_MS };
   }
@@ -94,12 +95,18 @@ export function drawFx(ctx: Ctx, v: FxView): void {
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           const cx = r.x + r.w / 2;
-          const cy = r.y + r.h / 2 - RISE_PX * k;
-          ctx.fillStyle = `rgb(${OK})`;
+          // 구역 윗변에서 시작해 위로 떠오른다 (구역 이름표를 가리지 않게). 어두운 테두리로 읽히게.
+          const cy = r.y - 20 - RISE_PX * k;
+          ctx.lineJoin = 'round';
+          ctx.strokeStyle = '#0b1220';
+          ctx.lineWidth = 8;
           ctx.font = `700 48px ${FONT}`;
+          ctx.strokeText(`+${j.points}`, cx, cy);
+          ctx.fillStyle = `rgb(${OK})`;
           ctx.fillText(`+${j.points}`, cx, cy);
-          ctx.fillStyle = '#e8eef8';
           ctx.font = `500 26px ${FONT}`;
+          ctx.strokeText(`${(j.rtMs / 1000).toFixed(2)}s`, cx, cy + 36);
+          ctx.fillStyle = '#e8eef8';
           ctx.fillText(`${(j.rtMs / 1000).toFixed(2)}s`, cx, cy + 36);
           ctx.globalAlpha = 1;
           // 인원 점: 구역 아래쪽 줄에 인원 수만큼
@@ -132,9 +139,9 @@ export function drawFx(ctx: Ctx, v: FxView): void {
   if (v.playStartMs !== null) {
     const f = phaseFlash(v.now - v.playStartMs);
     if (f) {
-      ctx.globalAlpha = f.alpha;
+      ctx.globalAlpha = f.alpha * 0.8;
       ctx.fillStyle = '#35d0ff';
-      ctx.font = `700 150px ${FONT}`;
+      ctx.font = `700 110px ${FONT}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(f.text, MAP_ORIGIN + 480, MAP_ORIGIN + 480);
