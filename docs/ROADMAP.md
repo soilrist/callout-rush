@@ -38,7 +38,7 @@
 - [x] M0-09 (CLI 없음 확인, 사람 할 일로 남김) JetBrains Air 확인 — `/Applications/Air.app` 이 있는지, 명령줄 도구가 딸려 오는지(`ls /Applications/Air.app/Contents/MacOS /Applications/Air.app/Contents/Resources` 와 공식 문서 https://www.jetbrains.com/air/ 검색), 프로젝트를 열면 `.air/` 가 생기는지. — 합격: DESIGN §9.1 의 Air 줄 "확인 필요"가 사실로 바뀐다(되는 명령 / 안 됨). CLI 가 있으면 「나중에」의 "Air 로 조각 하나"를 M2 로 올리고, 없으면 사람 할 일(M2 끝)로 남긴다.
 - [x] M0-10 `docs/jetbrains-usage.md` 틀 + README 뼈대 — 영어. usage 문서는 DESIGN §9.1 의 표 머리 + 맨 위 합계 칸. 루트 `README.md`: 한 줄 소개, Play(주소 자리), Run locally(`cd app && npm i && npm run dev`), Booth setup(자리), Built with JetBrains tools(usage 문서 링크). 루트 `LICENSE`(MIT 표준 문구, 저작권자 `Callout Rush contributors`). — 합격: 세 파일이 있고 사람 이름·이메일이 없다(`grep -iE "@|gdm" README.md LICENSE` 0건).
 - [x] M0-11 화면 시트 만들기 — `docs/reference/` 에 `attract.md`·`play.md`·`result.md`·`board.md`·`operator.md`. DESIGN §7·§8 을 무대 좌표·글자 크기·색 이름으로 옮긴 표(요소 | x | y | w | h | 글자 px | 색). 남의 그림은 넣지 않는다. — 합격: 다섯 파일, 각 화면의 DESIGN §8.1 요소가 전부 표에 있다.
-- [ ] M0-98 뼈대 통 점검 — 깨끗이 받아서(`git clone` 을 임시 폴더에) `npm ci && npm run check` 가 되는지, `npm run dev` 화면 캡처. — 합격: 새 폴더에서 CHECK exit 0, 걸린 시간(초)을 STATUS 에.
+- [x] M0-98 뼈대 통 점검 — 깨끗이 받아서(`git clone` 을 임시 폴더에) `npm ci && npm run check` 가 되는지, `npm run dev` 화면 캡처. — 합격: 새 폴더에서 CHECK exit 0, 걸린 시간(초)을 STATUS 에.
 - [!] 사람: 🎮 M0 5분 보기 — `cd app && npm run dev` 화면이 뜨는지(루프가 주소를 STATUS 에 적어 둔다), `docs/jetbrains-usage.md` 를 읽고 세 도구 상태 확인 — 계속 / 고쳐
 
 ## M1 — 한 판 완성 (합격: 대기 화면 클릭 → 3·2·1 → 60초 → 결과 숫자 → 다시 대기 화면이 사람 손과 봇 둘 다로 된다) · ~12-05
