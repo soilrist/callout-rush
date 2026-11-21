@@ -23,7 +23,7 @@ try {
   });
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
-  await page.goto(`http://localhost:${PORT}/index.html?state=${encodeURIComponent(state)}`);
+  await page.goto(`http://localhost:${PORT}/index.html?state=${state.split('&').map((q, i) => (i === 0 ? encodeURIComponent(q) : q)).join('&')}`);
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: outPath });
   await browser.close();
