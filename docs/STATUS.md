@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 — 10/13 조각 (M0-00~M0-09 끝, M0-07·M0-08 은 부분)
+- 마일스톤: M0 뼈대 — 11/13 조각 (M0-00~M0-10 끝, M0-07·M0-08 은 부분)
 - 브랜치: develop
-- 다음 조각: M0-10
+- 다음 조각: M0-11
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,18 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0010 · 2026-11-21 · 조각 M0-10
+- 계획: M0-10 usage 문서 틀 + README + LICENSE — 고른 이유: ROADMAP M0 첫 `[ ]` (INBOX 처리할 줄 없음) / `docs/jetbrains-usage.md`, `README.md`, `LICENSE`, DESIGN §9.1
+- 한 것: usage 문서를 맨 위 합계표 + 날짜·조각·도구·한 일·증거 표로 바꾸고 기존 세 줄을 옮김(WebStorm 1회·경고 5·고친 것 0, Junie·Air 0). 루트 README(소개·Play 자리·Run locally·Booth setup 자리·usage 링크)와 MIT LICENSE(저작권자 `Callout Rush contributors`) 작성
+- 커밋: 아래 참고
+- 검사: 1층 해당 없음(문서만; `grep -iE "@|gdm" README.md LICENSE | wc -l` 출력 `0`) / 2층 해당 없음 / 3층 해당 없음
+- 플레이어 눈: 해당 없음
+- 점검한 규칙: Autonomy, GitCommit
+- 가정한 것(🟡): 합계표의 WebStorm 실행 횟수는 STATUS 에 기록된 M0-07 한 번만 셈(그 전후 개발 중 돌린 횟수는 기록 없음). README 에 `npm run check` 한 줄 추가(ROADMAP 에 없던 부연)
+- 물은 것(🔴): 없음
+- INBOX 처리: 없음
+- 다음: M0-11
 
 ## #0009 · 2026-11-21 · 조각 M0-09
 - 계획: M0-09 Air 확인 — 고른 이유: ROADMAP M0 첫 `[ ]` (INBOX 처리할 줄 없음) / `docs/DESIGN.md` §9.1, `docs/jetbrains-usage.md`, ROADMAP

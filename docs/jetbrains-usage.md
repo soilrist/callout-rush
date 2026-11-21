@@ -1,5 +1,21 @@
 # JetBrains tools usage log
 
-- 2026-11-21 · M0-07 · WebStorm 2026.3 (build 263.7307.202) headless inspection `inspect.sh` ran from the command line with no license or login dialog, in about 12 seconds, and printed `INSPECT ok: 0 errors, 5 warnings` through `npm run inspect` (found: 5 unused-function warnings; none fixed yet). Caveat: unused local variables and unused imports were NOT reported in headless mode, so this gate currently catches only part of what the IDE editor shows.
-- 2026-11-21 · M0-08 · Junie CLI 26.11.2 (4100.11) installed with the official `install.sh` (to `~/.local/bin`); `junie --version` printed `Junie version: 26.11.2 (4100.11)`. The live task run was NOT done: `JUNIE_API_KEY` is not set on this machine (token must be created by a human at junie.jetbrains.com/cli). Guidelines file: `.junie/AGENTS.md` (first in Junie's lookup order; committed). Docs say the CLI is in Early Access; no pricing or free-quota page was found in the docs (unknown — to check when the token is created).
-- 2026-11-21 · M0-09 · JetBrains Air app build 262.834.70 is installed at `/Applications/Air.app`, but no command-line tool ships inside it (only the `Air` launcher in `Contents/MacOS`) and no `air` command is on PATH. The Air website lists "CLI" as a surface but gives no command name; whether a `.air` folder is created is unknown (app not opened yet). Air is NOT used so far; a human run is planned (ROADMAP, end of M2).
+Honest log of what each JetBrains tool actually did in this project. Only things that really ran are listed, with numbers and commit hashes.
+
+## Totals (updated at the end of each milestone)
+
+| Tool | Runs | Problems found | Problems fixed | Commits made by the tool |
+|---|---|---|---|---|
+| WebStorm headless inspection | 1 | 5 warnings | 0 | n/a |
+| Junie CLI | 0 | n/a | n/a | 0 |
+| JetBrains Air | 0 | n/a | n/a | 0 |
+
+Last updated: M0-10 (2026-11-21).
+
+## Log
+
+| Date | Slice | Tool | What it did | Evidence (commit / file) |
+|---|---|---|---|---|
+| 2026-11-21 | M0-07 | WebStorm | Headless inspection (`inspect.sh`) ran from the command line with no license or login dialog in about 12 seconds; `npm run inspect` printed `INSPECT ok: 0 errors, 5 warnings` (5 unused-function warnings found, none fixed yet). Caveat: unused local variables and unused imports were NOT reported in headless mode, so this gate catches only part of what the IDE editor shows. | `app/scripts/inspect.mjs`, commit 9ce8781 |
+| 2026-11-21 | M0-08 | Junie | CLI 26.11.2 (4100.11) installed with the official `install.sh` (to `~/.local/bin`); `junie --version` printed `Junie version: 26.11.2 (4100.11)`. The live task run was NOT done: `JUNIE_API_KEY` is not set (a human must create the token at junie.jetbrains.com/cli). Docs say the CLI is in Early Access; no pricing or free-quota page was found (unknown). | `.junie/AGENTS.md`, commit 029d107 |
+| 2026-11-21 | M0-09 | Air | App build 262.834.70 is installed at `/Applications/Air.app`, but no command-line tool ships inside it (only the `Air` launcher in `Contents/MacOS`) and no `air` command is on PATH. Whether a `.air` folder is created is unknown (app not opened yet). Air is NOT used so far; a human run is planned at the end of M2. | `docs/DESIGN.md` section 9.1 |
