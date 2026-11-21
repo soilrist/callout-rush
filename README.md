@@ -58,7 +58,7 @@ npm run check     # type check, lint, unit tests, build, end-to-end, sound rende
 npm run soak -- --games 1000 --timescale 10   # a bot plays 1000 rounds in a row and samples memory
 ```
 
-Soak result (1000 rounds): _(numbers are written to `docs/soak-report.md` when the long run finishes; until then they are not claimed here)_
+Soak result (1000 rounds): JS heap 1.93 MB to 2.14 MB (+0.21 MB), DOM nodes 16 to 16, 0 errors; game work per frame p95 1.8 ms (100-round re-run). Details: [docs/soak-report.md](docs/soak-report.md).
 
 ## Built with JetBrains tools
 
