@@ -159,6 +159,21 @@ export class ScoreStore {
     return [...this.list].sort(byRank).slice(0, limit);
   }
 
+  /** 저장된 전체 기록(저장 순서 그대로) — CSV 내보내기용 */
+  all(): ScoreEntry[] {
+    return [...this.list];
+  }
+
+  /** 오늘 기록만 지운다(운영자 메뉴). 지운 건수를 돌려준다. 옛 기록은 그대로 */
+  clearToday(now: number): number {
+    const start = dayStart(now);
+    const nextStart = dayStart(start + 86_400_000 + 3_600_000);
+    const before = this.list.length;
+    this.list = this.list.filter((e) => !(e.ts >= start && e.ts < nextStart));
+    this.persist();
+    return before - this.list.length;
+  }
+
   /** 오늘(now 의 로컬 날짜) 목록, 순위순. 자정 넘으면 비어 있다 */
   today(now: number, limit = 10): ScoreEntry[] {
     const start = dayStart(now);

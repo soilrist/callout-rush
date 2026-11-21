@@ -122,3 +122,16 @@ describe('previewRank', () => {
     expect(s.previewRank(900, now)).toBe(1);
   });
 });
+
+describe('ScoreStore 운영자 기능', () => {
+  it('clearToday 는 오늘 것만 지우고 옛 기록은 남긴다', () => {
+    const s = new ScoreStore(memoryStorage(), 50);
+    s.add(mk(500, T0 - DAY));
+    s.add(mk(700, T0 + 1000));
+    s.add(mk(800, T0 + 2000));
+    expect(s.clearToday(T0 + 5000)).toBe(2);
+    expect(s.today(T0 + 5000)).toHaveLength(0);
+    expect(s.size).toBe(1);
+    expect(s.all()).toHaveLength(1);
+  });
+});

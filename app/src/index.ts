@@ -18,6 +18,7 @@ import { keyAt } from './ui/keypad';
 import { accuracy, avgReaction } from './core/scoring';
 import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawDemoOverlay, drawResult } from './ui/screens';
 import { drawBoard } from './ui/board';
+import { installOperator } from './ui/operator';
 import type { ScoreEntry } from './core/scores';
 import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
@@ -126,6 +127,14 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   });
   const store = new ScoreStore();
   let savedCount = 0;
+  const operator = installOperator({
+    store,
+    games: () => flow.results,
+    errors: () => 0,
+    isMuted: () => sfx.isMuted(),
+    setMuted: (m) => sfx.setMuted(m),
+    onCleared: () => { mine = null; notifyScoresUpdated(); },
+  });
   /** 방금 저장한 내 기록 (순위 화면 강조용) */
   let mine: ScoreEntry | null = null;
   /** 결과를 떠나며 정해진 이름과 판 기록을 점수 저장소에 넣는다 */
@@ -176,6 +185,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     d['target'] = flow.screen === 'play' && g.active ? (g.active.call.zones[g.active.step] ?? '') : '';
   };
   const frame = (): void => {
+    operator.sampleFrame(performance.now());
     const t = now();
     const prev = flow;
     let next = flowTick(flow, t);
