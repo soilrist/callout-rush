@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-09 끝
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-10 끝
 - 브랜치: develop
-- 다음 조각: M1-10
+- 다음 조각: M1-11
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,18 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0022 · 2026-11-21 · 조각 M1-10
+- 계획: M1-10 소리 — 고른 이유: ROADMAP M1 첫 `[ ]` (INBOX 처리할 줄 없음) / `app/src/audio/sfx.ts`(+테스트), `app/scripts/sfxrender.mjs`
+- 한 것: §5.5 소리 8개를 WebAudio 로 합성(`scheduleSfx`), `createSfx()` = 첫 `unlock()` 에서 AudioContext 생성·음소거 값·끝난 노드 `disconnect`. hit 은 연속마다 반음(최대 +12), count 는 `go` 옵션으로 990Hz 250ms. 브라우저 OfflineAudioContext 로 실제 렌더하는 `npm run sfxrender` 를 `check` 에 넣음. eslint 전역에 URL·Blob·OfflineAudioContext 추가
+- 커밋: feat(audio) d436209 (`Slice: M1-10`)
+- 검사: 1층 통과(`Tests  79 passed (79)` / `SFX ok: 8개 소리 렌더 최대값 > 0.05, 길이 표 ±20ms` / `INSPECT ok: 0 errors, 48 warnings`, jev evidence `SUPPORTED`) / 2층 해당 없음 / 3층 해당 없음(보이는 것 아님)
+- 플레이어 눈: 실제로 귀로 듣는 건 못 함 — 최대값·길이만 잰 것. 게임에 연결(콜·판정·단계 때 `play`)은 M1-11 화면 흐름 몫이라 아직 소리가 안 난다. 실제 들림은 M1-98 에서
+- 점검한 규칙: Autonomy, CodingStyle, GitCommit, Verification
+- 가정한 것(🟡): `count` 삑 하나 90ms, 3번 반복은 호출 쪽이 한다. 소리 최대 볼륨 0.3 (귀 아프지 않게)
+- 물은 것(🔴): 없음
+- INBOX 처리: 처리할 줄 없음
+- 다음: M1-11
 
 ## #0021 · 2026-11-21 · 조각 M1-09
 - 계획: M1-09 판정 연출 — 고른 이유: ROADMAP M1 첫 `[ ]` (INBOX 처리할 줄 없음) / `app/src/ui/fx.ts`(+테스트), `index.ts` 연결, `scripts/fxshot.mjs`
