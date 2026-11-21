@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-06 끝
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-07 끝
 - 브랜치: develop
-- 다음 조각: M1-07
+- 다음 조각: M1-08
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,18 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0019 · 2026-11-21 · 조각 M1-07
+- 계획: M1-07 HUD — 고른 이유: ROADMAP M1 첫 `[ ]` (INBOX 처리할 줄 없음) / `app/src/ui/hud.ts`·`hud.test.ts`, `index.ts` 에 `?state=play&at=&seed=` 로 시계만 돌려 그리기, `shot.mjs` 가 `play&at=…` 추가 인자 허용 / `reference/play.md` 오른쪽 패널
+- 한 것: `drawHud` — 시간 막대·남은 초(10초 이하 주황)·단계 이름·콜 카드(무전 아이콘·쉼표 뒤 줄바꿈·폭 맞춤 글자 96→60)·콜 제한 시간 막대·점수·연속(3 이상 금색)·지난 콜 3줄(✓/✗ 는 선으로). 순수 함수 `callLines`·`fitPx`·`pastCalls` 테스트 6개
+- 커밋: feat(ui) HUD 커밋(`Slice: M1-07`)
+- 검사: 1층 통과(`CHECK exit 0` / `Tests  69 passed (69)` / `INSPECT ok: 0 errors, 5 warnings`, jev evidence `SUPPORTED`) / 2층 해당 없음 / 3층 통과 — `captures/M1-07a.png`(at=5000)·`M1-07b.png`(at=45000, 한 곳 콜)·`M1-07c.png`(at=45000 seed=7, 두 곳 콜 `South Stairs, then Container Row!`)를 열어 `reference/play.md` 와 대조: 가장 긴 문장이 카드 안(글자 자동 축소), 패널 위치 시트와 같음
+- 플레이어 눈: 콜 카드 글자가 크고 맵과 멀리 떨어져 시트대로. 판정 연출(번쩍·+점수)은 M1-09 몫. 지난 콜은 시계만 돌린 캡처라 전부 ✗(시간 초과) — 정상
+- 점검한 규칙: Autonomy, CodingStyle, GitCommit, Verification, Reference
+- 가정한 것(🟡): 캡처용 `at` 은 클릭 없이 50ms 단위로 시계만 돌림. 두 곳 콜 캡처는 seed=7 (시트에 없음). 지난 콜 줄 간격 34px(시트 32 — 3줄이 y1020 안에 들어감)
+- 물은 것(🔴): 없음
+- INBOX 처리: 처리할 줄 없음
+- 다음: M1-08
 
 ## #0018 · 2026-11-21 · 조각 M1-06
 - 계획: M1-06 맵 그리기 — 고른 이유: ROADMAP M1 첫 `[ ]` (INBOX 처리할 줄 없음) / `app/src/ui/map.ts`·`map.test.ts`, `index.ts` 에 `?state=play` 캔버스 연결, `docs/reference/play.md` 맵 절
