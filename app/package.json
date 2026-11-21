@@ -11,7 +11,8 @@
     "inspect": "node scripts/inspect.mjs",
     "lint": "eslint .",
     "test": "vitest run",
-    "check": "tsc --noEmit && eslint . && vitest run && vite build && npm run inspect"
+    "check": "tsc --noEmit && eslint . && vitest run && vite build && npm run e2e && npm run inspect",
+    "e2e": "node scripts/e2e.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

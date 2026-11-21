@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ZONES } from '../core/zones';
-import { MAP_ORIGIN, labelLines, zoneRect } from './map';
+import { zoneAt } from '../core/zones';
+import { MAP_ORIGIN, labelLines, stageToMap, zoneRect } from './map';
 
 describe('zoneRect', () => {
   it('맵 단위를 무대 px 로 바꾼다 (시트 값)', () => {
@@ -37,5 +38,18 @@ describe('labelLines', () => {
       const w = zoneRect(z).w;
       for (const l of labelLines(z.name, w)) expect(l.length * 17).toBeLessThanOrEqual(w);
     }
+  });
+});
+
+describe('stageToMap', () => {
+  it('구역 사각형 가운데를 누르면 그 구역이 나온다', () => {
+    for (const z of ZONES) {
+      const r = zoneRect(z);
+      const m = stageToMap(r.x + r.w / 2, r.y + r.h / 2);
+      expect(zoneAt(m.x, m.y)?.id).toBe(z.id);
+    }
+  });
+  it('맵 왼쪽 위 모서리는 0,0', () => {
+    expect(stageToMap(MAP_ORIGIN, MAP_ORIGIN)).toEqual({ x: 0, y: 0 });
   });
 });

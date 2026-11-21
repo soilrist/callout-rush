@@ -32,6 +32,11 @@ export function zoneRect(z: Zone): Rect {
   };
 }
 
+/** 무대 px → 맵 단위 (클릭 판정용). 맵 밖이어도 그대로 변환한다. */
+export function stageToMap(x: number, y: number): { x: number; y: number } {
+  return { x: (x - MAP_ORIGIN) / SCALE, y: (y - MAP_ORIGIN) / SCALE };
+}
+
 /** 이름표 줄: 한 줄로 안 들어가면 단어 사이에서 두 줄. */
 export function labelLines(name: string, widthPx: number): string[] {
   const up = name.toUpperCase();
