@@ -99,3 +99,7 @@ __pycache__/
 /_Source/raw/
 # 레퍼런스 게임 캡처(남의 저작물) — 글로 풀어 쓴 docs/reference/*.md 만 깃에
 /_Source/reference/
+
+# 감독 전용(공개 저장소에 안 올림)
+판정.md
+요강.pdf
