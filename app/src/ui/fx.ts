@@ -1,5 +1,5 @@
 /** 판정 연출 (DESIGN §4.2 UI, §5.5). 무대 좌표에 맵 위 효과를 그린다. 시간 계산은 순수 함수로 뺐다. */
-import { LABEL_FADE_MS, PHASES, WRONG_REVEAL_MS } from '../core/config';
+import { LABEL_FADE_MS, PHASES, PHASE_FLASH_MS, WRONG_REVEAL_MS } from '../core/config';
 import { ZONES, type ZoneId } from '../core/zones';
 import type { Judgement } from '../core/game';
 import { MAP_ORIGIN, labelLines, zoneRect } from './map';
@@ -9,7 +9,6 @@ export const RISE_MS = 700;
 export const RISE_PX = 70;
 export const SHAKE_MS = 120;
 export const SHAKE_PX = 6;
-export const PHASE_FLASH_MS = 800;
 const PHASE_TEXT = ['WARM-UP', 'LIVE', 'CLUTCH'] as const;
 const OK = '74,222,128';
 const MISS = '255,138,61';

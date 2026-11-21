@@ -46,6 +46,8 @@ export const LABEL_FADE_MS = 2000;
 export const TWO_ZONE_PERCENT = 50;
 export const RECENT_EXCLUDE = 2;
 export const WRONG_REVEAL_MS = 600;
+/** 단계 이름·GO 글자가 맵 위에 떠 있는 시간 (M2-19: 800 → 500) */
+export const PHASE_FLASH_MS = 500;
 
 // §6.4 부스·저장·내구
 export const ATTRACT_TO_DEMO_S = 20;
