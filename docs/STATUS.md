@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17·M2-18·M2-19 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17·M2-18·M2-19·M2-20 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
 - 브랜치: develop
-- 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 M2-20 부터. M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 M2-98 부터(판정 때 README 「Soak result」 줄도 채움). M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,16 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0043 · 2026-11-21 · 조각 M2-20 (README 완성)
+- 계획: M2-20 — 고른 이유: M2-12 1000판이 아직 도는 중(`logs/soak-run.log` 에 `exit=` 없음, soak.mjs 프로세스 살아 있음), M2-13·15·16 은 앞과 같은 이유로 건너뜀 → M2-20 / `README.md`·`제출본/shots/play.png`·`result.png`(M2-18 캡처 복사)·ROADMAP
+- 한 것: README 를 영어로 완성(소개·그림 2장·Play online·Download zip·Run from source·Booth setup 5단계·How it works 폴더 지도·Testing·JetBrains 링크·License). 새 폴더(`git archive HEAD app` 풀기)에서 `npm ci` → `npm run build`(`✓ built in 223ms`) → `npm run dev`(`Local: http://localhost:5173/`) 가 실제로 됨.
+- 못 한 것: Testing 의 「내구 결과 숫자 3개」는 1000판이 안 끝나 비워 둠(지어내지 않음). M2-12 판정 때 채우도록 ROADMAP M2-12 에 적음. Play online 주소도 M2-16(원격 저장소 없음) 대기.
+- 커밋: docs(readme) (`Slice: M2-20`)
+- 검사: 1층 해당 없음(코드 안 바꿈) / 2층 위 새 폴더 따라 하기 통과 / 3층 `제출본/shots/*.png` 는 M2-18 에서 열어 본 그림 그대로
+- 점검한 규칙: Autonomy, Verification(안 잰 숫자는 안 씀), 규칙 15
+- 가정한 것(🟡): 없음 / 물은 것(🔴): 없음 / INBOX 처리: 처리할 줄 없음
+- 다음: `logs/soak-run.log` 에 `exit=` 있으면 M2-12 판정, 없으면 M2-98
 
 ## #0042 · 2026-11-21 · 조각 M2-19 (다듬기 2 — 손)
 - 계획: M2-19 — 고른 이유: M2-12 1000판이 아직 도는 중(`logs/soak-run.log` 에 `exit=` 없음), M2-13·15·16 은 앞과 같은 이유로 건너뜀 → M2-19 / `app/scripts/hand.mjs`(새, `npm run hand`)·`app/src/core/config.ts`·`app/src/ui/fx.ts`·DESIGN §6.3
