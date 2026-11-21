@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { ATTRACT_DEMO_S, COUNTDOWN_MS, GAME_MS, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
+import { ATTRACT_DEMO_S, COUNTDOWN_MS, GAME_MS, PLAY_IDLE_QUIT_S, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { profileByName } from '../core/bot';
 import { mulberry32 } from '../core/rng';
-import { flowKey, flowClick, flowTick, initFlow, botFrame, type BotPlan, type Flow } from './flow';
+import { abandonPlay, startGame, flowKey, flowClick, flowTick, initFlow, botFrame, type BotPlan, type Flow } from './flow';
 
 describe('화면 흐름', () => {
   it('attract 에서 누르면 카운트다운 → 플레이 → 결과 → attract', () => {
@@ -13,6 +13,7 @@ describe('화면 흐름', () => {
     expect(f.game.status).toBe('countdown');
     f = flowTick(f, 100 + COUNTDOWN_MS + 10);
     expect(f.game.status).toBe('play');
+    f = flowClick(f, 0, 0, 100 + COUNTDOWN_MS + GAME_MS - 1000, 1); // 사람이 판 중 누름 (무입력 12초 포기 방지)
     f = flowTick(f, 100 + COUNTDOWN_MS + GAME_MS + 10);
     expect(f.screen).toBe('result');
     expect(f.results).toBe(1);
@@ -115,5 +116,26 @@ describe('대기 화면 시연', () => {
     }
     expect(f.demo).toBe(true);
     expect(f.game.finished).toBeGreaterThan(0);
+  });
+});
+
+describe('무입력·탭 숨김', () => {
+  it('플레이 중 12초 클릭이 없으면 저장 없이 대기로', () => {
+    const f = startGame(initFlow(1, 0), 1, 100);
+    expect(flowTick(f, 100 + PLAY_IDLE_QUIT_S * 1000 - 1).screen).toBe('play');
+    const g = flowTick(f, 100 + PLAY_IDLE_QUIT_S * 1000);
+    expect(g.screen).toBe('attract');
+    expect(g.saves).toBe(0);
+    expect(g.results).toBe(0);
+  });
+  it('클릭하면 12초가 다시 시작된다', () => {
+    let f = startGame(initFlow(1, 0), 1, 0);
+    f = flowClick(f, 5, 5, 8000, 1);
+    expect(flowTick(f, 8000 + PLAY_IDLE_QUIT_S * 1000 - 1).screen).toBe('play');
+  });
+  it('탭이 숨겨지면 판을 버린다 (대기·결과는 그대로)', () => {
+    expect(abandonPlay(startGame(initFlow(1, 0), 1, 0), 50).screen).toBe('attract');
+    const r: Flow = { ...initFlow(1, 0), screen: 'result' };
+    expect(abandonPlay(r, 50)).toBe(r);
   });
 });

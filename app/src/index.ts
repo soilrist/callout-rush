@@ -9,7 +9,8 @@ import { drawFx, labelAlphaAt, shakeOffset } from './ui/fx';
 import { drawMap, stageToMap } from './ui/map';
 import { profileByName, simulate } from './core/bot';
 import { mulberry32 } from './core/rng';
-import { botFrame, flowClick, flowKey, flowTick, initFlow, showResult, startGame, type BotPlan, type Flow } from './ui/flow';
+import { installHealth } from './ui/health';
+import { abandonPlay, botFrame, flowClick, flowKey, flowTick, initFlow, showResult, startGame, type BotPlan, type Flow } from './ui/flow';
 import { RESULT_IDLE_S } from './core/config';
 import { ScoreStore } from './core/scores';
 import { notifyScoresUpdated } from './core/channel';
@@ -21,6 +22,8 @@ import type { ScoreEntry } from './core/scores';
 import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
+const health = installHealth();
+(window as unknown as { __health: typeof health }).__health = health;
 const params = parseParams(window.location.search);
 document.body.dataset['state'] = params.state ?? 'attract';
 
@@ -102,6 +105,10 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   };
 
   const sfx = createSfx();
+  // 탭이 숨겨지면(사람이 다른 탭으로 감) 판을 버리고 대기로
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) update(abandonPlay(flow, now()), flow);
+  });
   window.addEventListener('pointerdown', () => sfx.unlock());
   /** 결과 화면 순위: 판마다 한 번 계산하고 등급이 뜰 때 소리 한 번 */
   let rankFor = -1;

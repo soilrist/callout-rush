@@ -1,5 +1,5 @@
 /** 화면 흐름 상태 기계 (DESIGN §8.1): Attract → Countdown → Play → Result → Board → Attract. 시계는 밖에서 넣는다. */
-import { ATTRACT_DEMO_S, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
+import { ATTRACT_DEMO_S, PLAY_IDLE_QUIT_S, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { backspace, canConfirm, finalName, typeLetter } from '../core/initials';
 import { decide, type BotProfile } from '../core/bot';
 import { initGame, step, type GameEvent, type GameState } from '../core/game';
@@ -35,7 +35,7 @@ export function initFlow(seed: number, now = 0): Flow {
 
 /** 판 시작: 상태를 새로 만든다 (지난 판 값이 남지 않게). 아무 때나 불러도 새 판. */
 export function startGame(f: Flow, seed: number, now: number): Flow {
-  return { ...f, screen: 'play', game: step(initGame(seed), { type: 'TICK', now }), since: now, initials: '', demo: false };
+  return { ...f, screen: 'play', game: step(initGame(seed), { type: 'TICK', now }), since: now, initials: '', lastInput: now, demo: false };
 }
 
 /** 시연 시작: 같은 게임 규칙, 결과·저장 없이 끝나면 대기로 돌아간다 */
@@ -53,8 +53,15 @@ function toResultIfDone(f: Flow, now: number): Flow {
   return f.game.status === 'done' ? showResult(f, f.game, now) : f;
 }
 
+/** 판을 버리고 대기 화면으로 (점수 저장·결과 없음). 사람이 떠났거나 탭이 숨겨졌을 때. */
+export function abandonPlay(f: Flow, now: number): Flow {
+  if (f.screen !== 'play') return f;
+  return { ...f, screen: 'attract', game: initGame(0), since: now, initials: '', lastInput: now, pressed: null, demo: false };
+}
+
 export function flowTick(f: Flow, now: number): Flow {
   if (f.screen === 'play') {
+    if (!f.demo && now - f.lastInput >= PLAY_IDLE_QUIT_S * 1000) return abandonPlay(f, now);
     return toResultIfDone({ ...f, game: step(f.game, { type: 'TICK', now }) }, now);
   }
   if (f.screen === 'attract' && now - f.since >= ATTRACT_DEMO_S * 1000) return startDemo(f, 9000 + f.results * 31 + Math.floor(now / 1000), now);
@@ -88,7 +95,7 @@ export function flowClick(f: Flow, x: number, y: number, now: number, seed: numb
 /** 판 안의 클릭 (사람·봇 공통). 시연 중 봇도 이 길로 들어간다. */
 function gameClick(f: Flow, x: number, y: number, now: number): Flow {
   const e: GameEvent = { type: 'CLICK', x, y, now };
-  return toResultIfDone({ ...f, game: step(f.game, e) }, now);
+  return toResultIfDone({ ...f, game: step(f.game, e), lastInput: now }, now);
 }
 
 export interface BotPlan {

@@ -40,7 +40,6 @@ try {
   await page.waitForTimeout(1200);
   await page.screenshot({ path: resolve(dir, 'M2-06-demo.png') });
   const mid = await saved();
-  const demoScore = await page.evaluate(() => Number(document.body.dataset.score));
   await page.mouse.click(900, 500);
   const after = await page.evaluate(() => ({ demo: document.body.dataset.demo, status: document.body.dataset.status, screen: document.body.dataset.screen }));
   // 배속 30 이라 클릭 뒤 몇 프레임 만에 카운트다운(3초)이 지날 수 있다 → 시연이 아닌 진짜 판(play 화면, demo=0)인지만 본다

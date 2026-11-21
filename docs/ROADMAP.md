@@ -65,7 +65,7 @@
 - [x] M2-04 게임 창 순위 화면(S5) — 오늘 TOP 10, 내 줄 강조, 10등 밖이면 `#n YOU`, 8초 뒤 또는 클릭으로 Attract. — 합격: CHECK + Playwright(점수 12개를 심고 한 판 → 내 줄이 강조돼 있음) + 캡처 대조.
 - [x] M2-05 보조 모니터 화면 — `board.html`+`src/board.ts`: §4.6 내용, BroadcastChannel + `storage` 이벤트 + 5초 다시 읽기, 새 기록 금색 3초·미끄러짐. — 합격: CHECK + Playwright(창 두 개: 게임 창에서 한 판 끝 → 보조 창에 새 줄이 1000ms 안에 나타남, 지연 ms 를 STATUS 에) + 캡처 `board` 대조(줄 높이 ≥ 80px).
 - [x] M2-06 대기 화면 완성 — 제목·한 줄 설명·깜빡이는 `CLICK TO PLAY`·오늘 TOP 3, 20초 뒤 뒤에서 봇 시연(`DEMO`, 소리 없음, 저장 안 함), 클릭하면 즉시 새 판. — 합격: CHECK + Playwright(`timescale=30` 으로 시연이 시작되고, 시연 중 클릭 → Countdown, 시연 점수는 저장 0건) + 캡처 대조.
-- [ ] M2-07 무입력·자동 초기화 — 플레이 12초 무입력 → 버리고 Attract, 탭 숨김 → 버림, 판 끝에 타이머·rAF·리스너·소리 노드 정리. 개발용 `window.__health()` 가 살아 있는 타이머 수·DOM 노드 수·리스너 수를 돌려준다. — 합격: CHECK + Playwright(5판 뒤와 25판 뒤 `__health()` 의 세 숫자가 같음).
+- [x] M2-07 무입력·자동 초기화 — 플레이 12초 무입력 → 버리고 Attract, 탭 숨김 → 버림, 판 끝에 타이머·rAF·리스너·소리 노드 정리. 개발용 `window.__health()` 가 살아 있는 타이머 수·DOM 노드 수·리스너 수를 돌려준다. — 합격: CHECK + Playwright(5판 뒤와 25판 뒤 `__health()` 의 세 숫자가 같음).
 - [ ] M2-08 운영자 메뉴 — `Ctrl+Shift+O`: §4.7 여섯 항목 + Booth health 숫자. CSV 내보내기는 `Blob` 내려받기. 오늘 기록 지우기는 확인 한 번. — 합격: CHECK + Playwright(메뉴 열기 → 지우기 → 오늘 0건 · 전체 기록은 그대로 · CSV 줄 수 = 기록 수 + 1) + 캡처 `operator` 대조.
 - [ ] M2-09 안 죽게 — `window.onerror`·`unhandledrejection` → 오류 수 +1, 3초 뒤 새로 고침. `navigator.wakeLock`(되면). 전체 화면 버튼. — 합격: CHECK + Playwright(일부러 예외를 던지면 5초 안에 Attract 로 돌아오고 점수 목록은 그대로).
 - [ ] M2-10 오프라인 — `public/sw.js`: 빌드 산출물 전부를 미리 저장(파일 목록은 빌드 때 만든다), 새 버전이면 바꿔 끼움. — 합격: CHECK + Playwright(한 번 연 뒤 `context.setOffline(true)` 로 새로 고침 → 한 판이 끝까지 되고 보조 창도 열림, 네트워크 요청 실패 0).
