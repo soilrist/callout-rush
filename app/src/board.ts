@@ -5,8 +5,10 @@ import { CHANNEL_NAME, isScoresUpdated } from './core/channel';
 import { SCORES_KEY, ScoreStore } from './core/scores';
 import { drawBoardWin, findNewId, FLASH_MS } from './ui/boardwin';
 import { STAGE_H, STAGE_W, fitStage } from './ui/stage';
+import { registerOffline } from './ui/offline';
 import type { ScoreEntry } from './core/scores';
 
+registerOffline();
 const canvas = document.createElement('canvas');
 canvas.width = STAGE_W;
 canvas.height = STAGE_H;

@@ -20,10 +20,12 @@ import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawDemoOverlay,
 import { drawBoard } from './ui/board';
 import { installOperator } from './ui/operator';
 import { installGuard, keepAwake } from './ui/guard';
+import { registerOffline } from './ui/offline';
 import type { ScoreEntry } from './core/scores';
 import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
+registerOffline();
 const guard = installGuard();
 keepAwake();
 const health = installHealth();
