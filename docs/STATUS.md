@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-06 끝
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-07 끝
 - 브랜치: develop
-- 다음 조각: M2-07 (M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-08 (M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,17 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0032 · 2026-11-21 · 조각 M2-07
+- 계획: M2-07 무입력·자동 초기화 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/flow.ts`(`abandonPlay`, 12초 무입력), `index.ts`(탭 숨김), `ui/health.ts`(새, `__health`), `scripts/health.mjs`(새), `core/config.ts` 의 `PLAY_IDLE_QUIT_S`(DESIGN §6 값 12초 그대로)
+- 한 것: 사람 판에서 12초(게임 시간) 클릭이 없으면 저장·결과 없이 대기로. 탭이 숨겨지면(`visibilitychange`) 판을 버림. 대기·결과 화면은 그대로. `window.__health()` = 살아 있는 타이머·DOM 노드·리스너 수(setTimeout·setInterval·addEventListener 를 감싸 셈). 시연(demo) 판은 12초 규칙 제외. 덤: `demo.mjs` 의 안 쓰는 변수 제거(eslint).
+- 커밋: feat(ui) (`Slice: M2-07`)
+- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, `Tests  123 passed (123)`, jev SUPPORTED) / 2층 통과(`HEALTH ok: 5판 {"timers":0,"nodes":10,"listeners":20} = 25판 {"timers":0,"nodes":10,"listeners":20}, 무입력 포기 results=0 saved=0, 탭 숨김 → attract, console_errors=0`, jev SUPPORTED) / 3층 해당 없음(새로 보이는 화면 없음 — 판을 버리면 이미 검사된 대기 화면으로 감)
+- 플레이어 눈: 처음 하는 사람 — 떠나면 다음 사람이 바로 대기 화면 / 손 — 해당 없음 / 게임 카메라 — 해당 없음 / 장르 상식 — 오락실 자동 초기화 / 갇힘 — 없음
+- 점검한 규칙: Autonomy, Verification, PlayerEye, CodingStyle, GitCommit
+- 가정한 것(🟡): 없음 · 물은 것(🔴): 없음 · 건강 검사는 느려서(약 2분 50초) `npm run check` 에는 안 넣음. 배속이 30 이상이면 헤드리스 프레임이 느려 봇이 12초 넘게 못 눌러 판이 버려짐 → health 는 timescale=10. 첫 시도에서 되돌리기 명령을 잘못 칠 뻔했으나 거부돼 변경은 그대로.
+- INBOX 처리: 처리할 줄 없음
+- 다음: M2-08
 
 ## #0031 · 2026-11-21 · 조각 M2-06
 - 계획: M2-06 대기 화면 완성 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/flow.ts`(시연 상태·`startDemo`), `ui/screens.ts`(TOP 3·DEMO 막), `index.ts`, `core/config.ts`(`ATTRACT_DEMO_S`), `scripts/demo.mjs`(새); 시트 `docs/reference/attract.md` S1
