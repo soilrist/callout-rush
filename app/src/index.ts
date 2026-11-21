@@ -5,6 +5,7 @@ import { parseParams } from './params';
 import { initGame, step, type GameState } from './core/game';
 import { ZONES } from './core/zones';
 import { drawHud, type PastCall } from './ui/hud';
+import { drawFx, labelAlphaAt, shakeOffset } from './ui/fx';
 import { drawMap, stageToMap } from './ui/map';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
@@ -41,7 +42,9 @@ if (params.state === 'play') {
         history.push({ ok: state.last.kind === 'hit', name: ZONES.find((z) => z.id === first)?.name ?? '', rtMs: state.last.rtMs });
       }
     }
-    drawMap(ctx, { labelAlpha: 1 });
+    const alpha = labelAlphaAt(state.playStartMs === null ? 0 : at - state.playStartMs);
+    drawMap(ctx, { labelAlpha: alpha });
+    drawFx(ctx, { last: state.last, people: 0, now: at, playStartMs: state.playStartMs });
     drawHud(ctx, { state, now: at, history });
   });
 }
@@ -53,9 +56,12 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   const clock = (): number => performance.now() * timescale;
   const t0 = clock();
   const now = (): number => clock() - t0;
+  let people = 0;
   const apply = (event: Parameters<typeof step>[1]): void => {
     const prev = state.last;
+    const before = state.active?.call.people ?? 0;
     state = step(state, event);
+    if (state.last !== prev && state.last?.kind === 'hit') people = before;
     if (state.last !== prev && state.last) {
       const first = state.last.revealZones[0] ?? state.last.zone;
       history.push({ ok: state.last.kind === 'hit', name: ZONES.find((z) => z.id === first)?.name ?? '', rtMs: state.last.rtMs });
@@ -90,7 +96,12 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     apply({ type: 'TICK', now: t });
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
-    drawMap(ctx, { labelAlpha: 1 });
+    const elapsed = state.playStartMs === null ? 0 : t - state.playStartMs;
+    ctx.save();
+    ctx.translate(shakeOffset(state.last, t), 0);
+    drawMap(ctx, { labelAlpha: labelAlphaAt(elapsed) });
+    drawFx(ctx, { last: state.last, people, now: t, playStartMs: state.playStartMs });
+    ctx.restore();
     drawHud(ctx, { state, now: t, history });
     publish();
     requestAnimationFrame(frame);
