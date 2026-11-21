@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-04 끝
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-05 끝
 - 브랜치: develop
-- 다음 조각: M2-05 (M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-06 (M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,17 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0030 · 2026-11-21 · 조각 M2-05
+- 계획: M2-05 보조 모니터 화면 — 고른 이유: ROADMAP 첫 `[ ]` / `board.html`(기존)+`src/board.ts`, `ui/boardwin.ts`(새), `core/channel.ts`(새), `index.ts`(저장 뒤 알림), `scripts/boardwin.mjs`(새); 시트 `docs/reference/board.md` S6
+- 한 것: 보조 창이 오늘 TOP 10(줄 84px)·전체 TOP 5·`BEAT #1` 을 그림. 게임 창이 저장 직후 `BroadcastChannel('calloutrush')` 로 알리고, 보조 창은 이것 + `storage` 이벤트 + 5초 읽기로 다시 읽음. 새로 들어온 줄은 금색 3초 + 옆에서 미끄러져 들어옴.
+- 커밋: feat(ui) 55c5372 (`Slice: M2-05`)
+- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, `Tests  116 passed (116)`, jev SUPPORTED) / 2층 통과(`BOARDWIN 줄 6 → 늘어남, 지연 2 ms, 읽은 횟수 4, 콘솔 오류 0, 종료코드 0`, jev SUPPORTED — 지연 2ms ≤ 1000ms) / 3층 통과(열어 본 그림: `captures/M2-05-boardwin-flash.png` — 새 5등 줄 금색 + 옆으로 어긋난 채 들어오는 중, `M2-05-boardwin-after.png` — 3.8초 뒤 제자리·금색 없음. 시트와 좌표 맞음, 줄 높이 84·80 ≥ 80)
+- 플레이어 눈: 처음 하는 사람 — 만질 게 없는 화면 / 손 — 해당 없음(탭 0번) / 게임 카메라 — 캡처 확인 / 장르 상식 — 순위표 / 갇힘 — 없음
+- 점검한 규칙: Autonomy, Verification, PlayerEye, CodingStyle, GitCommit
+- 가정한 것(🟡): 없음 · 물은 것(🔴): 없음 · 캡처 png 는 `.gitignore` 라 커밋 안 됨
+- INBOX 처리: 처리할 줄 없음
+- 다음: M2-06
 
 ## #0029 · 2026-11-21 · 조각 M2-04
 - 계획: M2-04 게임 창 순위 화면 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/board.ts`(새), `ui/flow.ts`(board 화면), `index.ts`, `scripts/boardshot.mjs`(새); 시트 `docs/reference/board.md` S5
