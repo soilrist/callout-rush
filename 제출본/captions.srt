@@ -1,0 +1,47 @@
+1
+00:00:00,500 --> 00:00:09,500
+At an esports booth the line is long, the Wi-Fi is bad, and the machine runs all day.
+
+2
+00:00:10,500 --> 00:00:14,000
+Read the call. Click the spot.
+
+3
+00:00:15,000 --> 00:00:28,000
+Stage 1, WARM-UP: the zone labels are on.
+
+4
+00:00:28,000 --> 00:00:50,000
+Stage 2, LIVE: the labels fade away. You have to know the map.
+
+5
+00:00:50,000 --> 00:01:13,000
+Stage 3, CLUTCH: half the calls name two spots, in order.
+
+6
+00:01:15,500 --> 00:01:24,000
+Your score is a reaction time.
+
+7
+00:01:24,000 --> 00:01:34,500
+Three initials, and your row appears on the second monitor. No server.
+
+8
+00:01:35,500 --> 00:01:44,500
+The next player gets a clean round, with nothing left over from the last one.
+
+9
+00:01:45,500 --> 00:01:59,500
+1000 rounds in one page, no reload: heap +0.21 MB, 16 DOM nodes every time, 0 errors, game work per frame 1.5 ms (p95).
+
+10
+00:02:00,500 --> 00:02:14,000
+WebStorm's headless inspection is a gate in npm run check: 13 runs, 49 warnings read.
+
+11
+00:02:14,000 --> 00:02:29,500
+1 real fix, 48 false positives switched off with a reason. Junie CLI is installed and configured.
+
+12
+00:02:30,500 --> 00:02:39,500
+Free to play, MIT licensed. Open it once with Wi-Fi, then it works offline.
