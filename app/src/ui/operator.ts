@@ -51,9 +51,10 @@ export function installOperator(deps: OperatorDeps): Operator {
   root.append(panel);
   document.body.append(root);
 
-  const btn = (label: string, run: () => void): HTMLButtonElement => {
+  const btn = (label: string, run: () => void, kind?: 'danger' | 'close'): HTMLButtonElement => {
     const b = document.createElement('button');
     b.type = 'button';
+    if (kind) b.className = kind;
     b.textContent = label;
     b.addEventListener('click', run);
     return b;
@@ -107,9 +108,9 @@ export function installOperator(deps: OperatorDeps): Operator {
       }),
       btn(deps.isMuted() ? 'Unmute' : 'Mute', () => { deps.setMuted(!deps.isMuted()); render(); }),
       btn('Export scores (CSV)', download),
-      btn("Clear today's scores", () => { confirming = true; render(); }),
+      btn("Clear today's scores", () => { confirming = true; render(); }, 'danger'),
       btn('Booth health', showHealth),
-      btn('Close', () => setOpen(false)),
+      btn('Close', () => setOpen(false), 'close'),
     );
     if (deps.store.persistFailed) msg.textContent = 'Storage is full — scores are kept in memory only.';
     else if (!msg.textContent) msg.textContent = '';
