@@ -1,10 +1,25 @@
+:root {
+  --c-bg: #0b1220;
+  --c-panel: #131c2e;
+  --c-line: #24324d;
+  --c-zone: #1b2a44;
+  --c-text: #e8eef8;
+  --c-accent: #35d0ff;
+  --c-correct: #4ade80;
+  --c-wrong: #ff8a3d;
+  --c-gold: #ffc53d;
+  --line-w: 2px;
+  --line-w-strong: 4px;
+}
 html,
 body {
   margin: 0;
   height: 100%;
-  background: #0b1220;
-  color: #e6edf7;
-  font-family: system-ui, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 body {
   display: grid;
