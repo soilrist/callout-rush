@@ -5,7 +5,7 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
 - 브랜치: develop
 - 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 다른 조각 M2-14 부터. M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
@@ -15,6 +15,17 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0039 · 2026-11-21 · 조각 M2-14 (WebStorm 검사 경고 49 → 0)
+- 계획: M2-14 — 고른 이유: ROADMAP 첫 `[ ]` 인 M2-12 는 1000판이 아직 도는 중(`logs/soak-run.log` 에 `exit=` 없음)이라 건너뜀 → M2-14 / `.idea/inspectionProfiles/Project_Default.xml`, `app/src/core/calls.ts`, `docs/jetbrains-usage.md`
+- 한 것: 경고 49개 전부 읽음. 48개는 `Unused constant/function` 오탐 — 헤드리스는 파일 사이 import 를 못 풀어 export 를 전부 미사용으로 냄(`GAME_MS`·`drawHud`·`mulberry32` 등을 grep 하면 다른 파일이 씀). `JSUnusedGlobalSymbols` 를 프로필에서 끄고 이유를 주석으로. 진짜 1개(`nextCall` JSDoc 에 `@param rng` 빠짐)는 고침. 앞·뒤 `49 → 0` 을 usage 문서에.
+- 커밋: 아래 feat 아닌 `chore`/`fix` 한 개 (`Slice: M2-14`)
+- 검사: 1층 `TypeScript: No errors found`, `ESLint: No issues found` / 2층 `INSPECT ok: 0 errors, 0 warnings` (jev SUPPORTED) / 3층 해당 없음
+- 플레이어 눈: 화면 변화 없음(주석·검사 설정)
+- 점검한 규칙: Verification, Autonomy(프로필은 도구 설정이라 🟢), GitCommit
+- 가정한 것(🟡): 없음 / 물은 것(🔴): 없음 / INBOX 처리: 처리할 줄 없음
+- 주의: 이번 바퀴에서 vitest 는 1000판과 CPU 를 다투지 않게 돌리지 않음(코드 변경은 주석 한 줄)
+- 다음: `logs/soak-run.log` 에 `exit=` 있으면 M2-12 판정, 없으면 M2-15(Junie 키 없으면 `[!]`) 또는 M2-17
 
 ## #0038 · 2026-11-21 · 조각 M2-12 (끝 못 함 — 1000판이 바퀴 40분 한도에 안 들어가 따로 돌림)
 - 계획: M2-12 1000판 내구 — 고른 이유: ROADMAP 첫 `[ ]` / `app/scripts/soak.mjs` 고침, 실행은 바퀴와 분리

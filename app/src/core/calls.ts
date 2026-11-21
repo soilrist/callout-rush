@@ -36,6 +36,7 @@ function pickPeople(rng: Rng): 1 | 2 | 3 {
 
 /**
  * 다음 콜을 만든다 (§4.3).
+ * @param rng 0 이상 1 미만 난수 함수 (시드를 줄 수 있다)
  * @param phase 단계 1~3 (3 에서만 두 곳 콜이 나온다)
  * @param recent 최근에 나온 구역 ID, 오래된 것부터. 마지막 RECENT_EXCLUDE 개는 고르지 않는다.
  */
