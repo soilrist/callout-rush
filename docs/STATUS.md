@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀)
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01 끝
 - 브랜치: develop
-- 다음 조각: M2-01 (M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-02 (M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,16 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0026 · 2026-11-21 · 조각 M2-01
+- 계획: M2-01 점수 저장소 — 고른 이유: ROADMAP 첫 `[ ]` / `app/src/core/scores.ts`, `scores.test.ts`
+- 한 것: ScoreStore(add·today·allTime·rankToday·prune 500건, 저장 어댑터 localStorage/메모리). 동점=먼저 낸 쪽, 자정 넘으면 오늘 빔, 깨진 JSON→.bad, 저장 실패→줄여 재시도→메모리, 600건→500건(오늘 것 보존) 테스트 9개
+- 커밋: feat(core) (`Slice: M2-01`)
+- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, 실행 출력 `Test Files  15 passed (15)` / `Tests  95 passed (95)`, jev SUPPORTED) / 2층 해당 없음 / 3층 해당 없음(화면 없는 모듈)
+- 점검한 규칙: Autonomy, Verification, CodingStyle, GitCommit
+- 가정한 것(🟡): 없음 · 물은 것(🔴): 없음
+- INBOX 처리: 처리할 줄 없음
+- 다음: M2-02
 
 ## #0025 · 2026-11-21 · 조각 M1-98
 - 계획: M1-98 처음 하는 사람 통 플레이 — 고른 이유: M1-13 이 JUNIE_API_KEY 없어 `[!]`(건너뜀) → 다음 `[ ]` / `app/scripts/playthrough.mjs`, `package.json`(npm run playthrough)
