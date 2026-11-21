@@ -7,12 +7,16 @@ import { ZONES } from './core/zones';
 import { drawHud, type PastCall } from './ui/hud';
 import { drawFx, labelAlphaAt, shakeOffset } from './ui/fx';
 import { drawMap, stageToMap } from './ui/map';
+import { profileByName, simulate } from './core/bot';
+import { mulberry32 } from './core/rng';
+import { botFrame, flowClick, flowTick, initFlow, showResult, startGame, type BotPlan, type Flow } from './ui/flow';
+import { countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
 const params = parseParams(window.location.search);
 document.body.dataset['state'] = params.state ?? 'attract';
 
-if (params.state === 'play') {
+{
   const canvas = document.createElement('canvas');
   canvas.width = STAGE_W;
   canvas.height = STAGE_H;
@@ -27,47 +31,67 @@ if (params.state === 'play') {
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
     // 캡처용: 클릭 없이 `at`(ms) 까지 시계만 돌린다. 판 시작 시각 0 → 플레이는 COUNTDOWN_MS 부터.
-    if (params.at === null) {
-      startLive(canvas, ctx, params.seed ?? Date.now(), params.timescale);
+    if (params.state === 'play' && params.at !== null) {
+      drawAt(ctx, params.at, params.seed ?? 1);
       return;
     }
-    const at = params.at;
-    let state: GameState = initGame(params.seed ?? 1);
-    const history: PastCall[] = [];
-    for (let t = 0; t <= at; t += 50) {
-      const prev = state.last;
-      state = step(state, { type: 'TICK', now: t });
-      if (state.last !== prev && state.last) {
-        const first = state.last.revealZones[0] ?? state.last.zone;
-        history.push({ ok: state.last.kind === 'hit', name: ZONES.find((z) => z.id === first)?.name ?? '', rtMs: state.last.rtMs });
-      }
-    }
-    const alpha = labelAlphaAt(state.playStartMs === null ? 0 : at - state.playStartMs);
-    drawMap(ctx, { labelAlpha: alpha });
-    drawFx(ctx, { last: state.last, people: 0, now: at, playStartMs: state.playStartMs });
-    drawHud(ctx, { state, now: at, history });
+    startLive(canvas, ctx, params.seed ?? Date.now(), params.timescale);
   });
 }
 
-/** 진짜 플레이: 클릭 → 무대 → 맵 좌표 → step, requestAnimationFrame 한 줄기가 TICK 을 보낸다. */
-function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, seed: number, timescale: number): void {
+function drawAt(ctx: CanvasRenderingContext2D, at: number, seed: number): void {
   let state: GameState = initGame(seed);
   const history: PastCall[] = [];
-  const clock = (): number => performance.now() * timescale;
-  const t0 = clock();
-  const now = (): number => clock() - t0;
-  let people = 0;
-  const apply = (event: Parameters<typeof step>[1]): void => {
+  for (let t = 0; t <= at; t += 50) {
     const prev = state.last;
-    const before = state.active?.call.people ?? 0;
-    state = step(state, event);
-    if (state.last !== prev && state.last?.kind === 'hit') people = before;
+    state = step(state, { type: 'TICK', now: t });
     if (state.last !== prev && state.last) {
       const first = state.last.revealZones[0] ?? state.last.zone;
       history.push({ ok: state.last.kind === 'hit', name: ZONES.find((z) => z.id === first)?.name ?? '', rtMs: state.last.rtMs });
     }
+  }
+  const alpha = labelAlphaAt(state.playStartMs === null ? 0 : at - state.playStartMs);
+  drawMap(ctx, { labelAlpha: alpha });
+  drawFx(ctx, { last: state.last, people: 0, now: at, playStartMs: state.playStartMs });
+  drawHud(ctx, { state, now: at, history });
+  const cd = countdownText(at - (state.t0 ?? 0));
+  if (cd && state.status === 'countdown') drawCountdown(ctx, cd);
+}
+
+/** 진짜 흐름: 대기 → 클릭 → 카운트다운 → 플레이 → 결과 → 대기. requestAnimationFrame 한 줄기가 시계를 돌린다. */
+function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, seed: number, timescale: number): void {
+  const clock = (): number => performance.now() * timescale;
+  const t0 = clock();
+  const now = (): number => clock() - t0;
+  let flow: Flow = initFlow(seed, 0);
+  /** 판마다 다른 시드: 시작 시드 + 지금까지 끝난 판 수 */
+  const nextSeed = (): number => seed + flow.results;
+  let history: PastCall[] = [];
+  let people = 0;
+  const bot = params.bot ? profileByName(params.bot) : null;
+  const botRng = mulberry32(seed ^ 0x51ed);
+  let plan: BotPlan | null = null;
+  /** 결과를 지나 대기로 돌아온 횟수 (검사용) */
+  let attracts = 0;
+  if (params.state === 'play') flow = startGame(flow, nextSeed(), now());
+  if (params.state === 'result') flow = showResult(flow, simulate(profileByName(params.bot ?? 'regular'), seed), now());
+
+  /** 판정이 바뀌면 지난 콜 기록·인원을 갱신하고, 새 판이면 비운다 */
+  const track = (prevGame: GameState, next: Flow): void => {
+    if (next.game.t0 !== prevGame.t0 && next.game.score === 0 && next.game.finished === 0) history = [];
+    const last = next.game.last;
+    if (last !== prevGame.last && last) {
+      if (last.kind === 'hit') people = prevGame.active?.call.people ?? 0;
+      const first = last.revealZones[0] ?? last.zone;
+      history.push({ ok: last.kind === 'hit', name: ZONES.find((z) => z.id === first)?.name ?? '', rtMs: last.rtMs });
+    }
   };
-  canvas.style.cursor = 'crosshair';
+  const update = (next: Flow, prev: Flow): void => {
+    if (next.screen === 'play' && prev.screen !== 'play') history = [];
+    else track(prev.game, next);
+    flow = next;
+  };
+
   canvas.style.userSelect = 'none';
   canvas.style.touchAction = 'none';
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -80,31 +104,54 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const fit = { scale: rect.width / STAGE_W, offsetX: rect.left, offsetY: rect.top, width: rect.width, height: rect.height, pixelWidth: STAGE_W, pixelHeight: STAGE_H };
     const p = screenToStage(fit, e.clientX, e.clientY);
     const m = stageToMap(p.x, p.y);
-    apply({ type: 'CLICK', x: m.x, y: m.y, now: now() });
+    update(flowClick(flow, m.x, m.y, now(), nextSeed()), flow);
     publish();
   });
-  // 검사용 표시: 시험이 점수·연속·정답 구역을 읽는다 (화면에는 안 보임).
+  // 검사용 표시: 시험이 화면·점수·연속·정답 구역·끝난 판 수를 읽는다 (화면에는 안 보임).
   const publish = (): void => {
     const d = document.body.dataset;
-    d['status'] = state.status;
-    d['score'] = String(state.score);
-    d['streak'] = String(state.streak);
-    d['target'] = state.active ? (state.active.call.zones[state.active.step] ?? '') : '';
+    const g = flow.game;
+    d['screen'] = flow.screen;
+    d['results'] = String(flow.results);
+    d['attracts'] = String(attracts);
+    d['status'] = flow.screen === 'play' ? g.status : flow.screen;
+    d['score'] = String(g.score);
+    d['streak'] = String(g.streak);
+    d['target'] = flow.screen === 'play' && g.active ? (g.active.call.zones[g.active.step] ?? '') : '';
   };
   const frame = (): void => {
     const t = now();
-    apply({ type: 'TICK', now: t });
+    const prev = flow;
+    let next = flowTick(flow, t);
+    if (bot) {
+      const r = botFrame(bot, next, plan, botRng, t, nextSeed());
+      next = r.flow;
+      plan = r.plan;
+    }
+    if (prev.screen === 'result' && next.screen !== 'result') attracts += 1;
+    update(next, prev);
+    canvas.style.cursor = flow.screen === 'play' ? 'crosshair' : 'pointer';
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
-    const elapsed = state.playStartMs === null ? 0 : t - state.playStartMs;
-    ctx.save();
-    ctx.translate(shakeOffset(state.last, t), 0);
-    drawMap(ctx, { labelAlpha: labelAlphaAt(elapsed) });
-    drawFx(ctx, { last: state.last, people, now: t, playStartMs: state.playStartMs });
-    ctx.restore();
-    drawHud(ctx, { state, now: t, history });
+    if (flow.screen === 'attract') drawAttract(ctx, t);
+    else if (flow.screen === 'result') drawResult(ctx, flow.game, t - flow.since);
+    else drawPlay(ctx, flow.game, t, history, people);
     publish();
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
+}
+
+function drawPlay(ctx: CanvasRenderingContext2D, state: GameState, t: number, history: PastCall[], people: number): void {
+  const elapsed = state.playStartMs === null ? 0 : t - state.playStartMs;
+  ctx.save();
+  ctx.translate(shakeOffset(state.last, t), 0);
+  drawMap(ctx, { labelAlpha: labelAlphaAt(elapsed) });
+  drawFx(ctx, { last: state.last, people, now: t, playStartMs: state.playStartMs });
+  ctx.restore();
+  drawHud(ctx, { state, now: t, history });
+  if (state.status === 'countdown' || elapsed < 500) {
+    const cd = countdownText(t - (state.t0 ?? t));
+    if (cd) drawCountdown(ctx, cd);
+  }
 }

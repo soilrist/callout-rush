@@ -1,0 +1,50 @@
+import { describe, expect, it } from 'vitest';
+import { COUNTDOWN_MS, GAME_MS, RESULT_BOARD_S } from '../core/config';
+import { profileByName } from '../core/bot';
+import { mulberry32 } from '../core/rng';
+import { flowClick, flowTick, initFlow, botFrame, type BotPlan, type Flow } from './flow';
+
+describe('화면 흐름', () => {
+  it('attract 에서 누르면 카운트다운 → 플레이 → 결과 → attract', () => {
+    let f = initFlow(1, 0);
+    expect(f.screen).toBe('attract');
+    f = flowClick(f, 0, 0, 100, 1);
+    expect(f.screen).toBe('play');
+    expect(f.game.status).toBe('countdown');
+    f = flowTick(f, 100 + COUNTDOWN_MS + 10);
+    expect(f.game.status).toBe('play');
+    f = flowTick(f, 100 + COUNTDOWN_MS + GAME_MS + 10);
+    expect(f.screen).toBe('result');
+    expect(f.results).toBe(1);
+    f = flowTick(f, f.since + RESULT_BOARD_S * 1000);
+    expect(f.screen).toBe('attract');
+  });
+  it('새 판은 지난 판 값을 물려받지 않는다', () => {
+    let f = initFlow(1, 0);
+    f = { ...f, game: { ...f.game, score: 999, streak: 5 } };
+    f = flowClick(f, 0, 0, 10, 2);
+    expect(f.game.score).toBe(0);
+    expect(f.game.streak).toBe(0);
+  });
+  it('결과 화면은 0.6초 안의 누름을 무시한다', () => {
+    let f: Flow = { ...initFlow(1, 0), screen: 'result', since: 1000 };
+    f = flowClick(f, 0, 0, 1300, 1);
+    expect(f.screen).toBe('result');
+    f = flowClick(f, 0, 0, 1700, 1);
+    expect(f.screen).toBe('attract');
+  });
+  it('봇이 세 판 연속 결과를 지나 attract 로 돌아온다', () => {
+    const profile = profileByName('regular');
+    const rng = mulberry32(5);
+    let f = initFlow(3, 0);
+    let plan: BotPlan | null = null;
+    for (let now = 0; now < 400000 && f.results < 3; now += 16) {
+      const r = botFrame(profile, f, plan, rng, now, 3 + f.results);
+      f = flowTick(r.flow, now);
+      plan = r.plan;
+    }
+    expect(f.results).toBe(3);
+    f = flowTick(f, f.since + RESULT_BOARD_S * 1000);
+    expect(f.screen).toBe('attract');
+  });
+});
