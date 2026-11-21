@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17·M2-18 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
 - 브랜치: develop
-- 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 M2-18 부터. M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 M2-19 부터. M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,18 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0041 · 2026-11-21 · 조각 M2-18 (다듬기 1 — 눈)
+- 계획: M2-18 — 고른 이유: M2-12 는 1000판이 아직 도는 중(`logs/soak.csv` 가 game 336 근처, `exit=` 없음), M2-13·15·16 은 앞 바퀴와 같은 이유로 건너뜀 → M2-18 / `app/scripts/polish.mjs`(새, `npm run polish`)·`app/src/style.css`·`app/src/ui/operator.ts`
+- 한 것: 화면 7장(대기·카운트다운·WARM-UP·CLUTCH·결과·순위표·운영자)을 1920×1080·1280×720·2560×1080 로 21장 찍어(`captures/M2-18/`, 1000판이 쓰는 `dist` 를 건드리지 않게 임시 폴더에 빌드) 1920 7장 + 2560 play-clutch + 1280 operator·result 를 열어 시트와 대조.
+- 앞(다른 곳 목록): ① 운영자 메뉴 — 패널 폭 560px 고정(시트 1000/1920, 창 크기에 안 따라감)·테두리 `line`(시트 `accent` 4px)·버튼 1열 20px(시트 2열 440×88·32px)·Clear 가 `miss` 색 아님·Close 가 `accent` 색 아님·막 알파 0.82(시트 0.85) = 6곳. 그 밖 화면은 시트와 같음: 결과 화면 이니셜 칸이 제목보다 오른쪽인 것은 시트(OK x280 w400)대로, 카운트다운 숫자가 CRANE 이름을 가리는 것은 시연 때만 보이는 의도된 겹침, 글자 잘림 0, 2560×1080 은 가운데 1920 무대+양옆 빈 칸, 1280×720 도 같은 비율.
+- 뒤(고친 뒤): 운영자 6곳을 CSS 만 고침(52vw·accent 4px·2열·1.67vw·min-height 4.6vw·막 0.85, `danger`/`close` 클래스). 다시 찍은 `operator-1920x1080.png`·`operator-1280x720.png` 를 열어 시트 모양(2열, Clear 주황, Close 하늘색, 잘림 없음) 확인 → 다른 곳 0. 한계: 시트의 패널 높이 800·버튼 좌표를 픽셀로 맞춘 건 아님(비율만) / Booth health·확인 창 모양은 이번에 다시 안 찍음.
+- 커밋: feat(ui) (`Slice: M2-18`)
+- 검사: 1층 `TypeScript: No errors found`, `ESLint: No issues found`, `Tests  129 passed (129)` / 2층 못 함(1000판과 CPU 를 다투지 않게 e2e·operator 스크립트 안 돌림 — 운영자 버튼 글자·순서는 안 바꿈) / 3층 위 그림 열어 대조(통과)
+- 플레이어 눈: 처음 하는 사람 — 운영자 메뉴는 운영자 전용, 숨김 / 손 — 버튼 높이 4.6vw 로 커져 눌러 보기 쉬워짐 / 카메라 — 1280·1920 둘 다 잘림 없음 / 갇힘 — Close·Esc 그대로
+- 점검한 규칙: Autonomy, Verification, PlayerEye, Reference 6절(시트와 다르게 한 곳 없음), 규칙 15
+- 가정한 것(🟡): 없음 / 물은 것(🔴): 없음 / INBOX 처리: 처리할 줄 없음
+- 다음: `logs/soak-run.log` 에 `exit=` 있으면 M2-12 판정, 없으면 M2-19
 
 ## #0040 · 2026-11-21 · 조각 M2-17 (zip)
 - 계획: M2-17 zip — 고른 이유: M2-12 는 1000판이 아직 도는 중(`logs/soak-run.log` 에 `exit=` 없음), M2-13 도 같은 CPU·포트라 뒤로, M2-15 는 JUNIE_API_KEY 대기, M2-16 은 `[!] 감독` 원격 저장소 대기 → M2-17 / `app/scripts/zip.mjs`·`zipcheck.mjs`(새)·`app/zip/`(serve.mjs·start.command·start.bat·README.txt)·`package.json`(`zip`·`zipcheck`)·`eslint.config.js`(zip/*.mjs 에 node 전역)
