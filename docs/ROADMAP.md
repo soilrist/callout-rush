@@ -19,7 +19,7 @@
 
 ## 사람이 먼저 할 일 (루프는 건너뛴다)
 > 감독이 `brew install --cask webstorm jetbrains-air` 로 앱을 깔아 둔 뒤에 한다. 안 된 일이 있어도 루프는 다른 조각을 계속한다.
-- [!] 사람: 대회 등록(Join hackathon) + JetBrains 무료 코드(All Products Pack·AI Ultimate) 받기 — https://cloud9.devpost.com/ (코드는 등록 뒤 안내 메일·페이지, 수량 한정이라 빨리) — 기다리는 조각: 없음(제출은 M3)
+- [x] 대회 등록 완료(2026-11-21, Devpost). JetBrains 체험 코드는 등록 뒤 5영업일 안에 메일로 옴(~11/28) — 오면 아래 WebStorm 활성화로
 - [!] 사람: WebStorm 처음 열기 → 약관 동의 → JetBrains 계정 로그인 → 받은 코드로 활성화(https://account.jetbrains.com/licenses) → 이 폴더를 열고 "Trust Project" → **창 닫기**(열려 있으면 루프의 검사가 안 돈다) — `/Applications/WebStorm.app` — 기다리는 조각: M0-07
 - [!] 사람: Junie CLI 토큰 만들기 → 터미널 설정 파일(`~/.zshrc`)에 `export JUNIE_API_KEY=...` 한 줄(저장소 안에 적지 않기) — https://junie.jetbrains.com/cli — 기다리는 조각: M0-08
 - [!] 사람: JetBrains Air 처음 열기 → 약관 동의 → 로그인 → 이 폴더 열기 — `/Applications/Air.app` — 기다리는 조각: M0-09
