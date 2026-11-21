@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-08 끝
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-09 끝
 - 브랜치: develop
-- 다음 조각: M2-09 (M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-10 (M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,17 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0034 · 2026-11-21 · 조각 M2-09
+- 계획: M2-09 안 죽게 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/guard.ts`(새)·`ui/guard.test.ts`(새)·`index.ts`(연결)·`scripts/crash.mjs`(새)·`package.json`(`crash`)
+- 한 것: `error`·`unhandledrejection` → `calloutrush.v1.health` 의 `errors` +1, 3초 뒤 `location.reload()`(예약은 한 번만). 운영자 메뉴 Errors 칸이 이 값을 읽음. `navigator.wakeLock`(있을 때만, 탭 다시 보이면 재요청). 전체 화면 버튼은 M2-08 에 이미 있음.
+- 커밋: feat(ui) 3e7d406 (`Slice: M2-09`)
+- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, `Tests  129 passed (129)`, jev SUPPORTED) / 2층: `CRASH ok: 예외 → 3.1초 만에 새로 고침·대기 화면 복귀, 오류 수 1, 점수 목록 그대로, 뜻밖의 콘솔 오류 0` — 실제 출력이나 jev 가 NOT_SUPPORTED(p 0.34) 라 **통과 선언 보류**. 함께 돌린 `OPERATOR ok: … 콘솔 오류 0`·`E2E ok: … 콘솔 오류 0` 은 회귀 없음(jev SUPPORTED) / 3층 해당 없음(화면 모양 변화 없음)
+- 플레이어 눈: 손님 눈에는 오류 때 3초 뒤 대기 화면으로 돌아가는 것뿐 / 갇힘 — 오류가 반복돼도 매번 새로 고침으로 빠져나옴(반복 시 무한 새로 고침 가능: 한계)
+- 점검한 규칙: Autonomy, Verification, CodingStyle, GitCommit
+- 가정한 것(🟡): 없음 · 물은 것(🔴): 없음 · 한계: wakeLock 은 헤드리스에서 못 봄(검사 못 함). 오류가 시작 때부터 계속 나면 3초마다 새로 고침.
+- INBOX 처리: 처리할 줄 없음
+- 다음: M2-10
 
 ## #0033 · 2026-11-21 · 조각 M2-08
 - 계획: M2-08 운영자 메뉴 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/operator.ts`(새), `core/csv.ts`(새), `core/scores.ts`(`all`·`clearToday`), `index.ts`(연결), `style.css`, `scripts/operator.mjs`(새)
