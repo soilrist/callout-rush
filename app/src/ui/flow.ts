@@ -1,12 +1,12 @@
-/** 화면 흐름 상태 기계 (DESIGN §8.1): Attract → Countdown → Play → Result → Attract. 시계는 밖에서 넣는다. */
-import { RESULT_IDLE_S } from '../core/config';
+/** 화면 흐름 상태 기계 (DESIGN §8.1): Attract → Countdown → Play → Result → Board → Attract. 시계는 밖에서 넣는다. */
+import { RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { backspace, canConfirm, finalName, typeLetter } from '../core/initials';
 import { decide, type BotProfile } from '../core/bot';
 import { initGame, step, type GameEvent, type GameState } from '../core/game';
 import type { Rng } from '../core/rng';
 
 /** 카운트다운은 play 화면 안의 game.status 로 나타난다 */
-export type FlowScreen = 'attract' | 'play' | 'result';
+export type FlowScreen = 'attract' | 'play' | 'result' | 'board';
 
 export interface Flow {
   screen: FlowScreen;
@@ -50,12 +50,13 @@ export function flowTick(f: Flow, now: number): Flow {
     return toResultIfDone({ ...f, game: step(f.game, { type: 'TICK', now }) }, now);
   }
   if (f.screen === 'result' && now - f.lastInput >= RESULT_IDLE_S * 1000) return leaveResult(f, now);
+  if (f.screen === 'board' && now - f.since >= RESULT_BOARD_S * 1000) return { ...f, screen: 'attract', since: now };
   return f;
 }
 
-/** 결과를 떠난다: 이름을 정해 saved 에 남기고 attract 로. 못 채웠으면 `---`. */
+/** 결과를 떠난다: 이름을 정해 saved 에 남기고 순위 화면(board)으로. 못 채웠으면 `---`. */
 function leaveResult(f: Flow, now: number): Flow {
-  return { ...f, screen: 'attract', since: now, saved: { name: finalName(f.initials), game: f.game }, saves: f.saves + 1, pressed: null };
+  return { ...f, screen: 'board', since: now, saved: { name: finalName(f.initials), game: f.game }, saves: f.saves + 1, pressed: null };
 }
 
 /** 결과 화면의 글자판·키보드 입력. key: 'A'~'Z' · 'BACK' · 'OK'. 0.6초 안의 누름은 무시(앞 판 연타 방지). */
@@ -73,6 +74,7 @@ export function flowClick(f: Flow, x: number, y: number, now: number, seed: numb
     const e: GameEvent = { type: 'CLICK', x, y, now };
     return toResultIfDone({ ...f, game: step(f.game, e) }, now);
   }
+  if (f.screen === 'board') return now - f.since < 600 ? f : startGame(f, seed, now); // 순위 화면 아무 데나 누르면 새 판 (OK 두 번 눌림 방지 0.6초)
   return f; // result 는 글자판(flowKey)만 받는다
 }
 
@@ -99,6 +101,7 @@ export function botFrame(
     if (t < 700) return { flow: f, plan: null };
     return { flow: flowKey(f, f.initials.length < 3 ? 'BOT'[f.initials.length] ?? 'B' : 'OK', now), plan: null };
   }
+  if (f.screen === 'board') return { flow: now - f.since < 1500 ? f : flowClick(f, 0, 0, now, seed), plan: null };
   if (f.screen !== 'play') return { flow: f, plan: null };
   const a = f.game.status === 'play' ? f.game.active : null;
   if (!a) return { flow: f, plan: null };

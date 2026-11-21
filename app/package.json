@@ -15,6 +15,7 @@
     "e2e": "node scripts/e2e.mjs",
     "initials": "node scripts/initials.mjs",
     "rankshot": "node scripts/rankshot.mjs",
+    "boardshot": "node scripts/boardshot.mjs",
     "playthrough": "node scripts/playthrough.mjs",
     "fxshot": "node scripts/fxshot.mjs",
     "sfxrender": "node scripts/sfxrender.mjs",

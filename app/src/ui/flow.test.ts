@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COUNTDOWN_MS, GAME_MS, RESULT_IDLE_S } from '../core/config';
+import { COUNTDOWN_MS, GAME_MS, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { profileByName } from '../core/bot';
 import { mulberry32 } from '../core/rng';
 import { flowKey, flowClick, flowTick, initFlow, botFrame, type BotPlan, type Flow } from './flow';
@@ -17,8 +17,12 @@ describe('화면 흐름', () => {
     expect(f.screen).toBe('result');
     expect(f.results).toBe(1);
     f = flowTick(f, f.lastInput + RESULT_IDLE_S * 1000);
-    expect(f.screen).toBe('attract');
+    expect(f.screen).toBe('board');
     expect(f.saved?.name).toBe('---');
+    f = flowTick(f, f.since + RESULT_BOARD_S * 1000 - 1);
+    expect(f.screen).toBe('board');
+    f = flowTick(f, f.since + RESULT_BOARD_S * 1000);
+    expect(f.screen).toBe('attract');
   });
   it('새 판은 지난 판 값을 물려받지 않는다', () => {
     let f = initFlow(1, 0);
@@ -27,7 +31,7 @@ describe('화면 흐름', () => {
     expect(f.game.score).toBe(0);
     expect(f.game.streak).toBe(0);
   });
-  it('결과 화면: 0.6초 안의 입력은 무시, 3글자 + OK 로 저장하고 attract', () => {
+  it('결과 화면: 0.6초 안의 입력은 무시, 3글자 + OK 로 저장하고 board', () => {
     let f: Flow = { ...initFlow(1, 0), screen: 'result', since: 1000, lastInput: 1000 };
     f = flowKey(f, 'A', 1300);
     expect(f.initials).toBe('');
@@ -38,7 +42,7 @@ describe('화면 흐름', () => {
     expect(f.screen).toBe('result'); // 2글자는 OK 가 안 눌린다
     f = flowKey(f, 'D', 2300);
     f = flowKey(f, 'OK', 2400);
-    expect(f.screen).toBe('attract');
+    expect(f.screen).toBe('board');
     expect(f.saved?.name).toBe('ZED');
     expect(f.saves).toBe(1);
   });
@@ -61,6 +65,13 @@ describe('화면 흐름', () => {
     }
     expect(f.results).toBe(3);
     f = flowTick(f, f.lastInput + RESULT_IDLE_S * 1000);
-    expect(f.screen).toBe('attract');
+    expect(f.screen).toBe('board');
+  });
+  it('순위 화면에서 누르면 바로 새 카운트다운 판', () => {
+    const f: Flow = { ...initFlow(1, 0), screen: 'board', since: 100 };
+    expect(flowClick(f, 0, 0, 200, 9).screen).toBe('board');
+    const g = flowClick(f, 0, 0, 800, 9);
+    expect(g.screen).toBe('play');
+    expect(g.game.status).toBe('countdown');
   });
 });

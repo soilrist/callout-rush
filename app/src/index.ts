@@ -15,6 +15,8 @@ import { ScoreStore } from './core/scores';
 import { keyAt } from './ui/keypad';
 import { accuracy, avgReaction } from './core/scoring';
 import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
+import { drawBoard } from './ui/board';
+import type { ScoreEntry } from './core/scores';
 import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
@@ -115,12 +117,14 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   });
   const store = new ScoreStore();
   let savedCount = 0;
+  /** 방금 저장한 내 기록 (순위 화면 강조용) */
+  let mine: ScoreEntry | null = null;
   /** 결과를 떠나며 정해진 이름과 판 기록을 점수 저장소에 넣는다 */
   const saveIfNew = (): void => {
     if (flow.saves === savedCount || !flow.saved) return;
     savedCount = flow.saves;
     const g = flow.saved.game;
-    store.add({ name: flow.saved.name, score: g.score, acc: accuracy(g.hit, g.finished), avgRt: avgReaction(g.rts) ?? 0, streak: g.bestStreak, ts: Date.now() });
+    mine = store.add({ name: flow.saved.name, score: g.score, acc: accuracy(g.hit, g.finished), avgRt: avgReaction(g.rts) ?? 0, streak: g.bestStreak, ts: Date.now() });
     document.body.dataset['lastName'] = flow.saved.name;
   };
 
@@ -169,13 +173,20 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
       next = r.flow;
       plan = r.plan;
     }
-    if (prev.screen === 'result' && next.screen !== 'result') attracts += 1;
+    if (prev.screen === 'board' && next.screen !== 'board') attracts += 1;
     update(next, prev);
     saveIfNew();
     canvas.style.cursor = flow.screen === 'play' ? 'crosshair' : 'pointer';
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
     if (flow.screen === 'attract') drawAttract(ctx, t);
+    else if (flow.screen === 'board') {
+      const nowMs = Date.now();
+      const rows = store.today(nowMs, 10);
+      const myRank = mine ? store.rankToday(mine.id, nowMs) : 0;
+      document.body.dataset['boardMine'] = String(myRank);
+      drawBoard(ctx, { rows, myId: mine?.id ?? null, myRank, mine, now: t });
+    }
     else if (flow.screen === 'result') {
       if (rankFor !== flow.results) {
         rankFor = flow.results;

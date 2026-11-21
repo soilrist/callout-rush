@@ -37,7 +37,7 @@ try {
   await page.waitForTimeout(250);
   await page.screenshot({ path: resolve(dir, 'M2-02-result-3letters.png') });
   await page.mouse.click(480, 890); // OK
-  await page.waitForFunction(() => document.body.dataset.screen === 'attract', null, { timeout: 3000 });
+  await page.waitForFunction(() => document.body.dataset.screen === 'board', null, { timeout: 3000 });
   if ((await d('lastName')) !== 'ZED') fail(`저장 이름=${await d('lastName')} (ZED 여야)`);
   if (errors.length) fail(`콘솔 오류 ${errors.join(' | ')}`);
   console.log(`INITIALS 저장 이름 ${await d('lastName')}, 콘솔 오류 ${errors.length}, 종료코드 ${code}`);
