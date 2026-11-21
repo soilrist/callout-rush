@@ -16,6 +16,15 @@
 
 ---
 
+## #0045 · 2026-11-21 · 조각 M3-01 (JetBrains 사용 합계)
+- 계획: M3-01 — 고른 이유: M2-12 1000판이 아직 도는 중(`logs/soak.csv` 200판째, `exit=` 없음), M2-13·15·16 은 앞 조건·키·원격 대기 → 다음 마일스톤 첫 `[ ]` / `docs/jetbrains-usage.md` 합계·ROADMAP.
+- 한 것: 합계표를 세는 명령과 함께 다시 씀: 검사 실행 4 → 13(`grep -c 'INSPECT ok' docs/STATUS.md`), Junie·Air 커밋 0(`Tool:` 꼬리말 grep), `.idea` 9·`.junie` 1 추적, 원격 없음이라 아직 공개 안 됨을 문서에 정직하게 적음.
+- 커밋: docs(status) (`Slice: M3-01`)
+- 검사: 1층 해당 없음(문서만) / 2층 해당 없음 / 3층 해당 없음
+- 점검한 규칙: Autonomy, Verification(세는 명령 실제 실행: 13 / 0 / 0 / 10 / 원격 0줄)
+- 가정한 것(🟡): 없음 / 물은 것(🔴): 없음 / INBOX 처리: 처리할 줄 없음
+- 다음: `logs/soak-run.log` 에 `exit=` 있으면 M2-12 판정, 없으면 M3-02 이후 중 soak 와 무관한 것
+
 ## #0044 · 2026-11-21 · 조각 M2-98 (처음 하는 사람 통 플레이)
 - 계획: M2-98 — 고른 이유: M2-12 1000판이 아직 도는 중(`logs/soak.csv` 150판째, `exit=` 없음), M2-13·15·16 은 앞과 같은 이유로 건너뜀 → M2-98 / `app/scripts/session.mjs`(새, `npm run session`)·`app/package.json`·ROADMAP. 공개 주소가 없어 `vite preview`(localhost)로.
 - 한 것: 창 두 개(게임+보조 board.html) 실제 속도(timescale=1): 봇이 한 판(대기→카운트다운→play→result→이니셜→순위) → 보조 창 갱신 시간 재기 → 순위 8초 뒤 대기 복귀 → 사람 창에서 시작만 누르고 방치 → 대기 복귀 → 다시 시작하면 점수 0.

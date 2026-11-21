@@ -2,15 +2,26 @@
 
 Honest log of what each JetBrains tool actually did in this project. Only things that really ran are listed, with numbers and commit hashes.
 
-## Totals (updated at the end of each milestone)
+## Totals (recounted in M3-01, 2026-11-21)
 
 | Tool | Runs | Problems found | Problems fixed | Commits made by the tool |
 |---|---|---|---|---|
-| WebStorm headless inspection | 4 | 49 warnings (1 real, 48 false positives) | 1 | n/a |
+| WebStorm headless inspection | 13 | 49 warnings (1 real, 48 false positives) | 1 | n/a |
 | Junie CLI | 0 | n/a | n/a | 0 |
 | JetBrains Air | 0 | n/a | n/a | 0 |
 
-Last updated: M2-14 (2026-11-21).
+How each number was counted (run from the repository root):
+
+| Number | Command | Result |
+|---|---|---|
+| Inspection runs recorded in STATUS (one `npm run check` ends with the inspection) | `grep -c 'INSPECT ok' docs/STATUS.md` | 13 |
+| Commits that name the inspection | `git log --format='%h %s' \| grep -ciE 'inspect\|webstorm'` | 3 |
+| Commits made by Junie (`Tool: Junie` trailer) | `git log --format='%B' \| grep -cE '^Tool: Junie'` | 0 |
+| Commits made with Air (`Tool: Air` trailer) | `git log --format='%B' \| grep -cE '^Tool: Air'` | 0 |
+| Problems found / fixed | see the M2-14 row in the log below (49 warnings, 48 false positives, 1 fixed) | 49 / 1 |
+| JetBrains config files tracked by git | `git ls-files .idea .junie .air \| wc -l` | .idea and .junie tracked, no .air folder |
+
+Remote check: this repository has no remote yet (`git remote -v` prints nothing), so `.idea` and `.junie` are committed locally but not yet public. They go online with the push in M2-16 / M3-10.
 
 ## Log
 
