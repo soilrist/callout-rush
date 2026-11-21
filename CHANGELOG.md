@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 ### Added
+- Vite + TypeScript 웹 앱 뼈대(`app/`)
 ### Changed
 ### Fixed
 ### Removed
