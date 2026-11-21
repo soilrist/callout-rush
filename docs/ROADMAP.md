@@ -46,7 +46,7 @@
 - [x] M1-02 난수·콜 생성 — `core/rng.ts`(mulberry32) + `core/calls.ts` `nextCall(rng, phase, recent)`: §4.3 규칙(인원 비율, 최근 2개 제외, 단계 3 두 곳 50%, 문장 만들기). — 합격: CHECK + 테스트(같은 시드 = 같은 순서 · 1만 번 뽑아 인원 비율 50/35/15 ±2%p · 최근 2개와 안 겹침 · 두 곳 콜의 두 구역이 다름 · 문장이 §5.2 틀과 일치).
 - [x] M1-03 점수 함수 — `core/scoring.ts`: §4.4 공식(`points`·`mult`·`grade`·정확도·평균 반응). — 합격: CHECK + 테스트(rt 300 → 만점 · rt = T → 절반 · 연속 10 이상 배수 2.0 · 등급 경계 5곳 · 목표 0개일 때 0%).
 - [x] M1-04 게임 리듀서 — `core/game.ts` `initGame(seed)`·`step(state, event)`: 단계 전환, 콜 띄우기, 정답·오답·시간 초과, 두 곳 순서, `CALL_GAP_MS` 동안 클릭 무시, 60초 끝. 시계·난수는 인자로. — 합격: CHECK + 테스트 10개 이상(§4.2 규칙·예외 줄마다 하나) + 같은 시드·같은 입력이면 최종 상태가 같다.
-- [ ] M1-05 봇 — `core/bot.ts`: §5.3 프로필 3개, `decide(state, rng)` 가 언제·어디를 누를지 돌려준다. `simulate(profile, seed)` 는 화면 없이 한 판을 돌린다. — 합격: CHECK + 테스트(1000판 평균 정확도가 프로필 값 ±3%p, 판마다 끝 상태가 `done`).
+- [x] M1-05 봇 — `core/bot.ts`: §5.3 프로필 3개, `decide(state, rng)` 가 언제·어디를 누를지 돌려준다. `simulate(profile, seed)` 는 화면 없이 한 판을 돌린다. — 합격: CHECK + 테스트(1000판 평균 정확도가 프로필 값 ±3%p, 판마다 끝 상태가 `done`).
 - [ ] M1-06 맵 그리기 — `ui/map.ts`: Canvas 2D 로 12구역(채움·테두리·§5.1 그림 무늬)·바닥 선·이름표. 이름표 투명도 인자. — 합격: CHECK + 캡처 `play` 를 열어 `reference/play.md` 와 대조(구역 12개가 다 보이고 이름표가 구역 밖으로 안 나감).
 - [ ] M1-07 HUD — `ui/hud.ts`: 시간 막대·남은 초·단계 이름·콜 카드(두 줄 포함)·콜 제한 시간 막대·점수·연속·지난 콜 3개(§8.2 좌표). — 합격: CHECK + 캡처 2장(`?state=play&at=5000`, `&at=45000` 두 곳 콜)을 열어 시트와 대조, 가장 긴 문장(`Container Row, then Loading Dock!`)이 카드 밖으로 안 나감.
 - [ ] M1-08 입력 연결·게임 루프 — `pointerdown` → 무대 → 맵 좌표 → `step`. `requestAnimationFrame` 루프 하나가 `TICK` 을 보낸다. 우클릭·드래그·선택 막기, 커서 십자. — 합격: CHECK + Playwright 테스트(시드 고정, 정답 구역 가운데를 누르면 점수가 오르고 빈 땅을 누르면 연속이 0).
