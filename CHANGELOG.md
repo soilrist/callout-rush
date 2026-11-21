@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 ### Added
+- 화면 흐름: 대기 → 카운트다운 → 플레이 → 결과 → 대기, 봇 자동 진행(`?bot=`)
 - Vite + TypeScript 웹 앱 뼈대(`app/`)
 - 화면 캡처 도구 `npm run shot` (Playwright)
 - 판정 연출(정답 번쩍·점수 떠오름, 오답 X·흔들림, 단계 전환 글자, 이름표 페이드)
