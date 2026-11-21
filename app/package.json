@@ -22,6 +22,7 @@
     "operator": "node scripts/operator.mjs",
     "crash": "node scripts/crash.mjs",
     "offline": "node scripts/offline.mjs",
+    "soak": "node scripts/soak.mjs",
     "playthrough": "node scripts/playthrough.mjs",
     "fxshot": "node scripts/fxshot.mjs",
     "sfxrender": "node scripts/sfxrender.mjs",
