@@ -50,7 +50,7 @@
 - [x] M1-06 맵 그리기 — `ui/map.ts`: Canvas 2D 로 12구역(채움·테두리·§5.1 그림 무늬)·바닥 선·이름표. 이름표 투명도 인자. — 합격: CHECK + 캡처 `play` 를 열어 `reference/play.md` 와 대조(구역 12개가 다 보이고 이름표가 구역 밖으로 안 나감).
 - [x] M1-07 HUD — `ui/hud.ts`: 시간 막대·남은 초·단계 이름·콜 카드(두 줄 포함)·콜 제한 시간 막대·점수·연속·지난 콜 3개(§8.2 좌표). — 합격: CHECK + 캡처 2장(`?state=play&at=5000`, `&at=45000` 두 곳 콜)을 열어 시트와 대조, 가장 긴 문장(`Container Row, then Loading Dock!`)이 카드 밖으로 안 나감.
 - [x] M1-08 입력 연결·게임 루프 — `pointerdown` → 무대 → 맵 좌표 → `step`. `requestAnimationFrame` 루프 하나가 `TICK` 을 보낸다. 우클릭·드래그·선택 막기, 커서 십자. — 합격: CHECK + Playwright 테스트(시드 고정, 정답 구역 가운데를 누르면 점수가 오르고 빈 땅을 누르면 연속이 0).
-- [ ] M1-09 판정 연출 — 정답 초록 번쩍 + 떠오르는 `+점수`·`0.61s` + 인원 점, 오답 주황 X + 흔들림 + 정답 구역 테두리 600ms, 단계 전환 글자 번쩍, 이름표 2초 사라짐. — 합격: CHECK + 캡처 3장(정답 직후·오답 직후·`at=16000` 이름표 반투명)을 열어 확인.
+- [x] M1-09 판정 연출 — 정답 초록 번쩍 + 떠오르는 `+점수`·`0.61s` + 인원 점, 오답 주황 X + 흔들림 + 정답 구역 테두리 600ms, 단계 전환 글자 번쩍, 이름표 2초 사라짐. — 합격: CHECK + 캡처 3장(정답 직후·오답 직후·`at=16000` 이름표 반투명)을 열어 확인.
 - [ ] M1-10 소리 — `audio/sfx.ts`: §5.5 여덟 가지를 WebAudio 로 합성, 첫 클릭에 `AudioContext` 시작, 음소거 값. 소리 노드는 끝나면 `disconnect`. — 합격: CHECK + 테스트(각 소리 함수가 오류 없이 돌고 `OfflineAudioContext` 로 렌더한 버퍼의 최대값 > 0.05, 길이가 표의 ±20ms).
 - [ ] M1-11 화면 흐름 — `ui/flow.ts` 상태 기계: Attract → Countdown → Play → Result(숫자만, 이니셜은 M2) → Attract. `?state=`·`?bot=`·`?timescale=` 연결. 판 시작 때 상태를 새로 만든다. — 합격: CHECK + Playwright(`?bot=regular&timescale=30` 으로 3판 연속 → 세 번 다 Result 를 지나 Attract 로 돌아옴, 콘솔 오류 0).
 - [ ] M1-12 숫자 맞추기 — `scripts/balance.mjs`: 봇 3종 × 1000판 → 점수 중앙값·10%·90%, 콜 수, 정확도. 결과로 DESIGN §6.2 의 "예상 점수"·등급 경계, §6.3 의 "예상 콜 수"를 **잰 값으로 바꾸고 근거 칸에 날짜·명령을 적는다**. 목표: rookie 중앙값 = ENTRY, regular = ANCHOR 또는 SHOT CALLER, pro = IGL, 봇 셋의 중앙값이 서로 1,500점 이상 차이. — 합격: CHECK + §6 표가 고쳐졌고 `config.ts` 와 값이 같다(테스트로 묶음).
