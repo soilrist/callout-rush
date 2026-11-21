@@ -5,4 +5,10 @@ export default tseslint.config(
   { ignores: ['dist/', '.inspect-out/', 'node_modules/'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { process: 'readonly', console: 'readonly', document: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly' },
+    },
+  },
 );
