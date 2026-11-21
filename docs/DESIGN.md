@@ -217,7 +217,7 @@
 없음.
 
 ### 5.8 UI 문구 (NPC·대사) — 영어, 이게 전부
-`CALLOUT RUSH` · `Read the call. Click the spot.` · `CLICK TO PLAY` · `DEMO` · `TODAY'S TOP 3` · `3` `2` `1` `GO` · `WARM-UP` · `LIVE — LABELS OFF` · `CLUTCH — DOUBLE CALLS` · `SCORE` · `STREAK` · `TOO SLOW` · `TIME!` · `AVG REACTION` · `ACCURACY` · `BEST STREAK` · `#<n> TODAY` · `ENTER YOUR INITIALS` · `OK` · `TODAY'S TOP 10` · `ALL-TIME TOP 5` · `BEAT #1: <score>` · `BE THE FIRST ON THE BOARD` · `#<n> YOU` · `NEXT PLAYER — CLICK TO PLAY` · 운영자 메뉴 항목(§4.7) · `Clear today's scores? This cannot be undone.` · `Storage is full — scores are kept in memory only.`
+`CALLOUT RUSH` · `Read the call. Click the spot.` · `CLICK TO PLAY` · `DEMO` · `TODAY'S TOP 3` · `3` `2` `1` `GO` · `WARM-UP` · `LIVE — LABELS OFF` · `CLUTCH — DOUBLE CALLS` · `SCORE` · `STREAK` · `TOO SLOW` · `TIME!` · `AVG REACTION` · `ACCURACY` · `BEST STREAK` · `#<n> TODAY` · `NEW #1 TODAY` 〔추가: 바퀴 28 — 오늘 1등〕 · `ENTER YOUR INITIALS` · `OK` · `TODAY'S TOP 10` · `ALL-TIME TOP 5` · `BEAT #1: <score>` · `BE THE FIRST ON THE BOARD` · `#<n> YOU` · `NEXT PLAYER — CLICK TO PLAY` · 운영자 메뉴 항목(§4.7) · `Clear today's scores? This cannot be undone.` · `Storage is full — scores are kept in memory only.`
 `Games played` · `JS heap` · `Frame time` · `Errors` · `Close` · `Unmute` · `Clear` · `Cancel` · `n/a` 〔추가: 바퀴 11 — 운영자 메뉴(`docs/reference/operator.md`)〕
 새 문구가 필요하면 여기에 먼저 추가한다. 게임 안에 팀·회사·다른 게임 이름을 쓰지 않는다.
 

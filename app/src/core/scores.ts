@@ -175,6 +175,11 @@ export class ScoreStore {
     return this.today(now, Infinity).findIndex((e) => e.id === id) + 1;
   }
 
+  /** 아직 저장 안 한 점수가 오늘 몇 등이 될지(1부터). 같은 점수는 먼저 낸 쪽이 앞이라 뒤로 간다 */
+  previewRank(score: number, now: number): number {
+    return this.today(now, Infinity).filter((e) => e.score >= score).length + 1;
+  }
+
   get size(): number {
     return this.list.length;
   }

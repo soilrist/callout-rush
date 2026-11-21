@@ -61,7 +61,17 @@ function statRow(ctx: Ctx, label: string, value: string, y: number): void {
   ctx.fillRect(984, y + 108, 852, 2);
 }
 
+/** 결과 화면 순위 글자. 1등이면 `NEW #1 TODAY`, 아니면 `#n TODAY`. 3등 안이면 금색. */
+export function rankLabel(rank: number): { text: string; gold: boolean } {
+  return { text: rank === 1 ? 'NEW #1 TODAY' : `#${rank} TODAY`, gold: rank <= 3 };
+}
+
+/** 점수 카운트업이 끝나 등급·순위가 뜨는 시각(ms) */
+export const COUNTUP_MS = 800;
+
 export interface ResultInput {
+  /** 오늘 순위(1부터). 0 이면 안 그린다 */
+  rank: number;
   initials: string;
   pressed: { key: string; at: number } | null;
   /** 지금 시각(ms, 눌림 150ms 판정용) */
@@ -115,13 +125,17 @@ export function drawResult(ctx: Ctx, g: GameState, sinceMs: number, input: Resul
   ctx.save();
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, 1920, 1080);
-  const k = Math.min(1, Math.max(0, sinceMs / 800));
+  const k = Math.min(1, Math.max(0, sinceMs / COUNTUP_MS));
   const shown = Math.round(g.score * k);
   text(ctx, 'SCORE', 60, 78, 28, C.text, 'left', 0.7);
   text(ctx, shown.toLocaleString('en-US'), 60, 200, 200, C.text);
   if (k >= 1) {
     const name = grade(g.score);
     text(ctx, name, 60, 395, 96, name === 'IGL' ? C.gold : C.accent);
+    if (input.rank > 0) {
+      const r = rankLabel(input.rank);
+      text(ctx, r.text, 984, 522, 72, r.gold ? C.gold : C.text);
+    }
   }
   const avg = avgReaction(g.rts);
   statRow(ctx, 'AVG REACTION', avg === null ? '—' : `${Math.round(avg)} ms`, 112 - 12);

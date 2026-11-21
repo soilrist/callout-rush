@@ -14,6 +14,7 @@
     "check": "tsc --noEmit && eslint . && vitest run && vite build && npm run e2e && npm run sfxrender && npm run inspect",
     "e2e": "node scripts/e2e.mjs",
     "initials": "node scripts/initials.mjs",
+    "rankshot": "node scripts/rankshot.mjs",
     "playthrough": "node scripts/playthrough.mjs",
     "fxshot": "node scripts/fxshot.mjs",
     "sfxrender": "node scripts/sfxrender.mjs",

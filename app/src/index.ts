@@ -14,7 +14,8 @@ import { RESULT_IDLE_S } from './core/config';
 import { ScoreStore } from './core/scores';
 import { keyAt } from './ui/keypad';
 import { accuracy, avgReaction } from './core/scoring';
-import { countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
+import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
+import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
 const params = parseParams(window.location.search);
@@ -96,7 +97,14 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     flow = next;
   };
 
+  const sfx = createSfx();
+  window.addEventListener('pointerdown', () => sfx.unlock());
+  /** 결과 화면 순위: 판마다 한 번 계산하고 등급이 뜰 때 소리 한 번 */
+  let rankFor = -1;
+  let rank = 0;
+  let rankSounded = -1;
   window.addEventListener('keydown', (e) => {
+    sfx.unlock();
     if (flow.screen !== 'result' || e.ctrlKey || e.metaKey || e.altKey) return;
     const k = e.key === 'Backspace' ? 'BACK' : e.key === 'Enter' ? 'OK' : e.key.length === 1 ? e.key : null;
     if (!k) return;
@@ -168,8 +176,18 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
     if (flow.screen === 'attract') drawAttract(ctx, t);
-    else if (flow.screen === 'result') drawResult(ctx, flow.game, t - flow.since, { initials: flow.initials, pressed: flow.pressed, now: t, idleLeft: 1 - (t - flow.lastInput) / (RESULT_IDLE_S * 1000) });
-    else drawPlay(ctx, flow.game, t, history, people);
+    else if (flow.screen === 'result') {
+      if (rankFor !== flow.results) {
+        rankFor = flow.results;
+        rank = store.previewRank(flow.game.score, Date.now());
+        document.body.dataset['rank'] = String(rank);
+      }
+      if (rankSounded !== flow.results && t - flow.since >= COUNTUP_MS) {
+        rankSounded = flow.results;
+        sfx.play('rank');
+      }
+      drawResult(ctx, flow.game, t - flow.since, { rank, initials: flow.initials, pressed: flow.pressed, now: t, idleLeft: 1 - (t - flow.lastInput) / (RESULT_IDLE_S * 1000) });
+    } else drawPlay(ctx, flow.game, t, history, people);
     publish();
     requestAnimationFrame(frame);
   };

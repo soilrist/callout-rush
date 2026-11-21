@@ -109,3 +109,16 @@ describe('ScoreStore', () => {
     expect(new ScoreStore(st, 50).allTime()[0].score).toBe(777);
   });
 });
+
+describe('previewRank', () => {
+  it('빈 목록이면 1등, 높은 점수가 있으면 밀리고, 같은 점수는 뒤', () => {
+    const s = new ScoreStore(memoryStorage());
+    const now = Date.now();
+    expect(s.previewRank(100, now)).toBe(1);
+    s.add({ name: 'AAA', score: 500, acc: 90, avgRt: 600, streak: 5, ts: now });
+    s.add({ name: 'BBB', score: 300, acc: 90, avgRt: 600, streak: 5, ts: now });
+    expect(s.previewRank(400, now)).toBe(2);
+    expect(s.previewRank(300, now)).toBe(3);
+    expect(s.previewRank(900, now)).toBe(1);
+  });
+});
