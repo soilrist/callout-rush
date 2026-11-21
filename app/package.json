@@ -29,6 +29,7 @@
     "hand": "node scripts/hand.mjs",
     "playthrough": "node scripts/playthrough.mjs",
     "session": "node scripts/session.mjs",
+    "submitshots": "node scripts/submitshots.mjs",
     "fxshot": "node scripts/fxshot.mjs",
     "sfxrender": "node scripts/sfxrender.mjs",
     "balance": "vite-node scripts/balance.ts"

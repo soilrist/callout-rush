@@ -3,6 +3,7 @@
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) · 버전: [SemVer](https://semver.org/lang/ko/) · 규칙: `docs/conventions/Versioning.md`
 
 ## [Unreleased]
+- 제출용 그림 7장(`제출본/shots/`)과 다시 찍는 명령 `npm run submitshots` 추가
 ### Added
 - 시작 `GO`·단계 글자가 맵을 가리는 시간을 0.8초 → 0.5초로 줄임(첫 콜이 가려지지 않게)
 - 운영자 메뉴를 시트대로 다듬음(2열 큰 단추, 주황 Clear·하늘색 Close, 창 크기에 맞춰 커짐)
