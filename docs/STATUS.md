@@ -20,7 +20,7 @@
 - 계획: M2-09 안 죽게 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/guard.ts`(새)·`ui/guard.test.ts`(새)·`index.ts`(연결)·`scripts/crash.mjs`(새)·`package.json`(`crash`)
 - 한 것: `error`·`unhandledrejection` → `calloutrush.v1.health` 의 `errors` +1, 3초 뒤 `location.reload()`(예약은 한 번만). 운영자 메뉴 Errors 칸이 이 값을 읽음. `navigator.wakeLock`(있을 때만, 탭 다시 보이면 재요청). 전체 화면 버튼은 M2-08 에 이미 있음.
 - 커밋: feat(ui) 3e7d406 (`Slice: M2-09`)
-- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, `Tests  129 passed (129)`, jev SUPPORTED) / 2층: `CRASH ok: 예외 → 3.1초 만에 새로 고침·대기 화면 복귀, 오류 수 1, 점수 목록 그대로, 뜻밖의 콘솔 오류 0` — 실제 출력이나 jev 가 NOT_SUPPORTED(p 0.34) 라 **통과 선언 보류**. 함께 돌린 `OPERATOR ok: … 콘솔 오류 0`·`E2E ok: … 콘솔 오류 0` 은 회귀 없음(jev SUPPORTED) / 3층 해당 없음(화면 모양 변화 없음)
+- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, `Tests  129 passed (129)`, jev SUPPORTED) / 2층: `CRASH ok: 예외 → 3.1초 만에 새로 고침·대기 화면 복귀, 오류 수 1, 점수 목록 그대로, 뜻밖의 콘솔 오류 0` — 실제 출력이나 jev 가 NOT_SUPPORTED(p 0.34) 라 **통과 선언 보류**. 함께 돌린 `OPERATOR ok: … 콘솔 오류 0`·`E2E ok: … 콘솔 오류 0` 은 회귀 없음(OPERATOR 만 jev SUPPORTED, E2E 는 NOT_SUPPORTED p 0.46 — 참고용) / 3층 해당 없음(화면 모양 변화 없음)
 - 플레이어 눈: 손님 눈에는 오류 때 3초 뒤 대기 화면으로 돌아가는 것뿐 / 갇힘 — 오류가 반복돼도 매번 새로 고침으로 빠져나옴(반복 시 무한 새로 고침 가능: 한계)
 - 점검한 규칙: Autonomy, Verification, CodingStyle, GitCommit
 - 가정한 것(🟡): 없음 · 물은 것(🔴): 없음 · 한계: wakeLock 은 헤드리스에서 못 봄(검사 못 함). 오류가 시작 때부터 계속 나면 3초마다 새로 고침.
