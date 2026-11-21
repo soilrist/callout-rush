@@ -25,7 +25,7 @@ try {
     server.on('exit', () => no(new Error('preview 꺼짐')));
   });
   mkdirSync(dirname(out), { recursive: true });
-  const header = 'games,elapsed_s,heap_mb,dom_nodes,listeners,timers,frame_p95_ms,storage_kb,console_errors\n';
+  const header = 'games,elapsed_s,heap_mb,dom_nodes,listeners,timers,frame_p95_ms,storage_kb,console_errors,work_p95_ms\n';
   writeFileSync(out, header);
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: W, height: Math.round(W * 9 / 16) } });
@@ -37,6 +37,11 @@ try {
   await page.addInitScript(() => {
     const w = globalThis;
     w.__frames = [];
+    // 게임이 프레임마다 쓰는 일(rAF 콜백 안에서 쓴 시간)을 프레임 시각별로 합쳐 쌓는다. 간격(__frames)은 기기·헤드리스 한계가 섞이고, 이 값은 우리 코드 몫만 본다 (M2-12a).
+    w.__work = [];
+    const raf = w.requestAnimationFrame.bind(w);
+    let curT = -1;
+    w.requestAnimationFrame = (cb) => raf((t) => { const s = w.performance.now(); try { cb(t); } finally { const d = w.performance.now() - s; if (t === curT) w.__work[w.__work.length - 1] += d; else { curT = t; w.__work.push(d); } } });
     let last = 0;
     const loop = (t) => { if (last) w.__frames.push(t - last); last = t; w.requestAnimationFrame(loop); };
     w.requestAnimationFrame(loop);
@@ -54,12 +59,14 @@ try {
     const { usedSize } = await cdp.send('Runtime.getHeapUsage');
     const m = await page.evaluate(() => {
       const f = globalThis.__frames.splice(0).sort((a, b) => a - b);
+      const w = globalThis.__work.splice(0).sort((a, b) => a - b);
+      const wp95 = w.length ? w[Math.min(w.length - 1, Math.floor(w.length * 0.95))] : 0;
       const h = globalThis.__health();
       let bytes = 0;
       for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); bytes += (k.length + (localStorage.getItem(k) ?? '').length) * 2; }
-      return { p95: f.length ? f[Math.min(f.length - 1, Math.floor(f.length * 0.95))] : 0, h, bytes };
+      return { wp95, p95: f.length ? f[Math.min(f.length - 1, Math.floor(f.length * 0.95))] : 0, h, bytes };
     });
-    const row = [n, ((Date.now() - t0) / 1000).toFixed(0), (usedSize / 1048576).toFixed(2), m.h.nodes, m.h.listeners, m.h.timers, m.p95.toFixed(1), (m.bytes / 1024).toFixed(1), errors].join(',');
+    const row = [n, ((Date.now() - t0) / 1000).toFixed(0), (usedSize / 1048576).toFixed(2), m.h.nodes, m.h.listeners, m.h.timers, m.p95.toFixed(1), (m.bytes / 1024).toFixed(1), errors, m.wp95.toFixed(2)].join(',');
     appendFileSync(out, `${row}\n`);
     console.log(row);
     return row;
