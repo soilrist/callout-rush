@@ -14,7 +14,8 @@ const every = Number(arg('every', 50));
 const W = Number(arg('width', 960));
 const out = arg('out', '../logs/soak.csv');
 const PORT = 4181;
-const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe' });
+// npx 를 거치면 server.kill() 이 vite 자식을 못 죽여 포트가 남는다 → node 로 vite 를 직접 띄운다.
+const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe' });
 let code = 0;
 const fail = (m) => { console.error(`SOAK 실패: ${m}`); code = 1; };
 try {
@@ -44,6 +45,9 @@ try {
   await cdp.send('HeapProfiler.enable');
   await page.goto(`http://localhost:${PORT}/index.html?bot=regular&timescale=${timescale}&seed=7`);
   await page.waitForFunction(() => typeof globalThis.__health === 'function');
+  // 이 기기의 헤드리스 크롬이 초당 몇 프레임을 내는지 먼저 잰다. 봇은 프레임마다 움직이므로 fps 가 낮으면 --timescale 30 에서 결과 화면(20초÷배속)을 못 지나 판이 안 끝난다.
+  const fps = await page.evaluate(() => new Promise((ok) => { const g = globalThis; let c = 0; const s = g.performance.now(); const l = () => { c++; if (g.performance.now() - s >= 2000) ok(c / 2); else g.requestAnimationFrame(l); }; g.requestAnimationFrame(l); }));
+  console.log(`fps=${fps.toFixed(1)} timescale=${timescale}${fps < 30 && timescale > 15 ? ' — 경고: fps 가 낮아 배속 30 은 판이 안 끝날 수 있다 (10 으로 낮출 것)' : ''}`);
   const t0 = Date.now();
   const sample = async (n) => {
     await cdp.send('HeapProfiler.collectGarbage');
@@ -67,7 +71,7 @@ try {
   while (Date.now() < endAt && (minutes > 0 || n < games)) {
     // 순위 화면(board)에 들어선 프레임에서 잰다 — 판마다 같은 지점이라 비교가 된다.
     const target = Math.min(next, minutes > 0 ? Infinity : games);
-    await page.waitForFunction((k) => Number(document.body.dataset.results) >= k && document.body.dataset.screen === 'board', target, { timeout: 600000, polling: 'raf' });
+    await page.waitForFunction((k) => Number(document.body.dataset.results) >= k && document.body.dataset.screen === 'board', target, { timeout: 1800000, polling: 'raf' });
     n = await done();
     await sample(n);
     next = n + every;
