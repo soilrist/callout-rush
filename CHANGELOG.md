@@ -5,6 +5,7 @@
 ## [Unreleased]
 ### Added
 - Vite + TypeScript 웹 앱 뼈대(`app/`)
+- 화면 캡처 도구 `npm run shot` (Playwright)
 ### Changed
 ### Fixed
 ### Removed
