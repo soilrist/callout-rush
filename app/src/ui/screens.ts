@@ -2,8 +2,10 @@
 import { COUNTDOWN_MS } from '../core/config';
 import { accuracy, avgReaction, grade } from '../core/scoring';
 import type { GameState } from '../core/game';
+import { INITIALS_LEN, canConfirm } from '../core/initials';
+import { OK_BOX, PAD, PAD_KEYS, SLOT, padCell } from './keypad';
 
-const C = { bg: '#0b1220', panel: '#131c2e', line: '#24324d', text: '#e8eef8', accent: '#35d0ff', gold: '#ffc53d' } as const;
+const C = { miss: '#ff8a3d', bg: '#0b1220', panel: '#131c2e', line: '#24324d', text: '#e8eef8', accent: '#35d0ff', gold: '#ffc53d' } as const;
 const FONT = '"Chakra Petch", system-ui, sans-serif';
 type Ctx = CanvasRenderingContext2D;
 
@@ -59,8 +61,57 @@ function statRow(ctx: Ctx, label: string, value: string, y: number): void {
   ctx.fillRect(984, y + 108, 852, 2);
 }
 
-/** 결과: 왼쪽 점수·등급, 오른쪽 통계 3줄. 이니셜·순위는 M2. 점수는 0.8초 동안 올라간다. */
-export function drawResult(ctx: Ctx, g: GameState, sinceMs: number): void {
+export interface ResultInput {
+  initials: string;
+  pressed: { key: string; at: number } | null;
+  /** 지금 시각(ms, 눌림 150ms 판정용) */
+  now: number;
+  /** 무입력 제한까지 남은 비율 0~1 */
+  idleLeft: number;
+}
+
+/** 이니셜 칸 3개 + 글자판 + OK + 남은 시간 막대 */
+function drawInitials(ctx: Ctx, r: ResultInput): void {
+  text(ctx, 'ENTER YOUR INITIALS', 60, 622, 36, C.accent);
+  const cur = Math.min(r.initials.length, INITIALS_LEN - 1);
+  for (let i = 0; i < INITIALS_LEN; i++) {
+    const x = SLOT.x + SLOT.pitch * i;
+    const active = i === cur && r.initials.length < INITIALS_LEN;
+    ctx.strokeStyle = active ? C.accent : C.line;
+    ctx.lineWidth = active ? 4 : 2;
+    ctx.strokeRect(x, SLOT.y, SLOT.w, SLOT.h);
+    const ch = r.initials[i];
+    if (ch) text(ctx, ch, x + SLOT.w / 2, SLOT.y + SLOT.h / 2 + 4, 96, C.text, 'center');
+  }
+  const ok = canConfirm(r.initials);
+  if (ok) {
+    ctx.fillStyle = C.accent;
+    ctx.fillRect(OK_BOX.x, OK_BOX.y, OK_BOX.w, OK_BOX.h);
+  } else {
+    ctx.strokeStyle = C.line;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(OK_BOX.x, OK_BOX.y, OK_BOX.w, OK_BOX.h);
+  }
+  text(ctx, 'OK', OK_BOX.x + OK_BOX.w / 2, OK_BOX.y + OK_BOX.h / 2 + 2, 56, ok ? C.bg : C.text, 'center', ok ? 1 : 0.4);
+  PAD_KEYS.forEach((k, i) => {
+    const c = padCell(i);
+    const down = r.pressed !== null && r.pressed.key === k && r.now - r.pressed.at < 150;
+    ctx.fillStyle = down ? C.accent : C.panel;
+    ctx.fillRect(c.x, c.y, PAD.cell, PAD.cell);
+    ctx.strokeStyle = C.line;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(c.x, c.y, PAD.cell, PAD.cell);
+    text(ctx, k === 'BACK' ? '\u232b' : k, c.x + PAD.cell / 2, c.y + PAD.cell / 2 + 2, 48, down ? C.bg : C.text, 'center');
+  });
+  ctx.fillStyle = C.panel;
+  ctx.fillRect(60, 990, 1800, 16);
+  const left = Math.min(1, Math.max(0, r.idleLeft));
+  ctx.fillStyle = left <= 0.25 ? C.miss : C.accent;
+  ctx.fillRect(60, 990, 1800 * left, 16);
+}
+
+/** 결과: 왼쪽 점수·등급, 오른쪽 통계 3줄, 아래 이니셜 입력. 점수는 0.8초 동안 올라간다. */
+export function drawResult(ctx: Ctx, g: GameState, sinceMs: number, input: ResultInput): void {
   ctx.save();
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, 1920, 1080);
@@ -76,6 +127,6 @@ export function drawResult(ctx: Ctx, g: GameState, sinceMs: number): void {
   statRow(ctx, 'AVG REACTION', avg === null ? '—' : `${Math.round(avg)} ms`, 112 - 12);
   statRow(ctx, 'ACCURACY', `${Math.round(accuracy(g.hit, g.finished))}%`, 232 - 12);
   statRow(ctx, 'BEST STREAK', String(g.bestStreak), 352 - 12);
-  text(ctx, 'CLICK TO CONTINUE', 960, 900, 48, C.accent, 'center', 0.8);
+  drawInitials(ctx, input);
   ctx.restore();
 }

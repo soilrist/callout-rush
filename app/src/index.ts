@@ -9,7 +9,11 @@ import { drawFx, labelAlphaAt, shakeOffset } from './ui/fx';
 import { drawMap, stageToMap } from './ui/map';
 import { profileByName, simulate } from './core/bot';
 import { mulberry32 } from './core/rng';
-import { botFrame, flowClick, flowTick, initFlow, showResult, startGame, type BotPlan, type Flow } from './ui/flow';
+import { botFrame, flowClick, flowKey, flowTick, initFlow, showResult, startGame, type BotPlan, type Flow } from './ui/flow';
+import { RESULT_IDLE_S } from './core/config';
+import { ScoreStore } from './core/scores';
+import { keyAt } from './ui/keypad';
+import { accuracy, avgReaction } from './core/scoring';
 import { countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
@@ -92,6 +96,26 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     flow = next;
   };
 
+  window.addEventListener('keydown', (e) => {
+    if (flow.screen !== 'result' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key === 'Backspace' ? 'BACK' : e.key === 'Enter' ? 'OK' : e.key.length === 1 ? e.key : null;
+    if (!k) return;
+    e.preventDefault();
+    update(flowKey(flow, k, now()), flow);
+    saveIfNew();
+    publish();
+  });
+  const store = new ScoreStore();
+  let savedCount = 0;
+  /** 결과를 떠나며 정해진 이름과 판 기록을 점수 저장소에 넣는다 */
+  const saveIfNew = (): void => {
+    if (flow.saves === savedCount || !flow.saved) return;
+    savedCount = flow.saves;
+    const g = flow.saved.game;
+    store.add({ name: flow.saved.name, score: g.score, acc: accuracy(g.hit, g.finished), avgRt: avgReaction(g.rts) ?? 0, streak: g.bestStreak, ts: Date.now() });
+    document.body.dataset['lastName'] = flow.saved.name;
+  };
+
   canvas.style.userSelect = 'none';
   canvas.style.touchAction = 'none';
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -103,8 +127,16 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const rect = canvas.getBoundingClientRect();
     const fit = { scale: rect.width / STAGE_W, offsetX: rect.left, offsetY: rect.top, width: rect.width, height: rect.height, pixelWidth: STAGE_W, pixelHeight: STAGE_H };
     const p = screenToStage(fit, e.clientX, e.clientY);
+    if (flow.screen === 'result') {
+      const k = keyAt(p.x, p.y);
+      if (k) update(flowKey(flow, k, now()), flow);
+      saveIfNew();
+      publish();
+      return;
+    }
     const m = stageToMap(p.x, p.y);
     update(flowClick(flow, m.x, m.y, now(), nextSeed()), flow);
+    saveIfNew();
     publish();
   });
   // 검사용 표시: 시험이 화면·점수·연속·정답 구역·끝난 판 수를 읽는다 (화면에는 안 보임).
@@ -112,6 +144,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const d = document.body.dataset;
     const g = flow.game;
     d['screen'] = flow.screen;
+    d['initials'] = flow.initials;
     d['results'] = String(flow.results);
     d['attracts'] = String(attracts);
     d['status'] = flow.screen === 'play' ? g.status : flow.screen;
@@ -130,11 +163,12 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     }
     if (prev.screen === 'result' && next.screen !== 'result') attracts += 1;
     update(next, prev);
+    saveIfNew();
     canvas.style.cursor = flow.screen === 'play' ? 'crosshair' : 'pointer';
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
     if (flow.screen === 'attract') drawAttract(ctx, t);
-    else if (flow.screen === 'result') drawResult(ctx, flow.game, t - flow.since);
+    else if (flow.screen === 'result') drawResult(ctx, flow.game, t - flow.since, { initials: flow.initials, pressed: flow.pressed, now: t, idleLeft: 1 - (t - flow.lastInput) / (RESULT_IDLE_S * 1000) });
     else drawPlay(ctx, flow.game, t, history, people);
     publish();
     requestAnimationFrame(frame);
