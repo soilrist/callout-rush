@@ -27,7 +27,7 @@
 
 ## M0 — 뼈대 (합격: 빈 화면이 뜨고, CHECK 한 줄이 돌고, JetBrains 도구 세 개의 "되는지/안 되는지"가 문서에 있다) · ~11-25
 - [x] M0-00 설계서·로드맵 채우기 (감독, 2026-11-21)
-- [ ] M0-01 `.gitignore` 고치기 — `.idea/` 통째 무시를 지우고 `.idea/workspace.xml`·`.idea/shelf/`·`.idea/usage.statistics.xml`·`.idea/httpRequests/`·`.idea/dataSources*` 만 무시. `app/node_modules/`·`app/dist/`·`captures/`·`app/.inspect-out/` 추가. `**/[Bb]uild/` 처럼 `app/` 안 파일을 잘못 가리는 규칙이 있으면 뺀다. — 합격: `git check-ignore -v .idea/inspectionProfiles/x.xml` 이 아무것도 안 내고, `git check-ignore app/node_modules/x` 는 걸린다.
+- [x] M0-01 `.gitignore` 고치기 — `.idea/` 통째 무시를 지우고 `.idea/workspace.xml`·`.idea/shelf/`·`.idea/usage.statistics.xml`·`.idea/httpRequests/`·`.idea/dataSources*` 만 무시. `app/node_modules/`·`app/dist/`·`captures/`·`app/.inspect-out/` 추가. `**/[Bb]uild/` 처럼 `app/` 안 파일을 잘못 가리는 규칙이 있으면 뺀다. — 합격: `git check-ignore -v .idea/inspectionProfiles/x.xml` 이 아무것도 안 내고, `git check-ignore app/node_modules/x` 는 걸린다.
 - [ ] M0-02 Vite + TypeScript 앱 만들기 — `app/` 에 `npm create vite@latest`(vanilla-ts) 수준의 최소 구성, `tsconfig` `strict: true`, `vite.config.ts` 에 `base: './'` 와 입력 두 개(`index.html`·`board.html`), 화면엔 바탕색 `#0B1220` 과 글자 `CALLOUT RUSH`. — 합격: `npm run build` 가 `dist/index.html`·`dist/board.html` 을 낸다.
 - [ ] M0-03 CHECK 한 줄 만들기 — ESLint(typescript-eslint 권장 설정) + Vitest + `package.json` 의 `check` 스크립트(공통 블록 순서, inspect 는 아직 빼고). 더미 테스트 1개. — 합격: `npm run check` exit 0, 일부러 타입 오류를 넣으면 exit 1(확인 뒤 되돌림).
 - [ ] M0-04 무대·글꼴·팔레트 — `src/ui/stage.ts`: 1920×1080 논리 무대를 창에 비율 유지로 맞추고(기기 픽셀비 반영) 화면↔무대 좌표 변환 순수 함수. CSS 변수로 DESIGN §7 팔레트. 글꼴 Chakra Petch 를 `@fontsource/chakra-petch` 로 넣되 **패키지 이름과 OFL 라이선스를 npm 페이지에서 확인**, 안 되면 `system-ui` 로 두고 DESIGN §7 을 고친다. — 합격: CHECK + 테스트(1280×720·1920×1080·2560×1080 세 창에서 무대 모서리 좌표 왕복 오차 ≤ 1px).

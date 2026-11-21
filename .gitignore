@@ -5,8 +5,6 @@
 **/[Ll]ibrary/
 **/[Tt]emp/
 **/[Oo]bj/
-**/[Bb]uild/
-**/[Bb]uilds/
 **/[Ll]ogs/
 **/[Uu]ser[Ss]ettings/
 **/[Mm]emoryCaptures/
@@ -18,7 +16,17 @@
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
-.idea/
+.idea/workspace.xml
+.idea/shelf/
+.idea/usage.statistics.xml
+.idea/httpRequests/
+.idea/dataSources*
+.idea/dataSources.local.xml
+# 웹 앱 (app/)
+app/node_modules/
+app/dist/
+app/.inspect-out/
+/captures/
 .gradle/
 .consulo/
 ExportedObj/
