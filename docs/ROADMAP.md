@@ -77,7 +77,7 @@
 - [ ] M2-16 공개 주소 — `.github/workflows/pages.yml`(Node 24, `npm ci && npm run build`, `app/dist` 를 Pages 로). 원격 저장소가 있으면 푸시하고 주소를 README·STATUS 에. — 합격: `curl -sI <주소>` 200, `<주소>board.html` 200. 원격이 없으면 워크플로 파일만 커밋하고 `[!]`(사람 할 일 5번).
 - [x] M2-17 zip — `scripts/zip.mjs`: `dist` + `serve.mjs`(Node 내장 `http` 만 쓰는 정적 서버, 포트 4173) + `start.command`·`start.bat` + `README.txt`(영어 5줄: Node 필요, 더블클릭, 주소, 보조 창 여는 법) → `제출본/callout-rush-web.zip`. — 합격: 임시 폴더에 풀어 `node serve.mjs` 로 띄우고 Playwright 로 한 판이 끝까지 됨, zip ≤ 1MB.
 - [x] M2-18 다듬기 1 — 눈 — 모든 화면 캡처 7장을 나란히 열어 보고 글자 크기·여백·색이 시트와 다른 곳, 글자가 잘리는 곳을 고친다. 1280×720·2560×1080 창에서도 한 장씩. — 합격: 다른 곳 목록(앞)과 고친 뒤 0곳(뒤)을 STATUS 에.
-- [ ] M2-19 다듬기 2 — 손 — 실제 속도 통 플레이 캡처를 보며 "맞혔는지 0.1초 안에 알 수 있나", "콜이 바뀐 걸 놓치지 않나"만 본다. 연출 시간·소리 크기 조정은 `config.ts` 에서만. — 합격: 바꾼 값과 이유를 DESIGN §6 에.
+- [x] M2-19 다듬기 2 — 손 — 실제 속도 통 플레이 캡처를 보며 "맞혔는지 0.1초 안에 알 수 있나", "콜이 바뀐 걸 놓치지 않나"만 본다. 연출 시간·소리 크기 조정은 `config.ts` 에서만. — 합격: 바꾼 값과 이유를 DESIGN §6 에.
 - [ ] M2-20 README 완성 — 영어: 소개 + 화면 그림 2장(`제출본/shots/`), Play online, Download zip, **Booth setup(5단계: 열기 → 운영자 메뉴 → 보조 창을 둘째 모니터로 → 전체 화면 → 끝)**, How it works(폴더 지도), Testing(`npm run check`·`npm run soak`, 내구 결과 숫자 3개), Built with JetBrains tools(도구별 2줄 + usage 문서 링크), License. — 합격: README 의 명령을 새 폴더에서 그대로 따라 해 전부 된다.
 - [ ] M2-98 처음 하는 사람 통 플레이 — 공개 주소(없으면 `vite preview`)에서 창 두 개로: 대기 → 한 판 → 이니셜 → 순위 → 보조 창 갱신 → 대기 → 12초 방치 → 대기. 실제 속도, 캡처를 열어 PlayerEye 다섯 칸 + "다음 사람이 깨끗한 판을 받나". — 합격: STATUS 에 다섯 칸, 한 사람 시간(초), 보조 창 갱신 지연(ms).
 - [!] 사람: 🎮 M2 5분 해 보기 — 공개 주소(STATUS 에 적힘)를 열고 `Ctrl+Shift+O` → `Open leaderboard window` → 2판 하고 이니셜 넣기. 볼 것: ① 순위표에 바로 뜨나 ② 그냥 두면 대기 화면으로 가나 ③ 부스에 그대로 놓아도 되겠나 — 계속 / 고쳐(무엇을)
