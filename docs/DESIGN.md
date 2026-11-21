@@ -334,7 +334,7 @@
 
 | 도구 | 역할 | 실제 명령(공식 문서 확인 2026-11-21) | 증거 |
 |---|---|---|---|
-| WebStorm | **품질 관문** — 매 CHECK 마다 헤드리스 코드 검사, 찾은 문제를 루프가 고침. 프로젝트 설정 공유 | `"/Applications/WebStorm.app/Contents/bin/inspect.sh" <저장소> <저장소>/.idea/inspectionProfiles/Project_Default.xml <출력폴더> -v2 -d <저장소>/app/src -format json` — 인자 순서·옵션은 문서대로. **WebStorm 창이 열려 있으면 안 돈다.** 라이선스 없이 도는지는 확인 필요(M0-07) | `.idea/`(inspectionProfiles·codeStyles·runConfigurations), `docs/jetbrains-usage.md` 의 실행 횟수·찾은 문제·고친 커밋 |
+| WebStorm | **품질 관문** — 매 CHECK 마다 헤드리스 코드 검사, 찾은 문제를 루프가 고침. 프로젝트 설정 공유 | `"/Applications/WebStorm.app/Contents/bin/inspect.sh" <저장소> <저장소>/.idea/inspectionProfiles/Project_Default.xml <출력폴더> -v2 -d <저장소>/app/src -format json` — 인자 순서·옵션은 문서대로. **WebStorm 창이 열려 있으면 안 돈다.** 라이선스 없이 도는지: **확인함(M0-07, 2026-11-21)** — 로그인·창 없이 약 12초에 돈다. 단 헤드리스에서 안 쓰는 지역 변수·import 는 안 잡힘〔확인: 원인 미상〕, 중복 코드 검사는 dist 사본 때문에 세지 않는다 | `.idea/`(inspectionProfiles·codeStyles·runConfigurations), `docs/jetbrains-usage.md` 의 실행 횟수·찾은 문제·고친 커밋 |
 | Junie (CLI) | **맡긴 조각** — 테스트 보강·코드 리뷰·작은 기능을 Junie 가 직접 커밋 | 설치 `curl -fsSL https://junie.jetbrains.com/install.sh \| bash`, 실행 `junie --auth="$JUNIE_API_KEY" --trust-project "<지시>"`. 키는 https://junie.jetbrains.com/cli 에서(사람). 요금·무료 사용량은 확인 필요(M0-08) | `.junie/`(지침 파일 — 정확한 파일 이름은 M0-08 에서 확인), 커밋 꼬리말 `Tool: Junie` |
 | JetBrains Air | **선택** — Air 안에서 에이전트로 조각 하나를 실제로 만든다 | 앱 설치 `brew install --cask jetbrains-air`. **CLI 명령·`.air` 폴더가 생기는지는 확인 필요(M0-09)**. 안 되면 사람이 앱에서 10분(ROADMAP) | `.air/`(생기면), 화면 캡처 1장 |
 

@@ -8,9 +8,10 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "shot": "node scripts/shot.mjs",
+    "inspect": "node scripts/inspect.mjs",
     "lint": "eslint .",
     "test": "vitest run",
-    "check": "tsc --noEmit && eslint . && vitest run && vite build"
+    "check": "tsc --noEmit && eslint . && vitest run && vite build && npm run inspect"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
