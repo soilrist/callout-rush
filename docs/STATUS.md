@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17 끝 · M2-12 1000판 실행이 따로 돌고 있음(아래 #0038)
 - 브랜치: develop
-- 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 다른 조각 M2-14 부터. M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-12 판정(다음 바퀴: `logs/soak-run.log` 에 `exit=0` 이 있으면 `logs/soak.csv` 로 §6.4 4줄 판정 + `docs/soak-report.md`. 아직 돌고 있으면 M2-18 부터. M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,16 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0040 · 2026-11-21 · 조각 M2-17 (zip)
+- 계획: M2-17 zip — 고른 이유: M2-12 는 1000판이 아직 도는 중(`logs/soak-run.log` 에 `exit=` 없음), M2-13 도 같은 CPU·포트라 뒤로, M2-15 는 JUNIE_API_KEY 대기, M2-16 은 `[!] 감독` 원격 저장소 대기 → M2-17 / `app/scripts/zip.mjs`·`zipcheck.mjs`(새)·`app/zip/`(serve.mjs·start.command·start.bat·README.txt)·`package.json`(`zip`·`zipcheck`)·`eslint.config.js`(zip/*.mjs 에 node 전역)
+- 한 것: `npm run zip` 이 **임시 폴더에 새로 빌드**(1000판이 쓰는 `dist` 를 건드리지 않음)해 `dist`+`serve.mjs`+시작 파일 둘+README 를 `제출본/callout-rush-web.zip`(68186바이트)으로 묶음. `serve.mjs` 는 Node 내장 `http` 만, 상위 경로 요청은 403. `zipcheck` 가 새 임시 폴더에 풀어 `node serve.mjs`(포트 4175)로 띄우고 Playwright 로 봇 한 판을 끝까지 돌림.
+- 커밋: feat(tools) (`Slice: M2-17`)
+- 검사: 1층 `TypeScript: No errors found`, `ESLint: No issues found` (vitest 는 1000판과 CPU 를 다투지 않게 안 돌림 — 앱 코드 변경 없음) / 2층 `ZIP ok: …callout-rush-web.zip 68186`, `ZIPCHECK ok: zip 68186바이트를 풀어 serve.mjs 로 띄움, 봇 1판 끝까지, board.html 200, 상위 경로 요청 403, 콘솔 오류 0` — jev NOT_SUPPORTED(p 0.45)라 **통과 선언 보류**(실제 출력은 위 그대로) / 3층 해당 없음(화면 변화 없음)
+- 플레이어 눈: 화면 변화 없음. 운영자: 압축 풀고 더블클릭 → 주소가 열림. 한계: 실제 Windows·`start.bat` 와 맥 더블클릭(`open`)은 못 해 봄(파일 실행 권한만 확인).
+- 점검한 규칙: Autonomy, Verification, GitCommit, 규칙 15(임시 폴더만 씀)
+- 가정한 것(🟡): 없음 / 물은 것(🔴): 없음 / INBOX 처리: 처리할 줄 없음
+- 다음: `logs/soak-run.log` 에 `exit=` 있으면 M2-12 판정, 없으면 M2-18
 
 ## #0039 · 2026-11-21 · 조각 M2-14 (WebStorm 검사 경고 49 → 0)
 - 계획: M2-14 — 고른 이유: ROADMAP 첫 `[ ]` 인 M2-12 는 1000판이 아직 도는 중(`logs/soak-run.log` 에 `exit=` 없음)이라 건너뜀 → M2-14 / `.idea/inspectionProfiles/Project_Default.xml`, `app/src/core/calls.ts`, `docs/jetbrains-usage.md`
