@@ -9,7 +9,7 @@ LOOP_SLUG="${LOOP_SLUG:-contest-p13-cloud9-jetbrains}"
 LOOP_LABEL="com.${LOOP_SLUG}.loop"
 
 # 바퀴가 "끝난 뒤" 쉬는 시간(초). 평시 180 / 아낄 때 900 / 한도 빠듯하면 1800
-LOOP_SLEEP_SEC=1800
+LOOP_SLEEP_SEC=60
 
 # 한 바퀴 최대 시간(초). 넘으면 끊고 다음 바퀴
 LOOP_LAP_TIMEOUT_SEC=2400
