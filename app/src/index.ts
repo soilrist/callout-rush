@@ -19,10 +19,13 @@ import { accuracy, avgReaction } from './core/scoring';
 import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawDemoOverlay, drawResult } from './ui/screens';
 import { drawBoard } from './ui/board';
 import { installOperator } from './ui/operator';
+import { installGuard, keepAwake } from './ui/guard';
 import type { ScoreEntry } from './core/scores';
 import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
+const guard = installGuard();
+keepAwake();
 const health = installHealth();
 (window as unknown as { __health: typeof health }).__health = health;
 const params = parseParams(window.location.search);
@@ -130,7 +133,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   const operator = installOperator({
     store,
     games: () => flow.results,
-    errors: () => 0,
+    errors: () => guard.errors(),
     isMuted: () => sfx.isMuted(),
     setMuted: (m) => sfx.setMuted(m),
     onCleared: () => { mine = null; notifyScoresUpdated(); },
