@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-07 끝
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-08 끝
 - 브랜치: develop
-- 다음 조각: M2-08 (M1-13 은 JUNIE_API_KEY 오면 다시)
+- 다음 조각: M2-09 (M1-13 은 JUNIE_API_KEY 오면 다시)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,17 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0033 · 2026-11-21 · 조각 M2-08
+- 계획: M2-08 운영자 메뉴 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/operator.ts`(새), `core/csv.ts`(새), `core/scores.ts`(`all`·`clearToday`), `index.ts`(연결), `style.css`, `scripts/operator.mjs`(새)
+- 한 것: `Ctrl+Shift+O` 로 HTML 겹침 메뉴(한 번 만들어 두고 보이기만 바꿔 노드·리스너가 판마다 안 늘게). 항목 7개(§4.7 여섯 + Close). CSV 는 줄 수 = 기록 수 + 1, 수식 글자 방어. 오늘 지우기는 확인 문구 뒤 `Yes, clear`. Booth health = 켠 뒤 판 수·JS 힙·최근 1분 프레임 ms·오류 수(오류는 M2-09 전까지 0 고정).
+- 커밋: feat(ui) b85f4c9 (`Slice: M2-08`)
+- 검사: 1층 통과(`tsc exit 0`, `eslint exit 0`, `Tests  127 passed (127)`, jev SUPPORTED) / 2층 통과(`OPERATOR ok: 항목 7개, CSV 줄 8 = 기록 7 + 1, 지우기 오늘 3 → 0 전체 7 → 4, 콘솔 오류 0`, jev SUPPORTED; `E2E ok: … 콘솔 오류 0`) / 3층 통과: `captures/M2-08-operator.png`·`M2-08-operator-confirm.png` 를 열어 봄 — 패널 가운데, 글자 안 잘림, 확인 문구 정확. 시트에 없는 화면이라 §8.1 S7 글자·색 토큰만 사용.
+- 플레이어 눈: 처음 하는 사람 — 키를 모르면 못 열어 일부러 숨김(설계) / 손 — 마우스 버튼 큼(높이 약 50px) / 게임 카메라 — 해당 없음(HTML 겹침) / 장르 상식 — 부스 관리 메뉴 / 갇힘 — Esc·Close·Cancel 로 항상 나감
+- 점검한 규칙: Autonomy, Verification, PlayerEye, CodingStyle, GitCommit
+- 가정한 것(🟡): 없음 · 물은 것(🔴): 없음 · 한계: 음소거는 저장하지 않음(`settings` 저장은 설계 §4.8 에 있으나 이번 합격선 밖 — M2-09 에서 같이 가능). 프레임 ms 47 은 헤드리스 값. `Open leaderboard window`·`Fullscreen` 은 헤드리스에서 못 눌러 봄(브라우저 팝업·전체 화면 허가 필요) — 검사 못 함.
+- INBOX 처리: 처리할 줄 없음
+- 다음: M2-09
 
 ## #0032 · 2026-11-21 · 조각 M2-07
 - 계획: M2-07 무입력·자동 초기화 — 고른 이유: ROADMAP 첫 `[ ]` / `ui/flow.ts`(`abandonPlay`, 12초 무입력), `index.ts`(탭 숨김), `ui/health.ts`(새, `__health`), `scripts/health.mjs`(새), `core/config.ts` 의 `PLAY_IDLE_QUIT_S`(DESIGN §6 값 12초 그대로)
