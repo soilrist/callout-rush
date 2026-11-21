@@ -36,3 +36,21 @@ To measure the game's own share, `scripts/soak.mjs` now also records how long th
 ## Verdict
 
 Heap, DOM, error and game-work-per-frame lines pass. The raw frame-interval line is not claimed. No leak is visible: DOM, listeners and timers are flat across 1000 rounds, and the heap rises 0.21 MB in 950 rounds.
+
+## Real-speed 60-minute run (M2-13)
+
+A second run at real speed: `cd app && npm run soak -- --minutes 60 --timescale 1 --every 3 --out ../logs/soak60.csv` (same machine and browser as above, started 18:02 KST). Raw data: `logs/soak60.csv` (19 rows, every 3 rounds).
+
+| Item | Measured |
+|---|---|
+| Length | 3732 s (62 min) and 57 rounds, about 65 s per round at `timescale=1`. The last row was written after the 3600 s deadline, so the loop ended by its own time check. The script's final `SOAK ok` line was not captured (the run was in the background without a log file), so its exit code is not recorded. |
+| Errors (console errors and caught exceptions) | 0 in all 19 rows |
+| Event listeners / pending timers / DOM nodes | 21 / 0 / 16 in all 19 rows (flat) |
+| Game work per frame, p95 (`work_p95_ms`) | 1.0 to 1.3 ms in all 19 rows, far under the 20 ms line |
+| Raw frame interval, p95 (`frame_p95_ms`) | 66.7 to 133.4 ms. Same limit as the note above: this headless Chromium draws about 12 frames per second, so the column measures the browser, not the game. No visible browser was used, so the 20 ms interval line is still not claimed. |
+| JS heap, first 5 minutes vs last 5 minutes | first 5 min: one sample, 1.81 MB (at 193 s). Last 5 min (samples at or after 3300 s): 2.03, 2.07, 2.04 MB, mean 2.05 MB. Difference +0.24 MB (+13%). |
+| Saved scores | 14.8 KB after 57 rounds (grows about 0.26 KB per round, same as the 1000-round run) |
+
+Reading of the heap number: the DESIGN asks only that the difference is written down. It is small in absolute terms (0.24 MB) and the curve rises in steps and then stays flat (1.98 MB from round 27 to round 45, 2.03 to 2.07 MB after), which is how a growing score list and a few cached strings look, not a steady leak. DOM nodes, listeners and timers did not move at all. With only 19 samples and one in the first 5 minutes, this is not a proof; together with the 1000-round run (+0.21 MB over 950 rounds) it shows no leak.
+
+Verdict for M2-13: 0 errors over 60 minutes, game work p95 1.3 ms at most, heap difference written down (+0.24 MB). The raw frame-interval line stays unclaimed.
