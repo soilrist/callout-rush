@@ -12,6 +12,7 @@ import { mulberry32 } from './core/rng';
 import { botFrame, flowClick, flowKey, flowTick, initFlow, showResult, startGame, type BotPlan, type Flow } from './ui/flow';
 import { RESULT_IDLE_S } from './core/config';
 import { ScoreStore } from './core/scores';
+import { notifyScoresUpdated } from './core/channel';
 import { keyAt } from './ui/keypad';
 import { accuracy, avgReaction } from './core/scoring';
 import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
@@ -125,6 +126,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     savedCount = flow.saves;
     const g = flow.saved.game;
     mine = store.add({ name: flow.saved.name, score: g.score, acc: accuracy(g.hit, g.finished), avgRt: avgReaction(g.rts) ?? 0, streak: g.bestStreak, ts: Date.now() });
+    notifyScoresUpdated();
     document.body.dataset['lastName'] = flow.saved.name;
   };
 
