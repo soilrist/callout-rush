@@ -30,6 +30,8 @@
     "playthrough": "node scripts/playthrough.mjs",
     "session": "node scripts/session.mjs",
     "submitshots": "node scripts/submitshots.mjs",
+    "videorec": "node scripts/videorec.mjs",
+    "videobuild": "node scripts/videobuild.mjs",
     "fxshot": "node scripts/fxshot.mjs",
     "sfxrender": "node scripts/sfxrender.mjs",
     "balance": "vite-node scripts/balance.ts"
