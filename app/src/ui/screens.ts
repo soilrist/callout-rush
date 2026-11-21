@@ -33,7 +33,42 @@ export function drawCountdown(ctx: Ctx, s: string): void {
   ctx.restore();
 }
 
-export function drawAttract(ctx: Ctx, now: number): void {
+/** 대기 화면 오른쪽 아래 오늘 TOP 3 (docs/reference/attract.md) */
+export function drawTop3(ctx: Ctx, rows: readonly { name: string; score: number }[]): void {
+  ctx.fillStyle = C.panel;
+  ctx.fillRect(1380, 780, 480, 240);
+  ctx.strokeStyle = C.line;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1380, 780, 480, 240);
+  text(ctx, "TODAY'S TOP 3", 1410, 816, 28, C.accent);
+  if (rows.length === 0) {
+    text(ctx, 'BE THE FIRST ON THE BOARD', 1620, 920, 28, C.text, 'center', 0.8);
+    return;
+  }
+  rows.slice(0, 3).forEach((e, i) => {
+    const y = 876 + 56 * i;
+    const color = i === 0 ? C.gold : C.text;
+    text(ctx, `#${i + 1}`, 1410, y, 40, color);
+    text(ctx, e.name, 1480, y, 40, color);
+    text(ctx, String(e.score), 1830, y, 40, color, 'right');
+  });
+}
+
+/** 시연 겹침: 뒤 판 위에 어두운 막 + 반투명 DEMO 표시 */
+export function drawDemoOverlay(ctx: Ctx): void {
+  ctx.save();
+  ctx.globalAlpha = 0.72;
+  ctx.fillStyle = C.bg;
+  ctx.fillRect(0, 0, 1920, 1080);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = C.line;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(60, 60, 140, 56);
+  text(ctx, 'DEMO', 130, 88, 36, C.text, 'center', 0.5);
+  ctx.restore();
+}
+
+export function drawAttract(ctx: Ctx, now: number, top: readonly { name: string; score: number }[] = []): void {
   ctx.save();
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, 1920, 1080);
@@ -51,6 +86,7 @@ export function drawAttract(ctx: Ctx, now: number): void {
   ctx.strokeRect(560, 620, 800, 150);
   const blink = 0.625 + 0.375 * Math.cos((now / 1200) * 2 * Math.PI);
   text(ctx, 'CLICK TO PLAY', 960, 695, 96, C.accent, 'center', blink);
+  drawTop3(ctx, top);
   ctx.restore();
 }
 

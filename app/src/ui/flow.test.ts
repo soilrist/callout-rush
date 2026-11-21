@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COUNTDOWN_MS, GAME_MS, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
+import { ATTRACT_DEMO_S, COUNTDOWN_MS, GAME_MS, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { profileByName } from '../core/bot';
 import { mulberry32 } from '../core/rng';
 import { flowKey, flowClick, flowTick, initFlow, botFrame, type BotPlan, type Flow } from './flow';
@@ -73,5 +73,47 @@ describe('화면 흐름', () => {
     const g = flowClick(f, 0, 0, 800, 9);
     expect(g.screen).toBe('play');
     expect(g.game.status).toBe('countdown');
+  });
+});
+
+describe('대기 화면 시연', () => {
+  it('19.9초엔 대기, 20초에 시연이 시작된다', () => {
+    const f = initFlow(1, 0);
+    expect(flowTick(f, ATTRACT_DEMO_S * 1000 - 1).screen).toBe('attract');
+    const d = flowTick(f, ATTRACT_DEMO_S * 1000);
+    expect(d.screen).toBe('play');
+    expect(d.demo).toBe(true);
+  });
+  it('시연 중 클릭하면 시연이 아닌 새 카운트다운 판', () => {
+    const d = flowTick(initFlow(1, 0), ATTRACT_DEMO_S * 1000);
+    const f = flowClick(d, 10, 10, ATTRACT_DEMO_S * 1000 + 500, 5);
+    expect(f.demo).toBe(false);
+    expect(f.screen).toBe('play');
+    expect(f.game.status).toBe('countdown');
+  });
+  it('시연이 끝나면 결과·저장 없이 대기로 돌아가고 타이머가 0 부터', () => {
+    const t0 = ATTRACT_DEMO_S * 1000;
+    let f = flowTick(initFlow(1, 0), t0);
+    f = flowTick(f, t0 + COUNTDOWN_MS + 10);
+    f = flowTick(f, t0 + COUNTDOWN_MS + GAME_MS + 10);
+    expect(f.screen).toBe('attract');
+    expect(f.demo).toBe(false);
+    expect(f.results).toBe(0);
+    expect(f.saves).toBe(0);
+    expect(f.since).toBe(t0 + COUNTDOWN_MS + GAME_MS + 10);
+  });
+  it('봇의 시연 클릭은 시연을 끊지 않는다', () => {
+    const t0 = ATTRACT_DEMO_S * 1000;
+    let f = flowTick(initFlow(1, 0), t0);
+    let plan: BotPlan | null = null;
+    const rng = mulberry32(3);
+    for (let t = t0; t < t0 + COUNTDOWN_MS + 20000; t += 50) {
+      f = flowTick(f, t);
+      const r = botFrame(profileByName('regular'), f, plan, rng, t, 1);
+      f = r.flow;
+      plan = r.plan;
+    }
+    expect(f.demo).toBe(true);
+    expect(f.game.finished).toBeGreaterThan(0);
   });
 });

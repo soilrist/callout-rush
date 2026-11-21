@@ -52,6 +52,8 @@ export const ATTRACT_TO_DEMO_S = 20;
 export const PLAY_IDLE_QUIT_S = 12;
 export const RESULT_IDLE_S = 20;
 export const RESULT_BOARD_S = 8;
+/** 대기 화면에서 아무도 안 건드리면 봇 시연이 시작되는 초 (§6.5) */
+export const ATTRACT_DEMO_S = 20;
 export const MAX_PERSON_S = 95;
 export const MAX_SCORES = 500;
 export const BOARD_REFRESH_MS = 5000;

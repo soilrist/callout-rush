@@ -15,7 +15,7 @@ import { ScoreStore } from './core/scores';
 import { notifyScoresUpdated } from './core/channel';
 import { keyAt } from './ui/keypad';
 import { accuracy, avgReaction } from './core/scoring';
-import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawResult } from './ui/screens';
+import { COUNTUP_MS, countdownText, drawAttract, drawCountdown, drawDemoOverlay, drawResult } from './ui/screens';
 import { drawBoard } from './ui/board';
 import type { ScoreEntry } from './core/scores';
 import { createSfx } from './audio/sfx';
@@ -78,6 +78,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   let people = 0;
   const bot = params.bot ? profileByName(params.bot) : null;
   const botRng = mulberry32(seed ^ 0x51ed);
+  const demoBot = profileByName('regular');
   let plan: BotPlan | null = null;
   /** 결과를 지나 대기로 돌아온 횟수 (검사용) */
   let attracts = 0;
@@ -158,6 +159,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const d = document.body.dataset;
     const g = flow.game;
     d['screen'] = flow.screen;
+    d['demo'] = flow.demo ? '1' : '0';
     d['initials'] = flow.initials;
     d['results'] = String(flow.results);
     d['attracts'] = String(attracts);
@@ -170,18 +172,19 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const t = now();
     const prev = flow;
     let next = flowTick(flow, t);
-    if (bot) {
-      const r = botFrame(bot, next, plan, botRng, t, nextSeed());
+    const driver = bot ?? (next.demo && next.screen === 'play' ? demoBot : null);
+    if (driver) {
+      const r = botFrame(driver, next, plan, botRng, t, nextSeed());
       next = r.flow;
       plan = r.plan;
     }
     if (prev.screen === 'board' && next.screen !== 'board') attracts += 1;
     update(next, prev);
     saveIfNew();
-    canvas.style.cursor = flow.screen === 'play' ? 'crosshair' : 'pointer';
+    canvas.style.cursor = flow.screen === 'play' && !flow.demo ? 'crosshair' : 'pointer';
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
-    if (flow.screen === 'attract') drawAttract(ctx, t);
+    if (flow.screen === 'attract') drawAttract(ctx, t, store.today(Date.now(), 3));
     else if (flow.screen === 'board') {
       const nowMs = Date.now();
       const rows = store.today(nowMs, 10);
@@ -200,7 +203,10 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
         sfx.play('rank');
       }
       drawResult(ctx, flow.game, t - flow.since, { rank, initials: flow.initials, pressed: flow.pressed, now: t, idleLeft: 1 - (t - flow.lastInput) / (RESULT_IDLE_S * 1000) });
-    } else drawPlay(ctx, flow.game, t, history, people);
+    } else {
+      drawPlay(ctx, flow.game, t, history, people);
+      if (flow.demo) drawDemoOverlay(ctx);
+    }
     publish();
     requestAnimationFrame(frame);
   };

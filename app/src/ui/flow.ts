@@ -1,5 +1,5 @@
 /** 화면 흐름 상태 기계 (DESIGN §8.1): Attract → Countdown → Play → Result → Board → Attract. 시계는 밖에서 넣는다. */
-import { RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
+import { ATTRACT_DEMO_S, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { backspace, canConfirm, finalName, typeLetter } from '../core/initials';
 import { decide, type BotProfile } from '../core/bot';
 import { initGame, step, type GameEvent, type GameState } from '../core/game';
@@ -25,15 +25,22 @@ export interface Flow {
   /** 저장할 이름이 정해진 마지막 판 (index 가 점수 저장소에 넣는다). saves 가 늘면 새 것. */
   saved: { name: string; game: GameState } | null;
   saves: number;
+  /** 대기 화면 뒤에서 봇이 도는 시연 판인가 (소리·저장 없음, 아무 클릭이면 새 판) */
+  demo: boolean;
 }
 
 export function initFlow(seed: number, now = 0): Flow {
-  return { screen: 'attract', game: initGame(seed), since: now, results: 0, initials: '', lastInput: now, pressed: null, saved: null, saves: 0 };
+  return { screen: 'attract', game: initGame(seed), since: now, results: 0, initials: '', lastInput: now, pressed: null, saved: null, saves: 0, demo: false };
 }
 
 /** 판 시작: 상태를 새로 만든다 (지난 판 값이 남지 않게). 아무 때나 불러도 새 판. */
 export function startGame(f: Flow, seed: number, now: number): Flow {
-  return { ...f, screen: 'play', game: step(initGame(seed), { type: 'TICK', now }), since: now, initials: '' };
+  return { ...f, screen: 'play', game: step(initGame(seed), { type: 'TICK', now }), since: now, initials: '', demo: false };
+}
+
+/** 시연 시작: 같은 게임 규칙, 결과·저장 없이 끝나면 대기로 돌아간다 */
+export function startDemo(f: Flow, seed: number, now: number): Flow {
+  return { ...startGame(f, seed, now), demo: true };
 }
 
 /** 결과 화면을 바로 보여 준다 (?state=result 검사용). 끝난 판을 넣는다. */
@@ -42,6 +49,7 @@ export function showResult(f: Flow, game: GameState, now: number): Flow {
 }
 
 function toResultIfDone(f: Flow, now: number): Flow {
+  if (f.demo && f.game.status === 'done') return { ...f, screen: 'attract', since: now, demo: false };
   return f.game.status === 'done' ? showResult(f, f.game, now) : f;
 }
 
@@ -49,6 +57,7 @@ export function flowTick(f: Flow, now: number): Flow {
   if (f.screen === 'play') {
     return toResultIfDone({ ...f, game: step(f.game, { type: 'TICK', now }) }, now);
   }
+  if (f.screen === 'attract' && now - f.since >= ATTRACT_DEMO_S * 1000) return startDemo(f, 9000 + f.results * 31 + Math.floor(now / 1000), now);
   if (f.screen === 'result' && now - f.lastInput >= RESULT_IDLE_S * 1000) return leaveResult(f, now);
   if (f.screen === 'board' && now - f.since >= RESULT_BOARD_S * 1000) return { ...f, screen: 'attract', since: now };
   return f;
@@ -70,12 +79,16 @@ export function flowKey(f: Flow, key: string, now: number): Flow {
 /** 화면 누름. attract 는 새 판, play 는 게임으로. result 는 flowKey 로 따로 들어온다. */
 export function flowClick(f: Flow, x: number, y: number, now: number, seed: number): Flow {
   if (f.screen === 'attract') return startGame(f, seed, now);
-  if (f.screen === 'play') {
-    const e: GameEvent = { type: 'CLICK', x, y, now };
-    return toResultIfDone({ ...f, game: step(f.game, e) }, now);
-  }
+  if (f.screen === 'play' && f.demo) return startGame(f, seed, now); // 시연 중 사람 클릭 = 즉시 새 판
+  if (f.screen === 'play') return gameClick(f, x, y, now);
   if (f.screen === 'board') return now - f.since < 600 ? f : startGame(f, seed, now); // 순위 화면 아무 데나 누르면 새 판 (OK 두 번 눌림 방지 0.6초)
   return f; // result 는 글자판(flowKey)만 받는다
+}
+
+/** 판 안의 클릭 (사람·봇 공통). 시연 중 봇도 이 길로 들어간다. */
+function gameClick(f: Flow, x: number, y: number, now: number): Flow {
+  const e: GameEvent = { type: 'CLICK', x, y, now };
+  return toResultIfDone({ ...f, game: step(f.game, e) }, now);
 }
 
 export interface BotPlan {
@@ -111,6 +124,6 @@ export function botFrame(
     const d = decide(profile, f.game, rng);
     p = d ? { key, at: a.stepStartMs + d.delayMs, x: d.x, y: d.y } : null;
   }
-  if (p && now >= p.at) return { flow: flowClick(f, p.x, p.y, now, seed), plan: null };
+  if (p && now >= p.at) return { flow: gameClick(f, p.x, p.y, now), plan: null };
   return { flow: f, plan: p };
 }
