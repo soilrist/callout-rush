@@ -95,7 +95,7 @@
 - [x] M3-08 제출 칸 채우기표 — `제출본/submit-checklist.md`(한국어): Devpost 제출 화면의 칸 순서대로 "칸 이름 | 붙여 넣을 내용 또는 파일 | 비고". 카테고리 = Category 3 Event Mini Game, 저장소 주소, 데모 주소, 영상 주소(자리), 보너스 URL = `AI_SHOWCASE.md` 의 GitHub 주소, 쓴 JetBrains 도구 체크. 규정 점검 12줄(공개 저장소·LICENSE·About 표시·영어·영상 3분 미만·영상에 실제 기기 화면·저작권 음악 없음·제3자 상표 없음·데모 무료 접근 02-04 까지 유지 등). — 합격: 점검 줄마다 확인 명령·결과가 적혀 있다.
 - [x] M3-09 금지 낱말·개인정보 훑기 — 저장소 전체(`app/src`·`README`·`AI_SHOWCASE`·`제출본`·`docs`)에서 다른 게임·팀·회사 이름, 사람 이름·이메일, 키 모양 문자열을 `grep` 으로. 낱말 목록은 `scripts/forbidden.txt`. `git log --format='%an %ae' | sort -u` 도 확인해 결과를 감독에게(🟡). — 합격: 게임·제출 글에서 0건(JetBrains 도구 이름·대회 이름은 제출 글에서만 허용).
 - [x] M3-10 릴리스 — 태그 `v1.0.0`, `제출본/callout-rush-web.zip` 을 새로 만들어 GitHub 릴리스에 첨부(`gh release create`), 저장소 About 에 설명·주소·주제어. 원격이 없으면 `[!]`. — 합격: 릴리스 주소 200, zip 을 내려받아 풀어 한 판이 됨, GitHub 가 라이선스를 MIT 로 표시(`gh repo view --json licenseInfo`).
-- [ ] M3-98 처음 하는 사람 통 점검 — 심사위원처럼: Devpost 글을 위에서부터 읽으며 링크를 전부 눌러 보고(주소·zip·저장소·usage 문서·보고서), 영상 초안을 처음부터 끝까지 프레임 12장으로 확인, 로그아웃된 브라우저(새 Playwright 컨텍스트)에서 공개 주소로 한 판. — 합격: 죽은 링크 0, 글의 숫자와 문서의 숫자 불일치 0.
+- [x] M3-98 처음 하는 사람 통 점검 — 심사위원처럼: Devpost 글을 위에서부터 읽으며 링크를 전부 눌러 보고(주소·zip·저장소·usage 문서·보고서), 영상 초안을 처음부터 끝까지 프레임 12장으로 확인, 로그아웃된 브라우저(새 Playwright 컨텍스트)에서 공개 주소로 한 판. — 합격: 죽은 링크 0, 글의 숫자와 문서의 숫자 불일치 0.
 - [!] 사람: 🎮 M3 5분 보기 — `제출본/demo-draft.mp4` 를 끝까지 보고, 공개 주소에서 1판 — 계속 / 고쳐(무엇을)
 - [!] 사람: YouTube 에 영상 올리기(공개, 제목 `Callout Rush — 60-second callout reaction trainer`, 자막 파일 `제출본/captions.srt` 첨부) — https://studio.youtube.com/ — 주소를 `제출본/submit-checklist.md` 에 적기
 - [!] 사람: Devpost 제출 — `제출본/submit-checklist.md` 를 보며 칸마다 붙여 넣기, 대표 그림·그림 6장 올리기, **01-11(월) 안에** Submit — https://cloud9.devpost.com/ — 제출 뒤에도 마감 전까지 고칠 수 있는지 화면에서 확인

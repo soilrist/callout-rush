@@ -47,7 +47,7 @@ A bot played 1000 rounds in a row in one browser page, with no reload (`docs/soa
 - Errors: 0.
 - Game work per frame: 1.5 ms at the 95th percentile (the budget is 20 ms).
 
-Also 129 unit tests across 23 files, and a downloadable zip of 66.6 KB.
+Also 129 unit tests across 23 files, and a downloadable zip of 66.7 KB.
 
 ## What we learned
 
@@ -59,8 +59,8 @@ A 60-minute real-speed run on a visible browser to add the frame interval we cou
 
 ## Try it
 
-- Play: `<DEMO_URL>` (leaderboard window: `<DEMO_URL>/board.html`)
-- Code: `<REPO_URL>`
+- Play: `https://soilrist.github.io/callout-rush/` (leaderboard window: `https://soilrist.github.io/callout-rush/board.html`)
+- Code: `https://github.com/soilrist/callout-rush`
 - Offline: download `callout-rush-web.zip`, unzip, install Node.js 18 or newer, run `node serve.mjs`.
 
 Booth setup in five steps:

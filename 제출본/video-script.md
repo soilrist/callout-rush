@@ -17,6 +17,6 @@ Every number below comes from a repo file; the source is in the last column.
 ## Notes for the person who records
 
 - Scene 6: Junie has made 0 commits so far (`JUNIE_API_KEY` missing, see the usage log). The caption says only "installed and configured". If a Junie run happens before submission, update this line and the usage totals together.
-- Scene 7: `<DEMO_URL>` and `<REPO_URL>` are placeholders until the repository is public (M2-16 / M3-10). Do not publish the video with the placeholders.
+- Scene 7: The end card shows the real addresses (soilrist.github.io/callout-rush, github.com/soilrist/callout-rush), filled in at M3-98.
 - Scene 5: the soak ran at `timescale=10` in a headless browser. The caption is about heap, DOM and errors only; it does not claim a 60 fps measurement.
 - Total of all scenes: 160 s (check below).
