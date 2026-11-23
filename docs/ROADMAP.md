@@ -24,7 +24,7 @@
 - [!] 사람: Junie CLI 토큰 만들기 → 터미널 설정 파일(`~/.zshrc`)에 `export JUNIE_API_KEY=...` 한 줄(저장소 안에 적지 않기) — https://junie.jetbrains.com/cli — 기다리는 조각: M0-08
 - [!] 사람: JetBrains Air 처음 열기 → 약관 동의 → 로그인 → 이 폴더 열기 — `/Applications/Air.app` — 기다리는 조각: M0-09
 - [x] 감독: 저장소 `callout-rush` 만들고 `origin` 연결 — 2026-11-23 완료(지금은 비공개, `develop` push 됨, https://github.com/soilrist/callout-rush)
-- [!] 감독: `callout-rush` 공개 전환(개인정보·키 기록 검사 통과 2026-11-23) — 공개 뒤 감독이 M2-16 을 `[ ]` 로 돌린다 — 기다리는 조각: M2-16
+- [x] 감독: `callout-rush` 공개 전환 — 2026-11-23 완료, Pages 켬(워크플로 실행 45122873652 성공)
 
 ## M0 — 뼈대 (합격: 빈 화면이 뜨고, CHECK 한 줄이 돌고, JetBrains 도구 세 개의 "되는지/안 되는지"가 문서에 있다) · ~11-25
 - [x] M0-00 설계서·로드맵 채우기 (감독, 2026-11-21)
@@ -75,7 +75,7 @@
 - [x] M2-13 실제 속도 60분 — `npm run soak -- --minutes 60 --timescale 1`(약 40판, 백그라운드로 돌리고 다음 조각을 먼저 해도 됨). 보고서에 절 하나 추가. — 합격: 60분 동안 오류 0, 프레임 p95 ≤ 20ms, 처음 5분과 마지막 5분의 힙 차이를 적는다.
 - [x] M2-14 WebStorm 검사로 고치기 한 바퀴 — `npm run inspect` 의 경고 목록 전체를 읽고 고칠 것은 고치고, 일부러 남기는 것은 프로필에서 끄고 이유를 한 줄. — 합격: 경고 수 앞·뒤를 `docs/jetbrains-usage.md` 에(예 `23 → 2`), CHECK 통과. 검사를 못 돌리는 상태면 `[!]`.
 - [ ] M2-15 Junie 에게 리뷰 맡기기 — `junie … "Review app/src/ui for leaks: timers, listeners, audio nodes, canvas state that survive a game reset. Report file:line and fix what is safe."` 결과를 검토해 반영, 꼬리말 `Tool: Junie`. — 합격: usage 문서에 한 줄(찾은 것 n · 고친 것 n) + M2-07 의 `__health()` 테스트가 그대로 통과. 못 쓰면 `[!]`.
-- [!] (워크플로 파일 커밋 #0060 cc8d6d8 — 원격 저장소 없어 푸시·주소 확인은 사람 할 일 5번) M2-16 공개 주소 — `.github/workflows/pages.yml`(Node 24, `npm ci && npm run build`, `app/dist` 를 Pages 로). 원격 저장소가 있으면 푸시하고 주소를 README·STATUS 에. — 합격: `curl -sI <주소>` 200, `<주소>board.html` 200. 원격이 없으면 워크플로 파일만 커밋하고 `[!]`(사람 할 일 5번).
+- [ ] (감독 2026-11-23: 공개·배포 끝, `https://soilrist.github.io/callout-rush/` 와 `board.html` 둘 다 200 확인 — 남은 일은 주소를 README·STATUS 에 적고 합격 명령 인용) M2-16 공개 주소 — `.github/workflows/pages.yml`(Node 24, `npm ci && npm run build`, `app/dist` 를 Pages 로). 원격 저장소가 있으면 푸시하고 주소를 README·STATUS 에. — 합격: `curl -sI <주소>` 200, `<주소>board.html` 200. 원격이 없으면 워크플로 파일만 커밋하고 `[!]`(사람 할 일 5번).
 - [x] M2-17 zip — `scripts/zip.mjs`: `dist` + `serve.mjs`(Node 내장 `http` 만 쓰는 정적 서버, 포트 4173) + `start.command`·`start.bat` + `README.txt`(영어 5줄: Node 필요, 더블클릭, 주소, 보조 창 여는 법) → `제출본/callout-rush-web.zip`. — 합격: 임시 폴더에 풀어 `node serve.mjs` 로 띄우고 Playwright 로 한 판이 끝까지 됨, zip ≤ 1MB.
 - [x] M2-18 다듬기 1 — 눈 — 모든 화면 캡처 7장을 나란히 열어 보고 글자 크기·여백·색이 시트와 다른 곳, 글자가 잘리는 곳을 고친다. 1280×720·2560×1080 창에서도 한 장씩. — 합격: 다른 곳 목록(앞)과 고친 뒤 0곳(뒤)을 STATUS 에.
 - [x] M2-19 다듬기 2 — 손 — 실제 속도 통 플레이 캡처를 보며 "맞혔는지 0.1초 안에 알 수 있나", "콜이 바뀐 걸 놓치지 않나"만 본다. 연출 시간·소리 크기 조정은 `config.ts` 에서만. — 합격: 바꾼 값과 이유를 DESIGN §6 에.
