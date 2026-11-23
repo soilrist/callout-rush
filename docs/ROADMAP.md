@@ -23,7 +23,8 @@
 - [!] 사람: WebStorm 처음 열기 → 약관 동의 → JetBrains 계정 로그인 → 받은 코드로 활성화(https://account.jetbrains.com/licenses) → 이 폴더를 열고 "Trust Project" → **창 닫기**(열려 있으면 루프의 검사가 안 돈다) — `/Applications/WebStorm.app` — 기다리는 조각: M0-07
 - [!] 사람: Junie CLI 토큰 만들기 → 터미널 설정 파일(`~/.zshrc`)에 `export JUNIE_API_KEY=...` 한 줄(저장소 안에 적지 않기) — https://junie.jetbrains.com/cli — 기다리는 조각: M0-08
 - [!] 사람: JetBrains Air 처음 열기 → 약관 동의 → 로그인 → 이 폴더 열기 — `/Applications/Air.app` — 기다리는 조각: M0-09
-- [!] 감독: GitHub 공개 저장소 `callout-rush` 만들고 `origin` 연결(`gh repo create --public --source . --remote origin`) — M2-16 전에 감독이 한다 — 기다리는 조각: M2-16
+- [x] 감독: 저장소 `callout-rush` 만들고 `origin` 연결 — 2026-11-23 완료(지금은 비공개, `develop` push 됨, https://github.com/soilrist/callout-rush)
+- [!] 감독: `callout-rush` 공개 전환(개인정보·키 기록 검사 통과 2026-11-23) — 공개 뒤 감독이 M2-16 을 `[ ]` 로 돌린다 — 기다리는 조각: M2-16
 
 ## M0 — 뼈대 (합격: 빈 화면이 뜨고, CHECK 한 줄이 돌고, JetBrains 도구 세 개의 "되는지/안 되는지"가 문서에 있다) · ~11-25
 - [x] M0-00 설계서·로드맵 채우기 (감독, 2026-11-21)
