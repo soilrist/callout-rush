@@ -3,6 +3,7 @@
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) · 버전: [SemVer](https://semver.org/lang/ko/) · 규칙: `docs/conventions/Versioning.md`
 
 ## [Unreleased]
+- GitHub 릴리스 v1.0.0 에 `callout-rush-web.zip` 첨부 (M3-10)
 - 1000판 연속 내구 실행 결과 보고서(`docs/soak-report.md`) 추가: 힙 +0.21MB, DOM 노드 변화 0, 오류 0
 - 제출용 그림 7장(`제출본/shots/`)과 다시 찍는 명령 `npm run submitshots` 추가
 ### Added
