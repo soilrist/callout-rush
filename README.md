@@ -10,7 +10,7 @@ A call such as `South Stairs, two!` appears. You click that spot on a tactical m
 
 ## Play online
 
-Live link: _(address goes here once the public page is up — see the roadmap item M2-16)_
+Live link: https://soilrist.github.io/callout-rush/ (leaderboard board: https://soilrist.github.io/callout-rush/board.html)
 
 ## Download zip (no internet needed after unzip)
 
