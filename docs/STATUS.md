@@ -16,6 +16,14 @@
 
 ---
 
+## #0069 · 2026-11-23 · M3-10 🔴 질문 — 릴리스 업로드 허락 대기
+- 계획: ROADMAP 첫 `[ ]` M2-15 는 JUNIE_API_KEY 없어 건너뜀 → M3-10. 저장소는 공개·MIT(`gh repo view --json licenseInfo,visibility` → `"key":"mit"`, `"PUBLIC"`). 그러나 `gh release create` 는 ③-15 외부 업로드 금지에 걸리고 submit-checklist 도 "릴리스에 올릴지는 사람이 정함" 이라 🔴. M3-98 은 devpost.md 에 링크가 아직 없고 릴리스 주소가 있어야 해서 같이 막힘.
+- 한 것: 코드 변경 없음. INBOX 에 `질문` 한 줄(M3-10 릴리스 허락).
+- 검사: 1·2·3층 해당 없음(문서 변경만).
+- 점검한 규칙: ③-5, ③-15, ④-2
+- 가정한 것(🟡): 없음 / 물은 것(🔴): 1개 / INBOX 처리: 처리할 줄 없음
+- 다음: 감독이 답을 주면 M3-10 → M3-98. 그때까지 실행 가능한 조각 없음.
+
 ## #0068 · 2026-11-23 · M2-16 공개 주소 README 기록
 - 계획: M2-16 — ROADMAP 첫 `[ ]` M2-15 는 JUNIE_API_KEY 없어 건너뜀 → M2-16(감독이 공개·배포 끝냄). 파일: README.md. 주소를 적고 curl 인용.
 - 한 것: README 「Play online」에 주소 기록, ROADMAP M2-16 `[x]`.
