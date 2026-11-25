@@ -71,7 +71,14 @@ try {
       typed = { tType: +tType.toFixed(1), tOk: +tOk.toFixed(1), tRowShown: +tRow.toFixed(1), game, board: side };
       await page.screenshot({ path: resolve(out, 'ace-game.png') });
       await board.screenshot({ path: resolve(out, 'ace-board.png') });
-      await page.waitForTimeout(7000); // 보조 창 새 줄 강조가 보이는 시간
+      // 보조 창 새 줄 강조 + 결과 화면 무입력 20초 뒤 실제 대기 화면으로 돌아오는 것까지 계속 녹화(장면 4)
+      const tEnd = (Date.now() - t0) / 1000 + 26;
+      while ((Date.now() - t0) / 1000 < tEnd) {
+        const s2 = await page.evaluate(() => document.body.dataset.screen);
+        if (s2 !== last) { log.push({ t: +((Date.now() - t0) / 1000).toFixed(1), screen: s2 }); last = s2; }
+        if (s2 === 'attract' && !log.some((l) => l.after)) { log[log.length - 1].after = true; await page.waitForTimeout(6000); break; }
+        await page.waitForTimeout(200);
+      }
       break;
     }
     await page.waitForTimeout(200);
