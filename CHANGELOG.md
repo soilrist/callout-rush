@@ -3,6 +3,7 @@
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) · 버전: [SemVer](https://semver.org/lang/ko/) · 규칙: `docs/conventions/Versioning.md`
 
 ## [Unreleased]
+- 맵 구역 테두리·그림 선을 더 밝게(배경과 대비 4.6:1) 해서 LIVE 단계에서도 12구역이 보이게 함 (M4-01)
 - GitHub 릴리스 v1.0.0 에 `callout-rush-web.zip` 첨부 (M3-10)
 - 1000판 연속 내구 실행 결과 보고서(`docs/soak-report.md`) 추가: 힙 +0.21MB, DOM 노드 변화 0, 오류 0
 - 제출용 그림 7장(`제출본/shots/`)과 다시 찍는 명령 `npm run submitshots` 추가
