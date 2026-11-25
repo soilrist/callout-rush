@@ -87,7 +87,7 @@ export function phaseAt(elapsedMs: number): 1 | 2 | 3 {
 function spawn(s: GameState, now: number, elapsed: number): GameState {
   const phase = phaseAt(elapsed);
   const cfg = PHASES[phase - 1];
-  if (!cfg) throw new Error(`없는 단계: ${phase}`);
+  if (!cfg) throw new Error(`Unknown phase: ${phase}`);
   const call = nextCall(s.rng, phase, s.recent);
   const limitMs = call.zones.length === 2 ? cfg.limitTwoMs : cfg.limitMs;
   return {
@@ -158,7 +158,7 @@ function onClick(s: GameState, e: Extract<GameEvent, { type: 'CLICK' }>): GameSt
   const a = cur.active;
   if (!a) return cur; // ignored during the gap right after a verdict (§4.2)
   const target = a.call.zones[a.step];
-  if (target === undefined) throw new Error('목표가 없다');
+  if (target === undefined) throw new Error('No target');
   const zone = zoneAt(e.x, e.y);
   if (!zone || zone.id !== target) return fail(cur, a, 'wrong', e.now, e.x, e.y);
   const rt = e.now - a.stepStartMs;

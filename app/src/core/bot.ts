@@ -26,7 +26,7 @@ export const BOT_PROFILES: readonly BotProfile[] = [
 
 export function profileByName(name: BotProfile['name']): BotProfile {
   const p = BOT_PROFILES.find((b) => b.name === name);
-  if (!p) throw new Error(`없는 봇: ${name}`);
+  if (!p) throw new Error(`Unknown bot: ${name}`);
   return p;
 }
 
@@ -50,7 +50,7 @@ export function decide(profile: BotProfile, state: GameState, rng: Rng): BotActi
   if (!a) return null;
   const target = a.call.zones[a.step];
   const zone = ZONES.find((z) => z.id === target);
-  if (!zone) throw new Error(`목표 구역 없음: ${String(target)}`);
+  if (!zone) throw new Error(`No target zone: ${String(target)}`);
   const delayMs = Math.max(BOT_MIN_RT_MS, profile.meanMs + profile.sdMs * gauss(rng));
   if (rng() < profile.accuracy) {
     return { delayMs, x: zone.x + zone.w / 2, y: zone.y + zone.h / 2 };

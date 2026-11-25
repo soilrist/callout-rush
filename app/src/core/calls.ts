@@ -13,7 +13,7 @@ export interface Call {
 
 function nameOf(id: ZoneId): string {
   const z = ZONES.find((zone) => zone.id === id);
-  if (!z) throw new Error(`없는 구역: ${id}`);
+  if (!z) throw new Error(`Unknown zone: ${id}`);
   return z.name;
 }
 
@@ -23,7 +23,7 @@ const PEOPLE_WORD = ['one', 'two', 'three'] as const;
 function pickZone(rng: Rng, excluded: readonly ZoneId[]): ZoneId {
   const pool = ZONES.filter((z) => !excluded.includes(z.id));
   const picked = pool[Math.floor(rng() * pool.length)];
-  if (!picked) throw new Error('고를 구역이 없다');
+  if (!picked) throw new Error('No zone to pick');
   return picked.id;
 }
 

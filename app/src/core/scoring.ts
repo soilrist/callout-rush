@@ -16,7 +16,7 @@ export type GradeName = (typeof GRADE_NAMES)[number];
 export function baseOf(people: 0 | 1 | 2 | 3): number {
   if (people === 0) return BASE_TWO_ZONE;
   const base = BASE_BY_PEOPLE[people - 1];
-  if (base === undefined) throw new Error(`없는 인원: ${people}`);
+  if (base === undefined) throw new Error(`Unknown player count: ${people}`);
   return base;
 }
 
