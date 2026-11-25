@@ -30,6 +30,7 @@
     "playthrough": "node scripts/playthrough.mjs",
     "session": "node scripts/session.mjs",
     "submitshots": "node scripts/submitshots.mjs",
+    "firstrun": "node scripts/firstrun.mjs",
     "videorec": "node scripts/videorec.mjs",
     "sfxtrack": "node scripts/sfxtrack.mjs",
     "videobuild": "node scripts/videobuild.mjs",
