@@ -22,6 +22,10 @@ The whole booth loop is built in. Attract screen, 3-2-1, round, result with grad
 
 Scores are saved in the browser (up to 500) and a second window, `board.html`, shows the leaderboard on a second monitor the moment a score is saved. No server is involved. An operator menu (`Ctrl+Shift+O`) has fullscreen, mute, CSV export and a two-step clear.
 
+## Why it is different
+
+Most reaction games show the target and test how fast your hand is. Callout Rush never shows the target: the call is a sentence, and you must know the map to turn it into a place. So the time we measure is understanding the call, finding the spot and clicking, not just aiming. From the middle of the round the zone names disappear, so the map has to be in your head, and in the last stage a call names two spots in order (`Tunnel, then Crane!`).
+
 ## How we built it — JetBrains tools
 
 **WebStorm (headless inspection).** `npm run check` ends with a WebStorm inspection that runs from the command line with no window and no login, in about 12 seconds. It ran 13 times as the last gate after type check, lint, unit tests, build and browser tests. It reported 49 warnings. We read every one: 1 was real (a missing `@param` line in the doc comment of `nextCall`, fixed) and 48 were false positives, because headless mode cannot resolve imports between files and called every exported constant "unused". We switched that one inspection off with the reason written in the profile, and left unused-code checking to `tsc`. We also tested the gate by adding an unused variable on purpose and it did not report it, so we know it covers only part of what the editor shows. Evidence: `docs/jetbrains-usage.md`, `app/scripts/inspect.mjs`, `.idea/`.
@@ -47,7 +51,7 @@ A bot played 1000 rounds in a row in one browser page, with no reload (`docs/soa
 - Errors: 0.
 - Game work per frame: 1.5 ms at the 95th percentile (the budget is 20 ms).
 
-Also 137 unit tests across 24 files, and a downloadable zip of 66.7 KB.
+Also 137 unit tests across 24 files, and a downloadable zip of 67.0 KB.
 
 ## What we learned
 

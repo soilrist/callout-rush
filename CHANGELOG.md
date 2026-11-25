@@ -3,6 +3,7 @@
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) · 버전: [SemVer](https://semver.org/lang/ko/) · 규칙: `docs/conventions/Versioning.md`
 
 ## [Unreleased]
+- 심사 기준 5칸마다 증거 파일·영상 장면을 적은 `docs/judge-map.md` 추가, 약한 칸(아이디어)에 devpost 「Why it is different」 문단 추가, zip 다시 만듦 (M4-98)
 - 처음 온 사람처럼 마우스만으로 대기 화면부터 순위까지 두 창 크기(1366×768·1920×1080)에서 해 보는 `npm run firstrun` 추가, 고칠 것 없음 확인 (M4-07)
 - 영상 초안을 다시 조립: 결과·순위(왼쪽 게임 창+오른쪽 보조 창)·다음 판을 한 녹화로 잇고 효과음 소리줄을 얹음(문서 카드는 무음), 자막에 sample scores 표기, 길이 150.3초 (M4-05)
 - 영상 녹화에서 결과 화면의 이니셜 `ACE` 를 실제 키보드로 치고 게임 창·보조 창 둘 다 새 줄을 확인 (`?hold=1` 인자, M4-04)
