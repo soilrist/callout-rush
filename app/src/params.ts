@@ -7,6 +7,8 @@ export interface UrlParams {
   bot: BotLevel | null;
   state: ScreenState | null;
   at: number | null;
+  /** 1 이면 봇이 결과 화면(이니셜 입력)을 건드리지 않는다 — 영상 녹화에서 사람 입력처럼 치려고 */
+  hold: boolean;
 }
 
 const STATES: readonly ScreenState[] = ['attract', 'play', 'result', 'board'];
@@ -30,5 +32,6 @@ export function parseParams(search: string): UrlParams {
     bot: BOTS.find((b) => b === bot) ?? null,
     state: STATES.find((s) => s === state) ?? null,
     at: num(q.get('at')),
+    hold: q.get('hold') === '1',
   };
 }

@@ -201,7 +201,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const prev = flow;
     let next = flowTick(flow, t);
     const driver = bot ?? (next.demo && next.screen === 'play' ? demoBot : null);
-    if (driver) {
+    if (driver && !(params.hold && next.screen === 'result')) {
       const r = botFrame(driver, next, plan, botRng, t, nextSeed());
       next = r.flow;
       plan = r.plan;

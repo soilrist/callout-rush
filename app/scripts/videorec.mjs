@@ -41,18 +41,42 @@ try {
   await page.goto(`http://localhost:${PORT}/index.html?state=attract&seed=5`);
   await page.waitForTimeout(10000); // 장면 1: 대기 화면
   const tPlayPage = (Date.now() - t0) / 1000;
-  await page.goto(`http://localhost:${PORT}/index.html?bot=pro&timescale=1&seed=7`);
+  await page.goto(`http://localhost:${PORT}/index.html?bot=pro&timescale=1&seed=7&hold=1`);
   const log = [];
   let last = '';
   let resultAt = 0;
+  let typed = null;
+  const fail = (m) => { errors.push(`ACE: ${m}`); code = 1; };
   while ((Date.now() - t0) / 1000 < 170) {
     const s = await page.evaluate(() => document.body.dataset.screen);
     const el = (Date.now() - t0) / 1000;
     if (s !== last) { log.push({ t: +el.toFixed(1), screen: s }); last = s; }
-    if (s === 'result' && !resultAt) resultAt = el;
-    if (resultAt && el - resultAt > 45) break;
+    if (s === 'result' && !resultAt) {
+      resultAt = el;
+      await page.waitForTimeout(2500); // 카운트업 + 잠금, 화면 읽을 시간
+      const rows0 = Number(await board.evaluate(() => document.body.dataset.boardRows));
+      for (const k of ['a', 'c', 'e']) { await page.keyboard.press(k); await page.waitForTimeout(450); }
+      const initials = await page.evaluate(() => document.body.dataset.initials);
+      if (initials !== 'ACE') fail(`치는 중 initials=${initials}`);
+      await page.waitForTimeout(900);
+      const tType = (Date.now() - t0) / 1000;
+      await page.mouse.click(480, 890); // OK
+      const tOk = (Date.now() - t0) / 1000;
+      await page.waitForFunction(() => document.body.dataset.lastName === 'ACE', null, { timeout: 3000 }).catch(() => fail('게임 창 lastName 이 ACE 아님'));
+      await board.waitForFunction((n) => Number(document.body.dataset.boardRows) > n, rows0, { timeout: 4000 }).catch(() => fail('보조 창 줄이 안 늘어남'));
+      const tRow = (Date.now() - t0) / 1000;
+      const game = await page.evaluate(() => ({ name: document.body.dataset.lastName, scores: JSON.parse(globalThis.localStorage.getItem('calloutrush.v1.scores') ?? '[]').filter((e) => e.name === 'ACE').length }));
+      const side = await board.evaluate(() => ({ rows: Number(document.body.dataset.boardRows), scores: JSON.parse(globalThis.localStorage.getItem('calloutrush.v1.scores') ?? '[]').filter((e) => e.name === 'ACE').length }));
+      if (game.scores < 1 || side.scores < 1) fail(`저장소에 ACE 줄 없음 game=${game.scores} board=${side.scores}`);
+      typed = { tType: +tType.toFixed(1), tOk: +tOk.toFixed(1), tRowShown: +tRow.toFixed(1), game, board: side };
+      await page.screenshot({ path: resolve(out, 'ace-game.png') });
+      await board.screenshot({ path: resolve(out, 'ace-board.png') });
+      await page.waitForTimeout(7000); // 보조 창 새 줄 강조가 보이는 시간
+      break;
+    }
     await page.waitForTimeout(200);
   }
+  if (!typed) fail('결과 화면에 못 옴');
   await ctx.close();
   await browser.close();
   const sfxOut = sfx.map((e) => ({ t: +((e.ms - t0abs) / 1000).toFixed(3), id: e.id, opts: e.opts ?? {} }));
@@ -61,7 +85,7 @@ try {
   for (const e of sfxOut) counts[e.id] = (counts[e.id] ?? 0) + 1;
   console.log('SFXLOG', JSON.stringify(counts));
   const vids = readdirSync(out).filter((f) => f.endsWith('.webm'));
-  writeFileSync(resolve(out, 'log.json'), JSON.stringify({ tPlayPage, log, vids, errors }, null, 1));
-  console.log(JSON.stringify({ tPlayPage, log, vids, errors: errors.length }));
+  writeFileSync(resolve(out, 'log.json'), JSON.stringify({ tPlayPage, log, ace: typed, vids, errors }, null, 1));
+  console.log(JSON.stringify({ tPlayPage, log, ace: typed, vids, errors: errors.length }));
 } catch (e) { console.error(e); code = 1; } finally { server.kill(); }
 process.exit(code);
