@@ -27,6 +27,9 @@ try {
     globalThis.localStorage.setItem('calloutrush.v1.scores', JSON.stringify(list));
   });
   const errors = [];
+  const sfx = [];
+  await ctx.exposeFunction('__sfxSink', (e) => sfx.push(e));
+  await ctx.addInitScript(() => { globalThis.__sfxLog = { push: (e) => globalThis.__sfxSink(e) }; });
   const board = await ctx.newPage();
   board.on('pageerror', (e) => errors.push(String(e)));
   await board.goto(`http://localhost:${PORT}/board.html`);
@@ -34,6 +37,7 @@ try {
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   page.on('pageerror', (e) => errors.push(String(e)));
   const t0 = Date.now();
+  const t0abs = t0;
   await page.goto(`http://localhost:${PORT}/index.html?state=attract&seed=5`);
   await page.waitForTimeout(10000); // 장면 1: 대기 화면
   const tPlayPage = (Date.now() - t0) / 1000;
@@ -51,6 +55,11 @@ try {
   }
   await ctx.close();
   await browser.close();
+  const sfxOut = sfx.map((e) => ({ t: +((e.ms - t0abs) / 1000).toFixed(3), id: e.id, opts: e.opts ?? {} }));
+  writeFileSync(resolve(out, 'sfx.json'), JSON.stringify(sfxOut, null, 1));
+  const counts = {};
+  for (const e of sfxOut) counts[e.id] = (counts[e.id] ?? 0) + 1;
+  console.log('SFXLOG', JSON.stringify(counts));
   const vids = readdirSync(out).filter((f) => f.endsWith('.webm'));
   writeFileSync(resolve(out, 'log.json'), JSON.stringify({ tPlayPage, log, vids, errors }, null, 1));
   console.log(JSON.stringify({ tPlayPage, log, vids, errors: errors.length }));

@@ -114,7 +114,10 @@ export function createSfx(): Sfx {
       if (ctx.state === 'suspended') void ctx.resume();
     },
     play(id, opts) {
-      if (muted || !ctx || ctx.state !== 'running') return;
+      if (muted) return;
+      // 녹화 도구가 window.__sfxLog 를 달아 둘 때만 기록한다(없으면 아무 일 없음). 소리가 실제로 날 수 있는지와 상관없이 부른 시각을 남긴다.
+      (globalThis as { __sfxLog?: { push(e: { ms: number; id: SfxId; opts?: SfxOpts }): void } }).__sfxLog?.push({ ms: Date.now(), id, opts });
+      if (!ctx || ctx.state !== 'running') return;
       scheduleSfx(ctx, ctx.destination, id, ctx.currentTime + 0.005, opts);
     },
     setMuted(m) { muted = m; },

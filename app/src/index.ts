@@ -22,6 +22,7 @@ import { installOperator } from './ui/operator';
 import { installGuard, keepAwake } from './ui/guard';
 import { registerOffline } from './ui/offline';
 import type { ScoreEntry } from './core/scores';
+import { cuesFor } from './audio/cues';
 import { createSfx } from './audio/sfx';
 import { STAGE_H, STAGE_W, fitStage, screenToStage } from './ui/stage';
 
@@ -104,13 +105,18 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
       history.push({ ok: last.kind === 'hit', name: ZONES.find((z) => z.id === first)?.name ?? '', rtMs: last.rtMs });
     }
   };
+  const sfx = createSfx();
+  let lastT = 0;
   const update = (next: Flow, prev: Flow): void => {
-    if (next.screen === 'play' && prev.screen !== 'play') history = [];
+    const t = now();
+    if (next.screen === 'play' && prev.screen !== 'play') { history = []; if (!next.demo) sfx.play('count'); }
     else track(prev.game, next);
+    // 효과음: 대기 화면 시연(demo)은 소리 없음(§3.4)
+    if (prev.screen === 'play' && (next.screen === 'play' || next.screen === 'result') && !prev.demo) for (const c of cuesFor(prev.game, next.game, lastT, t)) sfx.play(c.id, c.opts);
+    lastT = t;
     flow = next;
   };
 
-  const sfx = createSfx();
   // 탭이 숨겨지면(사람이 다른 탭으로 감) 판을 버리고 대기로
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) update(abandonPlay(flow, now()), flow);
