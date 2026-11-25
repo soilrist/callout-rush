@@ -4,14 +4,14 @@ import { zoneAt } from '../core/zones';
 import { MAP_COLORS, MAP_ORIGIN, labelLines, stageToMap, zoneRect } from './map';
 
 describe('zoneRect', () => {
-  it('맵 단위를 무대 px 로 바꾼다 (시트 값)', () => {
+  it('converts map units to stage px (sheet values)', () => {
     const z01 = zoneRect(ZONES[0]!);
     expect(z01.x).toBeCloseTo(463.2);
     expect(z01.y).toBeCloseTo(98.4);
     expect(z01.w).toBeCloseTo(153.6);
     expect(z01.h).toBeCloseTo(134.4);
   });
-  it('12개가 전부 맵 바탕 안에 있다', () => {
+  it('all 12 are inside the map base', () => {
     for (const z of ZONES) {
       const r = zoneRect(z);
       expect(r.x).toBeGreaterThanOrEqual(MAP_ORIGIN);
@@ -23,17 +23,17 @@ describe('zoneRect', () => {
 });
 
 describe('labelLines', () => {
-  it('좁은 구역의 두 단어 이름은 두 줄', () => {
+  it('a two-word name in a narrow zone takes two lines', () => {
     for (const id of ['Z01', 'Z12', 'Z07', 'Z09', 'Z11', 'Z06', 'Z05']) {
       const z = ZONES.find((q) => q.id === id)!;
       expect(labelLines(z.name, zoneRect(z).w)).toHaveLength(2);
     }
   });
-  it('한 단어나 넓은 구역은 한 줄, 대문자', () => {
+  it('a one-word name or a wide zone takes one line, uppercase', () => {
     expect(labelLines('Roof', 211)).toEqual(['ROOF']);
     expect(labelLines('Tunnel', 172)).toEqual(['TUNNEL']);
   });
-  it('모든 줄이 구역 폭 안에 들어간다 (글자 폭 17px 근사)', () => {
+  it('every line fits inside the zone width (letter width approx. 17px)', () => {
     for (const z of ZONES) {
       const w = zoneRect(z).w;
       for (const l of labelLines(z.name, w)) expect(l.length * 17).toBeLessThanOrEqual(w);
@@ -42,14 +42,14 @@ describe('labelLines', () => {
 });
 
 describe('stageToMap', () => {
-  it('구역 사각형 가운데를 누르면 그 구역이 나온다', () => {
+  it('pressing the center of a zone rectangle gives that zone', () => {
     for (const z of ZONES) {
       const r = zoneRect(z);
       const m = stageToMap(r.x + r.w / 2, r.y + r.h / 2);
       expect(zoneAt(m.x, m.y)?.id).toBe(z.id);
     }
   });
-  it('맵 왼쪽 위 모서리는 0,0', () => {
+  it('the top-left corner of the map is 0,0', () => {
     expect(stageToMap(MAP_ORIGIN, MAP_ORIGIN)).toEqual({ x: 0, y: 0 });
   });
 });
@@ -66,8 +66,8 @@ function contrast(a: string, b: string): number {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 
-describe('구역 윤곽 대비', () => {
-  it('테두리 색이 맵 바탕과 3:1 이상, 구역 채움과도 3:1 이상', () => {
+describe('zone outline contrast', () => {
+  it('the border color is at least 3:1 against the map base and also against the zone fill', () => {
     expect(contrast(MAP_COLORS.zoneLine, MAP_COLORS.bg)).toBeGreaterThanOrEqual(3);
     expect(contrast(MAP_COLORS.zoneLine, MAP_COLORS.zone)).toBeGreaterThanOrEqual(3);
   });

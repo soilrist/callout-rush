@@ -14,18 +14,18 @@ function median(name: 'rookie' | 'regular' | 'pro'): number {
   return a[Math.floor(a.length / 2)] ?? 0;
 }
 
-describe('밸런스 목표 (§6.2, M1-12)', () => {
+describe('Balance targets (§6.2, M1-12)', () => {
   const m = { rookie: median('rookie'), regular: median('regular'), pro: median('pro') };
-  it('rookie=ENTRY, regular=ANCHOR 또는 SHOT CALLER, pro=IGL', () => {
+  it('rookie=ENTRY, regular=ANCHOR or SHOT CALLER, pro=IGL', () => {
     expect(grade(m.rookie)).toBe('ENTRY');
     expect(['ANCHOR', 'SHOT CALLER']).toContain(grade(m.regular));
     expect(grade(m.pro)).toBe('IGL');
   });
-  it('봇 셋의 중앙값이 서로 1500점 이상 차이', () => {
+  it('bot set medians differ by at least 1500 points', () => {
     expect(m.regular - m.rookie).toBeGreaterThanOrEqual(1500);
     expect(m.pro - m.regular).toBeGreaterThanOrEqual(1500);
   });
-  it('DESIGN §6.2 등급 경계 행이 config.ts 와 같다', () => {
+  it('DESIGN §6.2 grade edge row matches config.ts', () => {
     const doc = readFileSync(new URL('../../../docs/DESIGN.md', import.meta.url), 'utf8');
     const row = doc.split('\n').find((l) => l.startsWith('| 등급 경계'));
     const nums = (row?.split('|')[2] ?? '').match(/[\d,]+/g)?.map((x) => Number(x.replace(/,/g, '')));

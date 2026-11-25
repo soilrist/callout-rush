@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-describe('뼈대', () => {
-  it('테스트 도구가 돈다', () => {
+describe('skeleton', () => {
+  it('the test tool runs', () => {
     expect(1 + 1).toBe(2);
   });
 });

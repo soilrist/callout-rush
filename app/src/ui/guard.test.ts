@@ -11,7 +11,7 @@ function fake() {
 }
 
 describe('guard', () => {
-  it('오류를 셀 때마다 저장값이 늘고 새로 고침은 한 번만 예약한다', () => {
+  it('each counted error raises the saved value and the reload is scheduled only once', () => {
     const f = fake();
     f.guard.report();
     f.guard.report();
@@ -19,7 +19,7 @@ describe('guard', () => {
     expect(f.calls).toEqual([{ ms: RELOAD_DELAY_MS }]);
     expect(f.reloads()).toBe(1);
   });
-  it('망가진 저장값은 0 으로 읽는다', () => {
+  it('a broken saved value reads as 0', () => {
     expect(readErrors({ getItem: () => '{not json' })).toBe(0);
     expect(readErrors({ getItem: () => JSON.stringify({ errors: -3 }) })).toBe(0);
     expect(HEALTH_KEY).toBe('calloutrush.v1.health');

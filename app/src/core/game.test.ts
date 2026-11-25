@@ -3,8 +3,8 @@ import { CALL_GAP_MS, COUNTDOWN_MS, GAME_MS, PHASES, WRONG_REVEAL_MS } from './c
 import { initGame, phaseAt, step, type GameEvent, type GameState } from './game';
 import { ZONES, type ZoneId } from './zones';
 
-const T0 = 1000; // 테스트용 시작 시계
-const PLAY = T0 + COUNTDOWN_MS; // 플레이 시작 시각
+const T0 = 1000; // test start clock
+const PLAY = T0 + COUNTDOWN_MS; // play start time
 
 function center(id: ZoneId): { x: number; y: number } {
   const z = ZONES.find((zone) => zone.id === id);
@@ -18,7 +18,7 @@ function click(s: GameState, id: ZoneId, now: number): GameState {
   const c = center(id);
   return step(s, { type: 'CLICK', x: c.x, y: c.y, now });
 }
-/** 카운트다운을 넘기고 첫 콜을 띄운 상태 (콜은 PLAY 시각에 뜬다) */
+/** State after the countdown, with the first call shown (the call appears at PLAY time) */
 function started(seed = 1): GameState {
   return tick(tick(initGame(seed), T0), PLAY);
 }
@@ -26,30 +26,30 @@ function other(id: ZoneId): ZoneId {
   return ZONES.find((z) => z.id !== id)?.id ?? 'Z01';
 }
 function activeOf(s: GameState) {
-  if (!s.active) throw new Error('콜이 없다');
+  if (!s.active) throw new Error('no call');
   return s.active;
 }
-/** 한 곳 콜이 뜰 때까지 시드를 바꿔 가며 시작한다 */
+/** Starts with changing seeds until a one-zone call appears */
 function startedOneZone(): GameState {
   for (let seed = 1; seed < 100; seed++) {
     const s = started(seed);
     if (activeOf(s).call.zones.length === 1) return s;
   }
-  throw new Error('한 곳 콜 시드 없음');
+  throw new Error('no one-zone call seed');
 }
-/** 단계 3 에서 두 곳 콜이 뜬 상태. now = 콜이 뜬 시각 */
+/** State with a two-zone call in stage 3. now = the time the call appeared */
 function twoZoneState(): { s: GameState; now: number } {
   const now = PLAY + 41000;
   for (let seed = 1; seed < 200; seed++) {
-    // 첫 콜은 시간 초과로 보내고(now), 간격 뒤(now + 1000) 단계 3 콜을 띄운다
+    // expire the first call as too slow (now), then show a stage 3 call after the gap (now + 1000)
     const s = tick(tick(tick(tick(initGame(seed), T0), PLAY), now), now + 1000);
     if (s.active && s.active.call.zones.length === 2) return { s, now: now + 1000 };
   }
-  throw new Error('두 곳 콜 시드 없음');
+  throw new Error('no two-zone call seed');
 }
 
-describe('시작·카운트다운', () => {
-  it('카운트다운 동안은 콜이 없고 클릭은 무시된다', () => {
+describe('start and countdown', () => {
+  it('during the countdown there is no call and clicks are ignored', () => {
     let s = tick(initGame(1), T0);
     expect(s.status).toBe('countdown');
     s = click(s, 'Z01', T0 + 1000);
@@ -59,7 +59,7 @@ describe('시작·카운트다운', () => {
     expect(s.status).toBe('countdown');
   });
 
-  it('카운트다운이 끝나는 TICK 에 play 로 바뀌고 첫 콜이 뜬다', () => {
+  it('on the TICK where the countdown ends it becomes play and the first call appears', () => {
     const s = started();
     expect(s.status).toBe('play');
     expect(s.active?.stepStartMs).toBe(PLAY);
@@ -67,8 +67,8 @@ describe('시작·카운트다운', () => {
   });
 });
 
-describe('콜 판정 (§4.2)', () => {
-  it('정답: 점수·연속·맞힌 수가 오르고 반응 시간이 기록된다', () => {
+describe('call judging (§4.2)', () => {
+  it('right answer: score, streak and hit count go up and the reaction time is recorded', () => {
     let s = startedOneZone();
     const a = activeOf(s);
     const id = a.call.zones[0] as ZoneId;
@@ -83,11 +83,11 @@ describe('콜 판정 (§4.2)', () => {
     expect(s.active).toBeNull();
   });
 
-  it('오답(다른 구역): 0점, 연속 0, 정답 구역 0.6초 공개', () => {
+  it('wrong answer (other zone): 0 points, streak 0, right zone revealed for 0.6 s', () => {
     let s = startedOneZone();
     const a = activeOf(s);
     const id = a.call.zones[0] as ZoneId;
-    s = click(s, id, a.stepStartMs + 400); // 연속 1
+    s = click(s, id, a.stepStartMs + 400); // streak 1
     s = tick(s, a.stepStartMs + 400 + CALL_GAP_MS);
     const b = activeOf(s);
     const before = s.score;
@@ -102,14 +102,14 @@ describe('콜 판정 (§4.2)', () => {
     expect(s.last?.revealUntil).toBe(now + WRONG_REVEAL_MS);
   });
 
-  it('빈 땅 클릭도 오답 (막 찍기 방지)', () => {
+  it('a click on empty ground is also wrong (stops random tapping)', () => {
     let s = startedOneZone();
     s = step(s, { type: 'CLICK', x: 5, y: 5, now: PLAY + 500 });
     expect(s.last?.kind).toBe('wrong');
     expect(s.finished).toBe(1);
   });
 
-  it('시간 초과: 제한 시간이 지나면 TOO SLOW 로 끝나고 연속이 0 이 된다', () => {
+  it('timeout: past the time limit it ends as TOO SLOW and the streak becomes 0', () => {
     let s = startedOneZone();
     const a = activeOf(s);
     s = tick(s, a.stepStartMs + a.limitMs - 1);
@@ -122,7 +122,7 @@ describe('콜 판정 (§4.2)', () => {
     expect(s.active).toBeNull();
   });
 
-  it('제한 시간 뒤에 온 클릭은 정답 구역이어도 시간 초과', () => {
+  it('a click after the time limit is a timeout even in the right zone', () => {
     let s = startedOneZone();
     const a = activeOf(s);
     s = click(s, a.call.zones[0] as ZoneId, a.stepStartMs + a.limitMs + 50);
@@ -130,7 +130,7 @@ describe('콜 판정 (§4.2)', () => {
     expect(s.hit).toBe(0);
   });
 
-  it('판정 직후 CALL_GAP_MS 동안의 클릭은 무시, 그 뒤 TICK 에 다음 콜', () => {
+  it('clicks during CALL_GAP_MS right after judging are ignored, the next call comes on the TICK after', () => {
     let s = startedOneZone();
     const a = activeOf(s);
     const t = a.stepStartMs + 500;
@@ -145,7 +145,7 @@ describe('콜 판정 (§4.2)', () => {
     expect(s.active?.stepStartMs).toBe(t + CALL_GAP_MS);
   });
 
-  it('간격이 끝났어도 TICK 이 콜을 띄우기 전의 클릭은 새 콜의 오답이 되지 않는다', () => {
+  it('even after the gap ends, a click before the TICK shows the call is not a wrong answer for the new call', () => {
     let s = startedOneZone();
     const a = activeOf(s);
     const t = a.stepStartMs + 500;
@@ -157,8 +157,8 @@ describe('콜 판정 (§4.2)', () => {
   });
 });
 
-describe('두 곳 콜', () => {
-  it('첫 구역 → 둘째 구역 순서로 맞히면 각각 점수, 둘째 반응은 첫 클릭부터 잰다', () => {
+describe('two-zone call', () => {
+  it('hitting the first zone then the second scores each, and the second reaction is timed from the first click', () => {
     const { s: s0, now } = twoZoneState();
     const [first, second] = activeOf(s0).call.zones as [ZoneId, ZoneId];
     let s = click(s0, first, now + 400);
@@ -173,7 +173,7 @@ describe('두 곳 콜', () => {
     expect(s.active).toBeNull();
   });
 
-  it('순서가 바뀌면(둘째를 먼저) 목표 2개 모두 실패', () => {
+  it('if the order is swapped (second first), both targets fail', () => {
     const { s: s0, now } = twoZoneState();
     const [first, second] = activeOf(s0).call.zones as [ZoneId, ZoneId];
     const s = click(s0, second, now + 300);
@@ -184,7 +184,7 @@ describe('두 곳 콜', () => {
     expect(s.last?.revealZones).toEqual([first, second]);
   });
 
-  it('둘째를 틀리면 첫째 점수는 남고 둘째만 실패, 연속 0', () => {
+  it('if the second is wrong, the first score stays and only the second fails, streak 0', () => {
     const { s: s0, now } = twoZoneState();
     const [first, second] = activeOf(s0).call.zones as [ZoneId, ZoneId];
     let s = click(s0, first, now + 300);
@@ -197,7 +197,7 @@ describe('두 곳 콜', () => {
     expect(s.last?.revealZones).toEqual([second]);
   });
 
-  it('둘째가 시간 초과면 둘째만 실패', () => {
+  it('if the second times out, only the second fails', () => {
     const { s: s0, now } = twoZoneState();
     const [first] = activeOf(s0).call.zones as [ZoneId, ZoneId];
     let s = click(s0, first, now + 300);
@@ -209,8 +209,8 @@ describe('두 곳 콜', () => {
   });
 });
 
-describe('단계·끝', () => {
-  it('단계 번호가 구간 경계에서 바뀐다', () => {
+describe('stages and end', () => {
+  it('the stage number changes at the range edges', () => {
     expect(phaseAt(0)).toBe(1);
     expect(phaseAt(14999)).toBe(1);
     expect(phaseAt(15000)).toBe(2);
@@ -219,10 +219,10 @@ describe('단계·끝', () => {
     expect(phaseAt(59999)).toBe(3);
   });
 
-  it('단계가 바뀌어도 떠 있던 콜은 원래 제한 시간 그대로', () => {
+  it('a call already shown keeps its original time limit when the stage changes', () => {
     let s = started(3);
     const a = activeOf(s);
-    // 단계 1 끝 직전에 콜을 하나 띄운다: 먼저 현재 콜을 시간 초과로 보내고 15초 직전에 다시
+    // show a call just before the end of stage 1: first send the current call out as too slow, then show again just before 15 s
     s = tick(s, a.stepStartMs + a.limitMs);
     s = tick(s, PLAY + 14900);
     const b = activeOf(s);
@@ -231,9 +231,9 @@ describe('단계·끝', () => {
     expect(s.active?.limitMs).toBe(PHASES[0]?.limitMs);
   });
 
-  it('60초가 되면 done, 떠 있던 콜은 점수도 실패도 아니다', () => {
+  it('at 60 s it is done, and a call still shown is neither a score nor a failure', () => {
     let s = startedOneZone();
-    // 마지막 콜을 59.9초에 띄운다
+    // show the last call at 59.9 s
     const a = activeOf(s);
     s = tick(s, a.stepStartMs + a.limitMs);
     s = tick(s, PLAY + GAME_MS - 100);
@@ -245,7 +245,7 @@ describe('단계·끝', () => {
     expect(s.finished).toBe(finished);
   });
 
-  it('끝난 뒤의 클릭·TICK 은 상태를 바꾸지 않는다', () => {
+  it('clicks and TICKs after the end do not change the state', () => {
     let s = startedOneZone();
     s = tick(s, PLAY + GAME_MS);
     const score = s.score;
@@ -256,8 +256,8 @@ describe('단계·끝', () => {
   });
 });
 
-describe('결정성', () => {
-  /** 같은 이벤트 줄을 처음부터 흘려 최종 상태(난수 함수 빼고)를 돌려준다 */
+describe('determinism', () => {
+  /** Replays the same event list from the start and returns the final state (without the random function) */
   function run(seed: number): Omit<GameState, 'rng'> {
     let s = initGame(seed);
     const events: GameEvent[] = [];
@@ -273,7 +273,7 @@ describe('결정성', () => {
     return rest;
   }
 
-  it('같은 시드·같은 입력이면 최종 상태가 같고, 시드가 다르면 달라진다', () => {
+  it('same seed and input give the same final state, a different seed gives a different one', () => {
     const a = run(7);
     expect(a.status).toBe('done');
     expect(run(7)).toEqual(a);

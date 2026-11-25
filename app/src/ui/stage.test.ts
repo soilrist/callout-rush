@@ -15,7 +15,7 @@ const corners: [number, number][] = [
 
 describe('stage', () => {
   for (const [w, h] of windows) {
-    it(`${w}x${h}: 모서리 왕복 오차 ≤ 1px`, () => {
+    it(`${w}x${h}: corner round-trip error ≤ 1px`, () => {
       const fit = fitStage(w, h, 2);
       for (const [x, y] of corners) {
         const s = stageToScreen(fit, x, y);
@@ -26,20 +26,20 @@ describe('stage', () => {
     });
   }
 
-  it('비율 유지: 2560x1080 은 좌우 여백, 무대는 가운데', () => {
+  it('keeps the ratio: 2560x1080 has side margins, the stage is centered', () => {
     const fit = fitStage(2560, 1080, 1);
     expect(fit.scale).toBe(1);
     expect(fit.offsetX).toBe(320);
     expect(fit.offsetY).toBe(0);
   });
 
-  it('기기 픽셀비가 백버퍼 크기에 반영된다', () => {
+  it('the device pixel ratio is reflected in the back buffer size', () => {
     const fit = fitStage(1280, 720, 2);
     expect(fit.pixelWidth).toBe(2560);
     expect(fit.pixelHeight).toBe(1440);
   });
 
-  it('무대 밖 판정', () => {
+  it('outside-the-stage check', () => {
     const fit = fitStage(2560, 1080, 1);
     expect(insideStage(screenToStage(fit, 10, 10))).toBe(false);
     expect(insideStage(screenToStage(fit, 1280, 540))).toBe(true);
