@@ -21,7 +21,7 @@ How each number was counted (run from the repository root):
 | Problems found / fixed | see the M2-14 row in the log below (49 warnings, 48 false positives, 1 fixed) | 49 / 1 |
 | JetBrains config files tracked by git | `git ls-files .idea .junie .air \| wc -l` | 10 files (.idea 9, .junie 1), no .air folder |
 
-Remote check: this repository has no remote yet (`git remote -v` prints nothing), so `.idea` and `.junie` are committed locally but not yet public. They go online with the push in M2-16 / M3-10.
+Remote check: `git remote -v` prints `origin https://github.com/soilrist/callout-rush.git`; the repository is public (GitHub API `"private": false`), so `.idea` and `.junie` are public with it.
 
 ## Log
 

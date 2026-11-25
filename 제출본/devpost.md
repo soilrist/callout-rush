@@ -47,7 +47,7 @@ A bot played 1000 rounds in a row in one browser page, with no reload (`docs/soa
 - Errors: 0.
 - Game work per frame: 1.5 ms at the 95th percentile (the budget is 20 ms).
 
-Also 129 unit tests across 23 files, and a downloadable zip of 66.7 KB.
+Also 137 unit tests across 24 files, and a downloadable zip of 66.7 KB.
 
 ## What we learned
 
