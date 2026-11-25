@@ -29,4 +29,4 @@ Every check uses the same code path as a real player, so a passing number means 
 - **We did not measure 60 fps.** The headless browser we had draws about 12 frames per second even for an empty canvas, so the frame interval says nothing about the game. We report only the time our own frame code runs (1.5 ms), which excludes compositing and GPU. A real-speed run on a visible browser is still to do.
 - **The soak ran at 10 times clock speed**, not real time, because of the same 12 fps limit. It covers 1000 rounds. The heap rose 0.21 MB (1.93 to 2.14), which passes our 5 MB rule but not the 10% rule.
 - **Bot skill is not human skill.** The bot shows grades are ordered, not that people find it fun. We ran no booth test.
-- **JetBrains tools were uneven.** WebStorm's headless inspection ran 13 times and found 1 real issue and 48 false positives. Junie and Air made 0 commits (`docs/jetbrains-usage.md`).
+- **JetBrains tools were uneven.** WebStorm's headless inspection found 2 real issues and 48 false positives (50 warnings). Junie and Air made 0 commits (`docs/jetbrains-usage.md`).

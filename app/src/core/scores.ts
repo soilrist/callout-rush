@@ -96,20 +96,26 @@ export class ScoreStore {
       this.list = this.persistFailed ? this.list : [];
       return;
     }
+    let items: unknown[] | null = null;
     try {
       const parsed: unknown = JSON.parse(raw);
-      if (!Array.isArray(parsed)) throw new Error('not array');
-      this.list = parsed.filter(isEntry);
+      if (Array.isArray(parsed)) items = parsed;
     } catch {
-      try {
-        this.storage.setItem(SCORES_BAD_KEY, raw);
-        this.storage.removeItem(SCORES_KEY);
-      } catch {
-        this.persistFailed = true;
-      }
-      this.recovered = true;
-      this.list = [];
+      items = null;
     }
+    if (items !== null) {
+      this.list = items.filter(isEntry);
+      return;
+    }
+    // 깨진 JSON 이거나 배열이 아니면 같은 복구 길
+    try {
+      this.storage.setItem(SCORES_BAD_KEY, raw);
+      this.storage.removeItem(SCORES_KEY);
+    } catch {
+      this.persistFailed = true;
+    }
+    this.recovered = true;
+    this.list = [];
   }
 
   /** 점수 한 건 추가. id·ts 는 채워 준다. 돌려주는 값은 저장된 항목 */

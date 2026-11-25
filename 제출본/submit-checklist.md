@@ -19,7 +19,7 @@
 | Working build / demo link | GitHub Pages 주소 (`<주소>/` 와 `<주소>/board.html`) | `https://soilrist.github.io/callout-rush/` 와 `board.html` 둘 다 200. 심사 끝(한국 2027-02-04 08:00)까지 무료·로그인 없이 |
 | Downloadable build | `제출본/callout-rush-web.zip` (약 66KB) | 파일 있음. 릴리스에 올릴지는 사람이 정함 |
 | Screenshots / image gallery | `제출본/shots/0-cover.png`(표지) → `1-attract.png` → `2-play-stage1.png` → `3-play-stage3.png` → `4-result.png` → `5-board.png` → `6-operator.png` | 파일 있음. 7장 |
-| Bonus: Best AI-Powered Workflow Story URL | 저장소의 `AI_SHOWCASE.md` 직접 주소: `<저장소 주소>/blob/main/AI_SHOWCASE.md` | 파일 있음(M3-07). 저장소 공개 뒤 주소 확인 |
+| Bonus: Best AI-Powered Workflow Story URL | 저장소의 `AI_SHOWCASE.md` 직접 주소: `<저장소 주소>/blob/develop/AI_SHOWCASE.md` | 파일 있음(M3-07). 저장소 공개 뒤 주소 확인 |
 | JetBrains tools used (체크) | 사실대로: WebStorm(헤드리스 검사 13회). Junie·Air 는 `docs/jetbrains-usage.md` 합계가 0이면 체크하지 않는다 | 합계표 확인 후 |
 | Team | 1명(개인) | |
 

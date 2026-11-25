@@ -19,7 +19,7 @@ A commit hook rejects badly formed commits, and a separate check compares the qu
 
 `npm run check` ends with a headless WebStorm inspection (`app/scripts/inspect.mjs`, commit `9ce8781`). It needs no window or login and takes about 12 seconds. It is the last gate after `tsc`, ESLint, Vitest, the build and the browser tests.
 
-**Case 1: a real finding, fixed (`64ed7fd`).** The inspection reported 49 warnings. One was real: the doc comment of `nextCall` in `app/src/core/calls.ts` lacked its `@param rng` line. Before and after:
+**Case 1: a real finding, fixed (`64ed7fd`).** The first inspection run reported 49 warnings. One was real: the doc comment of `nextCall` in `app/src/core/calls.ts` lacked its `@param rng` line. Before and after:
 
 ```ts
  * 다음 콜을 만든다 (§4.3).
@@ -31,11 +31,19 @@ A commit hook rejects badly formed commits, and a separate check compares the qu
  * @param phase 단계 1~3 ...
 ```
 
-**Case 2: 48 false positives, and what we did (`64ed7fd`).** The other 48 said "unused constant/function" for exports such as `GAME_MS` and `drawHud`. Headless mode cannot resolve imports between files, so it called every export unused, although grep showed other files use them. The agent turned that one inspection off in `.idea/inspectionProfiles/Project_Default.xml` with the reason as a comment, and left unused-code checking to `tsc`. Result: `INSPECT ok: 0 errors, 0 warnings`. We count this as a tool limit we worked around, not as 48 bugs found.
+**Case 2: 48 false positives, and what we did (`64ed7fd`).** The other 48 said "unused constant/function" for exports such as `GAME_MS` and `drawHud`. Headless mode cannot resolve imports between files, so it called every export unused, although grep showed other files use them. The agent turned that one inspection off in `.idea/inspectionProfiles/Project_Default.xml` with the reason as a comment, and left unused-code checking to `tsc`. Result at that time: `INSPECT ok: 0 errors, 0 warnings`. We count this as a tool limit we worked around, not as 48 bugs found.
 
 **Case 3: a blind spot found by testing the gate (`9ce8781`).** We added an unused local variable and an unused import on purpose to see whether the gate would fail. It did not report either. The agent recorded this as a failed acceptance test and the slice as partly done, instead of calling the gate complete. So the inspection covers only part of what the IDE editor shows.
 
-Total real WebStorm findings: 1 (see `docs/jetbrains-usage.md`, where every number has a command).
+**Case 4: a second real finding, found late and fixed (this slice's commit).** After Case 1 the gate printed `0 warnings`, but later code brought one back: in `app/src/core/scores.ts`, `load()` did `throw new Error('not array')` and caught it in the `catch` of the same function. The run before the fix printed `INSPECT ok: 0 errors, 1 warnings`; the warning had been there since about lap 79 and we first read it in the supervisor's review of 2026-11-25. The fix removes the throw, so a non-array value takes the same recovery path as broken JSON (new unit test). Our first rewrite still printed `1 warnings` (`parsed is possibly null`); the second printed `INSPECT ok: 0 errors, 0 warnings`.
+
+```diff
+-      if (!Array.isArray(parsed)) throw new Error('not array');
+-      this.list = parsed.filter(isEntry);
++      if (Array.isArray(parsed)) items = parsed;
+```
+
+Total real WebStorm findings: 2 (see `docs/jetbrains-usage.md`, where every number has a command).
 
 ## Problems the other gates caught
 

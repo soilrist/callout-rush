@@ -35,6 +35,16 @@ describe('ScoreStore', () => {
     expect(s.size).toBe(1);
   });
 
+  it('배열이 아닌 JSON 도 깨진 JSON 과 같은 복구 길', () => {
+    const st = memoryStorage();
+    st.setItem(SCORES_KEY, '{"a":1}');
+    const s = new ScoreStore(st, 50);
+    expect(s.size).toBe(0);
+    expect(st.getItem(SCORES_BAD_KEY)).toBe('{"a":1}');
+    expect(st.getItem(SCORES_KEY)).toBeNull();
+    expect(s.recovered).toBe(true);
+  });
+
   it('모양이 틀린 항목만 걸러낸다', () => {
     const st = memoryStorage();
     st.setItem(SCORES_KEY, JSON.stringify([{ id: 'a', name: 'A', score: 1, acc: 1, avgRt: 1, streak: 1, ts: T0 }, { x: 1 }]));
