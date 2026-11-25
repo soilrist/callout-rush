@@ -1,0 +1,2 @@
+WARNING app/src/core/scores.ts:101 'throw' of exception caught locally
+INSPECT ok: 0 errors, 1 warnings
