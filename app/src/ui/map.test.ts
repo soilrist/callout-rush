@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ZONES } from '../core/zones';
 import { zoneAt } from '../core/zones';
-import { MAP_ORIGIN, labelLines, stageToMap, zoneRect } from './map';
+import { MAP_COLORS, MAP_ORIGIN, labelLines, stageToMap, zoneRect } from './map';
 
 describe('zoneRect', () => {
   it('맵 단위를 무대 px 로 바꾼다 (시트 값)', () => {
@@ -51,5 +51,24 @@ describe('stageToMap', () => {
   });
   it('맵 왼쪽 위 모서리는 0,0', () => {
     expect(stageToMap(MAP_ORIGIN, MAP_ORIGIN)).toEqual({ x: 0, y: 0 });
+  });
+});
+
+function luminance(hex: string): number {
+  const ch = [1, 3, 5].map((i) => {
+    const v = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * ch[0]! + 0.7152 * ch[1]! + 0.0722 * ch[2]!;
+}
+function contrast(a: string, b: string): number {
+  const [x, y] = [luminance(a), luminance(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+
+describe('구역 윤곽 대비', () => {
+  it('테두리 색이 맵 바탕과 3:1 이상, 구역 채움과도 3:1 이상', () => {
+    expect(contrast(MAP_COLORS.zoneLine, MAP_COLORS.bg)).toBeGreaterThanOrEqual(3);
+    expect(contrast(MAP_COLORS.zoneLine, MAP_COLORS.zone)).toBeGreaterThanOrEqual(3);
   });
 });

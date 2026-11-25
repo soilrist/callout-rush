@@ -8,8 +8,12 @@ const C = {
   bg: '#0b1220',
   line: '#24324d',
   zone: '#1b2a44',
+  /** 구역 테두리·안쪽 그림 선 (배경 bg 와 대비 4.6:1, 채움 zone 과 3.5:1) */
+  zoneLine: '#5f7fb0',
   text: '#e8eef8',
 } as const;
+/** 구역 테두리 색과 맵 바탕·구역 채움 색 (대비 테스트용) */
+export const MAP_COLORS = { bg: C.bg, zone: C.zone, zoneLine: C.zoneLine } as const;
 const INSET = 8;
 const LABEL_PX = 28;
 /** 28px 대문자 한 글자 폭 근사(시트: 약 17px, 경계 LOADING DOCK 이 두 줄이 되게 18) */
@@ -162,7 +166,7 @@ export function drawMap(ctx: Ctx, opts: MapOptions): void {
     const r = zoneRect(z);
     ctx.fillStyle = C.zone;
     ctx.fillRect(r.x, r.y, r.w, r.h);
-    ctx.strokeStyle = C.line;
+    ctx.strokeStyle = C.zoneLine;
     ctx.lineWidth = 2;
     ctx.strokeRect(r.x, r.y, r.w, r.h);
     art(ctx, z.id, r);
