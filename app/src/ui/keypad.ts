@@ -1,11 +1,11 @@
-/** 결과 화면 글자판 배치와 누른 칸 찾기 (docs/reference/result.md). 무대 좌표 1920×1080. */
+/** Result-screen letter pad layout and finding the pressed key (docs/reference/result.md). Stage coordinates 1920×1080. */
 export type PadKey = string | 'BACK' | 'OK';
 
 export const PAD = { x: 984, y: 640, cell: 84, pitch: 96, cols: 9 } as const;
 export const OK_BOX = { x: 280, y: 840, w: 400, h: 100 } as const;
 export const SLOT = { x: 280, y: 664, w: 120, h: 140, pitch: 140 } as const;
 
-/** 줄 1 A~I, 줄 2 J~R, 줄 3 S~Z + ⌫ */
+/** Row 1 A–I, row 2 J–R, row 3 S–Z + ⌫ */
 export const PAD_KEYS: readonly PadKey[] = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'BACK'];
 
 export function padCell(i: number): { x: number; y: number } {

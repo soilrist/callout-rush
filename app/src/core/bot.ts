@@ -3,7 +3,7 @@ import { initGame, step, type GameState } from './game';
 import { mulberry32, type Rng } from './rng';
 import { ZONES } from './zones';
 
-/** 봇 프로필 (DESIGN §5.3). 반응 시간은 정규분포, 정확도는 맞힐 확률. */
+/** Bot profile (DESIGN §5.3). Reaction time is normally distributed; accuracy is the chance of a correct click. */
 export interface BotProfile {
   id: 'B1' | 'B2' | 'B3';
   name: 'rookie' | 'regular' | 'pro';
@@ -14,7 +14,7 @@ export interface BotProfile {
 }
 
 export const BOT_MIN_RT_MS = 200;
-/** 일부러 틀릴 때 누르는 빈 땅 (구역 밖) */
+/** Empty ground (outside every zone) clicked on purpose when the bot misses */
 const WRONG_SPOT = { x: 5, y: 5 };
 const TICK_MS = 16;
 
@@ -30,7 +30,7 @@ export function profileByName(name: BotProfile['name']): BotProfile {
   return p;
 }
 
-/** 표준 정규분포 한 값 (Box–Muller) */
+/** One standard normal value (Box–Muller) */
 function gauss(rng: Rng): number {
   const u = 1 - rng();
   const v = rng();
@@ -38,13 +38,13 @@ function gauss(rng: Rng): number {
 }
 
 export interface BotAction {
-  /** 목표가 뜬 시각에서 몇 ms 뒤에 누르나 */
+  /** How many ms after the target appears the bot clicks */
   delayMs: number;
   x: number;
   y: number;
 }
 
-/** 지금 목표에 대해 언제·어디를 누를지. 콜이 없으면 null. 난수는 봇 전용 rng 를 넣는다. */
+/** When and where to click for the current target. null if there is no call. Pass in the bot-only rng for randomness. */
 export function decide(profile: BotProfile, state: GameState, rng: Rng): BotAction | null {
   const a = state.active;
   if (!a) return null;
@@ -58,7 +58,7 @@ export function decide(profile: BotProfile, state: GameState, rng: Rng): BotActi
   return { delayMs, ...WRONG_SPOT };
 }
 
-/** 화면 없이 가상 시계로 한 판을 끝까지 돌린다. 같은 (프로필, 시드) 면 결과가 같다. */
+/** Runs one whole round on a virtual clock with no screen. The same (profile, seed) gives the same result. */
 export function simulate(profile: BotProfile, seed: number): GameState {
   const botRng = mulberry32(seed ^ 0x9e3779b9);
   let s = initGame(seed);

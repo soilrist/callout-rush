@@ -1,4 +1,4 @@
-/** 살아 있는 타이머·리스너·DOM 노드 수 (M2-07). 판을 거듭해도 늘지 않는지 시험이 `window.__health()` 로 읽는다. */
+/** Number of live timers, listeners and DOM nodes (M2-07). The test reads it with `window.__health()` to check it does not grow over many rounds. */
 export interface Health {
   timers: number;
   nodes: number;
@@ -14,7 +14,7 @@ function idOf(l: object): number {
 }
 const capture = (o?: boolean | AddEventListenerOptions): boolean => (typeof o === 'object' ? o.capture === true : o === true);
 
-/** setTimeout·setInterval·addEventListener 를 감싸 살아 있는 수를 센다. 한 번만 부른다. */
+/** Wraps setTimeout, setInterval and addEventListener to count what is alive. Call only once. */
 export function installHealth(): () => Health {
   const live = new Set<number>();
   const st = window.setTimeout.bind(window);

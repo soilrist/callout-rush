@@ -39,7 +39,7 @@ h1 {
 }
 #operator[hidden] { display: none; }
 #operator .op-panel {
-  width: 52vw; /* 시트 1000/1920 */
+  width: 52vw; /* sheet 1000/1920 */
   background: var(--c-panel);
   border: var(--line-w-strong) solid var(--c-accent);
   padding: 2.1vw;
@@ -48,7 +48,7 @@ h1 {
 #operator .op-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7vw 1vw; }
 #operator button {
   font: inherit;
-  font-size: 1.67vw; /* 시트 32/1920 */
+  font-size: 1.67vw; /* sheet 32/1920 */
   min-height: 4.6vw;
   color: var(--c-text);
   background: var(--c-zone);

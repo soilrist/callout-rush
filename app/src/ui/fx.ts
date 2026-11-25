@@ -1,4 +1,4 @@
-/** 판정 연출 (DESIGN §4.2 UI, §5.5). 무대 좌표에 맵 위 효과를 그린다. 시간 계산은 순수 함수로 뺐다. */
+/** Verdict effects (DESIGN §4.2 UI, §5.5). Draws map effects in stage coordinates. The time math is pulled out as pure functions. */
 import { LABEL_FADE_MS, PHASES, PHASE_FLASH_MS, WRONG_REVEAL_MS } from '../core/config';
 import { ZONES, type ZoneId } from '../core/zones';
 import type { Judgement } from '../core/game';
@@ -16,19 +16,19 @@ const FONT = '"Chakra Petch", system-ui, sans-serif';
 
 type Ctx = CanvasRenderingContext2D;
 
-/** 이름표 투명도: 1단계 1, 2단계 시작부터 LABEL_FADE_MS 에 걸쳐 0, 3단계 0. elapsed = 플레이 시작 후 ms. */
+/** Label opacity: 1 in phase 1, from the start of phase 2 fades to 0 over LABEL_FADE_MS, 0 in phase 3. elapsed = ms since play started. */
 export function labelAlphaAt(elapsedMs: number): number {
   const fadeFrom = PHASES[1]?.fromMs ?? 0;
   if (elapsedMs < fadeFrom) return 1;
   return Math.max(0, 1 - (elapsedMs - fadeFrom) / LABEL_FADE_MS);
 }
 
-/** 판정이 일어난 시각. hit 은 클릭 시각, wrong·slow 는 공개 끝 - 600ms. */
+/** Time the verdict happened. For hit, the click time; for wrong and slow, reveal end - 600 ms. */
 export function judgedAt(j: Judgement): number {
   return j.kind === 'hit' ? j.revealUntil : j.revealUntil - WRONG_REVEAL_MS;
 }
 
-/** 오답 흔들림: 판정 후 120ms 동안 좌우로 ±6px 감쇠. 그 밖은 0. */
+/** Wrong-answer shake: for 120 ms after the verdict, ±6px left and right, fading. Outside that window, 0. */
 export function shakeOffset(j: Judgement | null, now: number): number {
   if (!j || j.kind !== 'wrong') return 0;
   const age = now - judgedAt(j);
@@ -36,9 +36,9 @@ export function shakeOffset(j: Judgement | null, now: number): number {
   return Math.sin((age / SHAKE_MS) * Math.PI * 4) * SHAKE_PX * (1 - age / SHAKE_MS);
 }
 
-/** 단계 전환 번쩍(LIVE·CLUTCH): 지금 번쩍이는 단계 글자와 투명도(0~1). 없으면 null. */
+/** Phase-change flash (LIVE, CLUTCH): the phase text flashing now and its opacity (0–1). null if none. */
 export function phaseFlash(elapsedMs: number): { text: string; alpha: number } | null {
-  // 첫 단계(WARM-UP)는 전환이 아니다 — 판 시작에 맵을 가리지 않게 2·3단계만.
+  // The first phase (WARM-UP) is not a change — only phases 2 and 3, so the map is not covered at round start.
   for (let i = 1; i < PHASES.length; i++) {
     const age = elapsedMs - (PHASES[i]?.fromMs ?? 0);
     if (age >= 0 && age < PHASE_FLASH_MS) return { text: PHASE_TEXT[i] ?? '', alpha: 1 - age / PHASE_FLASH_MS };
@@ -48,10 +48,10 @@ export function phaseFlash(elapsedMs: number): { text: string; alpha: number } |
 
 export interface FxView {
   last: Judgement | null;
-  /** hit 이었던 콜의 인원 (맞히면 그 수만큼 점이 찍힌다) */
+  /** People count of the call that was a hit (that many dots are drawn on a hit) */
   people: number;
   now: number;
-  /** 플레이 시작 시각 (없으면 null) */
+  /** Time play started (null if none) */
   playStartMs: number | null;
 }
 
@@ -74,7 +74,7 @@ function drawReveal(ctx: Ctx, id: ZoneId, alpha: number): void {
   lines.forEach((t, i) => ctx.fillText(t, r.x + r.w / 2, r.y + r.h / 2 + (i - (lines.length - 1) / 2) * 32, r.w - 16));
 }
 
-/** 맵 위 효과: 정답 번쩍·떠오르는 글자·점, 오답 X·정답 구역 테두리, 단계 글자. 맵을 그린 뒤 부른다. */
+/** Effects on the map: correct flash, rising text and dots, wrong X and correct-zone outline, phase text. Call after drawing the map. */
 export function drawFx(ctx: Ctx, v: FxView): void {
   ctx.save();
   const j = v.last;
@@ -94,7 +94,7 @@ export function drawFx(ctx: Ctx, v: FxView): void {
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           const cx = r.x + r.w / 2;
-          // 구역 윗변에서 시작해 위로 떠오른다 (구역 이름표를 가리지 않게). 어두운 테두리로 읽히게.
+          // Starts at the top edge of the zone and floats up (so it does not cover the zone label). A dark outline keeps it readable.
           const cy = r.y - 20 - RISE_PX * k;
           ctx.lineJoin = 'round';
           ctx.strokeStyle = '#0b1220';
@@ -108,7 +108,7 @@ export function drawFx(ctx: Ctx, v: FxView): void {
           ctx.fillStyle = '#e8eef8';
           ctx.fillText(`${(j.rtMs / 1000).toFixed(2)}s`, cx, cy + 36);
           ctx.globalAlpha = 1;
-          // 인원 점: 구역 아래쪽 줄에 인원 수만큼
+          // People dots: as many as the people count, on the lower row of the zone
           ctx.fillStyle = `rgb(${OK})`;
           for (let i = 0; i < v.people; i++) {
             ctx.beginPath();

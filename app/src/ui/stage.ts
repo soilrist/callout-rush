@@ -1,18 +1,18 @@
-/** 1920×1080 논리 무대를 창에 비율 유지로 맞추고, 화면↔무대 좌표를 바꾸는 순수 함수. */
+/** Fits the 1920×1080 logical stage to the window keeping the ratio, and pure functions that convert screen ↔ stage coordinates. */
 
 export const STAGE_W = 1920;
 export const STAGE_H = 1080;
 
 export interface StageFit {
-  /** 무대 1 논리 px 가 화면(CSS) 몇 px 인가 */
+  /** How many screen (CSS) px one logical stage px is */
   scale: number;
-  /** 무대 왼쪽 위 모서리의 화면(CSS) 좌표 */
+  /** Screen (CSS) coordinate of the stage top-left corner */
   offsetX: number;
   offsetY: number;
-  /** 무대가 화면에서 차지하는 CSS 크기 */
+  /** CSS size the stage takes on screen */
   width: number;
   height: number;
-  /** 캔버스 백버퍼 픽셀 크기(기기 픽셀비 반영) */
+  /** Canvas backbuffer pixel size (with the device pixel ratio) */
   pixelWidth: number;
   pixelHeight: number;
 }
@@ -45,7 +45,7 @@ export function stageToScreen(fit: StageFit, x: number, y: number): Point {
   return { x: x * fit.scale + fit.offsetX, y: y * fit.scale + fit.offsetY };
 }
 
-/** 무대 안(경계 포함)인가 */
+/** Inside the stage (edges included)? */
 export function insideStage(p: Point): boolean {
   return p.x >= 0 && p.x <= STAGE_W && p.y >= 0 && p.y <= STAGE_H;
 }

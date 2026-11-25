@@ -1,21 +1,21 @@
-/** §5.5 효과음 여덟 가지. 전부 WebAudio 합성(파일 0개). 이 파일은 다른 모듈을 가져오지 않는다(브라우저 렌더 시험이 단독으로 불러온다). */
+/** §5.5 The eight sound effects. All are synthesized with WebAudio (0 files). This file imports no other module (the browser render test loads it on its own). */
 export type SfxId = 'radio' | 'hit' | 'miss' | 'count' | 'phase' | 'end' | 'rank' | 'ui';
 
 export interface SfxOpts {
-  /** hit: 지금 연속 정답 수 — 1마다 반음 올림, 최대 +12 */
+  /** hit: current streak of correct answers — up one semitone per step, max +12 */
   streak?: number;
-  /** count: 시작 신호(990Hz 250ms) */
+  /** count: start signal (990Hz 250ms) */
   go?: boolean;
 }
 
-/** 표의 소리 길이(ms). count 는 삑 하나, 시작 신호는 250 */
+/** Sound lengths from the table (ms). count is one beep; the start signal is 250 */
 export const SFX_MS: Record<SfxId, number> = {
   radio: 160, hit: 80, miss: 180, count: 90, phase: 200, end: 600, rank: 330, ui: 25,
 };
 
 const PEAK = 0.3;
 
-/** 한 음: 시작 t, 길이 dur 초, 끝에서 0 으로 줄어든다(hold = 앞에서 그대로 두는 비율). */
+/** One note: start t, length dur seconds, fades to 0 at the end (hold = share of the length kept flat at the start). */
 function tone(ctx: BaseAudioContext, out: AudioNode, type: OscillatorType, f0: number, f1: number, t: number, dur: number, hold: number): void {
   const osc = ctx.createOscillator();
   const g = ctx.createGain();
@@ -33,12 +33,12 @@ function tone(ctx: BaseAudioContext, out: AudioNode, type: OscillatorType, f0: n
   osc.onended = () => { osc.disconnect(); g.disconnect(); };
 }
 
-/** 대역 통과 흰 소음 */
+/** Band-pass white noise */
 function noise(ctx: BaseAudioContext, out: AudioNode, hz: number, t: number, dur: number): void {
   const n = Math.max(1, Math.floor(ctx.sampleRate * dur));
   const buf = ctx.createBuffer(1, n, ctx.sampleRate);
   const d = buf.getChannelData(0);
-  let s = 12345; // 고정 씨앗 — 같은 소리가 나오게
+  let s = 12345; // fixed seed — so the same sound comes out every time
   for (let i = 0; i < n; i++) { s = (s * 1664525 + 1013904223) >>> 0; d[i] = (s / 0x80000000) - 1; }
   const src = ctx.createBufferSource();
   const bp = ctx.createBiquadFilter();
@@ -58,7 +58,7 @@ function noise(ctx: BaseAudioContext, out: AudioNode, hz: number, t: number, dur
   src.onended = () => { src.disconnect(); bp.disconnect(); g.disconnect(); };
 }
 
-/** 소리 하나를 시각 t(초)부터 예약한다. 끝나는 시각(초)을 돌려준다. */
+/** Schedules one sound from time t (seconds). Returns the end time (seconds). */
 export function scheduleSfx(ctx: BaseAudioContext, out: AudioNode, id: SfxId, t: number, opts: SfxOpts = {}): number {
   switch (id) {
     case 'radio':
@@ -96,14 +96,14 @@ export function scheduleSfx(ctx: BaseAudioContext, out: AudioNode, id: SfxId, t:
 }
 
 export interface Sfx {
-  /** 첫 클릭 같은 사용자 동작 안에서 부른다. 한 번만 만들고 멈춘 상태면 다시 깨운다. */
+  /** Call this inside a user action such as the first click. Creates the context once, and wakes it again if it is suspended. */
   unlock(): void;
   play(id: SfxId, opts?: SfxOpts): void;
   setMuted(m: boolean): void;
   isMuted(): boolean;
 }
 
-/** 소리 관리자. AudioContext 는 unlock() 때 처음 만든다(브라우저 규칙). 음소거면 아무것도 예약하지 않는다. */
+/** Sound manager. The AudioContext is created on the first unlock() (browser rule). When muted, nothing is scheduled. */
 export function createSfx(): Sfx {
   let ctx: AudioContext | null = null;
   let muted = false;
@@ -115,7 +115,7 @@ export function createSfx(): Sfx {
     },
     play(id, opts) {
       if (muted) return;
-      // 녹화 도구가 window.__sfxLog 를 달아 둘 때만 기록한다(없으면 아무 일 없음). 소리가 실제로 날 수 있는지와 상관없이 부른 시각을 남긴다.
+      // Only when a recording tool has attached window.__sfxLog do we log. If not, nothing happens. We record the call time even if sound cannot really play.
       (globalThis as { __sfxLog?: { push(e: { ms: number; id: SfxId; opts?: SfxOpts }): void } }).__sfxLog?.push({ ms: Date.now(), id, opts });
       if (!ctx || ctx.state !== 'running') return;
       scheduleSfx(ctx, ctx.destination, id, ctx.currentTime + 0.005, opts);

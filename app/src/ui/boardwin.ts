@@ -1,4 +1,4 @@
-/** 보조 창 순위 화면 S6 (docs/reference/board.md). 무대 좌표 1920×1080. */
+/** Helper-window rank screen S6 (docs/reference/board.md). Stage coordinates 1920×1080. */
 import type { ScoreEntry } from '../core/scores';
 
 const C = { bg: '#0b1220', panel: '#131c2e', text: '#e8eef8', accent: '#35d0ff', gold: '#ffc53d' } as const;
@@ -14,7 +14,7 @@ export const SLIDE_MS = 600;
 export interface BoardWinView {
   today: readonly ScoreEntry[];
   all: readonly ScoreEntry[];
-  /** 방금 들어온 새 기록 id 와 들어온 시각 */
+  /** ID of the newest record that just arrived, plus its arrival time */
   newId: string | null;
   newAt: number;
   now: number;
@@ -27,20 +27,20 @@ export function allRowY(n: number): number {
   return ALL.y + ALL.h * n;
 }
 
-/** 새 기록 줄의 번쩍임 세기: 들어온 순간 0.35 → 3초 뒤 0 */
+/** Flash strength of a new record row: 0.35 at the moment it arrives → 0 after 3 s */
 export function flashAlpha(elapsed: number): number {
   if (elapsed < 0 || elapsed >= FLASH_MS) return 0;
   return 0.35 * (1 - elapsed / FLASH_MS);
 }
 
-/** 새 줄이 옆에서 제자리로 들어오는 x 어긋남(px): 처음 160 → 600ms 뒤 0 */
+/** x offset (px) of a new row sliding into place from the side: 160 at first → 0 after 600 ms */
 export function slideOffset(elapsed: number): number {
   if (elapsed < 0 || elapsed >= SLIDE_MS) return 0;
   const k = 1 - elapsed / SLIDE_MS;
   return 160 * k * k;
 }
 
-/** 새로 읽은 목록에서 전에 없던 id 중 가장 높은 순위의 것 (처음 읽을 땐 null) */
+/** Among the ids not there before in a newly read list, the one with the highest rank (null on the first read) */
 export function findNewId(prev: ReadonlySet<string> | null, rows: readonly ScoreEntry[]): string | null {
   if (prev === null) return null;
   return rows.find((e) => !prev.has(e.id))?.id ?? null;

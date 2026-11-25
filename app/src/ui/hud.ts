@@ -1,4 +1,4 @@
-/** HUD (DESIGN §8.2, docs/reference/play.md). 오른쪽 패널을 무대 좌표에 그린다. */
+/** HUD (DESIGN §8.2, docs/reference/play.md). Draws the right panel in stage coordinates. */
 import { GAME_MS } from '../core/config';
 import { mult } from '../core/scoring';
 import { phaseAt, type GameState } from '../core/game';
@@ -24,14 +24,14 @@ const LINE_GAP = 1.1;
 
 type Ctx = CanvasRenderingContext2D;
 
-/** 콜 문장 줄바꿈: 쉼표 뒤에서 끊는다. */
+/** Call sentence line break: break after a comma. */
 export function callLines(text: string): string[] {
   const i = text.indexOf(', ');
   if (i < 0) return [text];
   return [text.slice(0, i + 1), text.slice(i + 2)];
 }
 
-/** 가장 긴 줄이 폭 안에 들어가는 글자 크기(96 → 최소 60). measure(px, 글자) = 폭. */
+/** Largest font size at which the longest line fits the width (96 → min 60). measure(px, text) = width. */
 export function fitPx(lines: readonly string[], measure: (px: number, s: string) => number, width = TEXT_W): number {
   for (let px = BIG_PX; px > MIN_PX; px--) {
     if (lines.every((l) => measure(px, l) <= width)) return px;
@@ -39,21 +39,21 @@ export function fitPx(lines: readonly string[], measure: (px: number, s: string)
   return MIN_PX;
 }
 
-/** 지난 콜 한 줄에 쓸 글 */
+/** Text for one past-call line */
 export interface PastCall {
   ok: boolean;
   name: string;
   rtMs: number;
 }
 
-/** 지금 상태에서 지난 콜 줄을 만든다(최신 위, 최대 3). 판정 기록이 없으면 비어 있다. */
+/** Builds the past-call lines from the current state (newest on top, max 3). Empty if there is no verdict record. */
 export function pastCalls(history: readonly PastCall[]): PastCall[] {
   return history.slice(-3).reverse();
 }
 
 export interface HudView {
   state: GameState;
-  /** 지금 시각(ms, state.t0 와 같은 시계) */
+  /** Current time (ms, the same clock as state.t0) */
   now: number;
   history: readonly PastCall[];
 }
@@ -94,7 +94,7 @@ function drawRadio(ctx: Ctx, x: number, y: number): void {
   }
 }
 
-/** 오른쪽 패널(시간·단계·콜 카드·점수·연속·지난 콜)을 그린다. */
+/** Draws the right panel (time, phase, call card, score, streak, past calls). */
 export function drawHud(ctx: Ctx, view: HudView): void {
   const { state: s, now } = view;
   ctx.save();
@@ -106,12 +106,12 @@ export function drawHud(ctx: Ctx, view: HudView): void {
   const elapsed = s.playStartMs === null ? 0 : Math.max(0, Math.min(GAME_MS, now - s.playStartMs));
   const left = Math.ceil((GAME_MS - elapsed) / 1000);
   const urgent = left <= 10;
-  // 시간 막대
+  // time bar
   ctx.fillStyle = C.panel;
   ctx.fillRect(1080, 60, 780, 16);
   ctx.fillStyle = urgent ? C.miss : C.accent;
   ctx.fillRect(1080, 60, 780 * (1 - elapsed / GAME_MS), 16);
-  // 남은 초·단계 이름
+  // seconds left and phase name
   ctx.textBaseline = 'top';
   ctx.textAlign = 'left';
   ctx.fillStyle = urgent ? C.miss : C.text;
@@ -122,7 +122,7 @@ export function drawHud(ctx: Ctx, view: HudView): void {
   font(ctx, 700, 32);
   ctx.fillText(PHASE_NAMES[phaseAt(elapsed) - 1] ?? '', 1860, 96);
 
-  // 콜 카드
+  // call card
   ctx.fillStyle = C.panel;
   ctx.fillRect(CARD.x, CARD.y, CARD.w, CARD.h);
   ctx.strokeStyle = C.accent;
@@ -153,7 +153,7 @@ export function drawHud(ctx: Ctx, view: HudView): void {
     ctx.fillText('TIME!', TEXT_X, 284);
   }
 
-  // 점수·연속
+  // score and streak
   ctx.fillStyle = C.text;
   ctx.globalAlpha = 0.7;
   font(ctx, 500, 28);
@@ -165,7 +165,7 @@ export function drawHud(ctx: Ctx, view: HudView): void {
   font(ctx, 700, 56);
   ctx.fillText(`STREAK ${s.streak} · x${mult(s.streak).toFixed(1)}`, 1080, 800);
 
-  // 지난 콜
+  // past calls
   font(ctx, 500, 24);
   pastCalls(view.history).forEach((p, i) => {
     const y = 920 + i * 34;

@@ -1,4 +1,4 @@
-/** 맵 그리기 (DESIGN §5.1, docs/reference/play.md). 무대 좌표(1920×1080)에 Canvas 2D 로 그린다. */
+/** Map drawing (DESIGN §5.1, docs/reference/play.md). Draws on stage coordinates (1920×1080) with Canvas 2D. */
 import { MAP_PX, MAP_UNITS } from '../core/config';
 import { ZONES, type Zone, type ZoneId } from '../core/zones';
 
@@ -8,15 +8,15 @@ const C = {
   bg: '#0b1220',
   line: '#24324d',
   zone: '#1b2a44',
-  /** 구역 테두리·안쪽 그림 선 (배경 bg 와 대비 4.6:1, 채움 zone 과 3.5:1) */
+  /** Zone outline and inner drawing lines (4.6:1 contrast with the background bg, 3.5:1 with the fill zone) */
   zoneLine: '#5f7fb0',
   text: '#e8eef8',
 } as const;
-/** 구역 테두리 색과 맵 바탕·구역 채움 색 (대비 테스트용) */
+/** Zone outline color, and map background and zone fill colors (for the contrast test) */
 export const MAP_COLORS = { bg: C.bg, zone: C.zone, zoneLine: C.zoneLine } as const;
 const INSET = 8;
 const LABEL_PX = 28;
-/** 28px 대문자 한 글자 폭 근사(시트: 약 17px, 경계 LOADING DOCK 이 두 줄이 되게 18) */
+/** Approximate width of one 28px capital letter (sheet: about 17px; 18 so the LOADING DOCK label breaks into two lines) */
 const CHAR_PX = 18;
 
 export interface Rect {
@@ -26,7 +26,7 @@ export interface Rect {
   h: number;
 }
 
-/** 맵 단위 → 무대 px 사각형 */
+/** Map units → stage px rectangle */
 export function zoneRect(z: Zone): Rect {
   return {
     x: MAP_ORIGIN + z.x * SCALE,
@@ -36,12 +36,12 @@ export function zoneRect(z: Zone): Rect {
   };
 }
 
-/** 무대 px → 맵 단위 (클릭 판정용). 맵 밖이어도 그대로 변환한다. */
+/** Stage px → map units (for click hit-testing). Converts as is even outside the map. */
 export function stageToMap(x: number, y: number): { x: number; y: number } {
   return { x: (x - MAP_ORIGIN) / SCALE, y: (y - MAP_ORIGIN) / SCALE };
 }
 
-/** 이름표 줄: 한 줄로 안 들어가면 단어 사이에서 두 줄. */
+/** Label lines: if it does not fit on one line, two lines, broken between words. */
 export function labelLines(name: string, widthPx: number): string[] {
   const up = name.toUpperCase();
   const words = up.split(' ');
@@ -140,11 +140,11 @@ function art(ctx: Ctx, id: ZoneId, r: Rect): void {
 }
 
 export interface MapOptions {
-  /** 이름표 투명도 0~1 */
+  /** Label opacity 0–1 */
   labelAlpha: number;
 }
 
-/** 맵 바탕·바닥 선·구역 12개(채움·테두리·그림)·이름표를 그린다. */
+/** Draws the map background, floor lines, the 12 zones (fill, outline, drawing) and labels. */
 export function drawMap(ctx: Ctx, opts: MapOptions): void {
   ctx.save();
   ctx.lineWidth = 2;
@@ -153,7 +153,7 @@ export function drawMap(ctx: Ctx, opts: MapOptions): void {
   ctx.fillRect(MAP_ORIGIN, MAP_ORIGIN, MAP_PX, MAP_PX);
   ctx.strokeRect(MAP_ORIGIN, MAP_ORIGIN, MAP_PX, MAP_PX);
 
-  // 빈 땅 점선 길: 구역 아래에 깔고, 구역 채움이 위를 덮는다.
+  // Dotted path on empty ground: laid under the zones, and the zone fills cover it.
   ctx.setLineDash([10, 12]);
   for (const u of [250, 500, 750]) {
     const p = MAP_ORIGIN + u * SCALE;

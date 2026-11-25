@@ -7,7 +7,7 @@ export interface UrlParams {
   bot: BotLevel | null;
   state: ScreenState | null;
   at: number | null;
-  /** 1 이면 봇이 결과 화면(이니셜 입력)을 건드리지 않는다 — 영상 녹화에서 사람 입력처럼 치려고 */
+  /** If 1, the bot does not touch the result screen (initials input) — so a video recording can type it like a person */
   hold: boolean;
 }
 
@@ -20,7 +20,7 @@ function num(v: string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-/** 주소 인자(?seed·timescale·bot·state·at)를 읽는다. 없거나 틀리면 기본값 — 인자가 없으면 아무 영향 없음. */
+/** Reads the URL params (?seed, timescale, bot, state, at). Missing or wrong means the default — with no params there is no effect. */
 export function parseParams(search: string): UrlParams {
   const q = new URLSearchParams(search);
   const ts = num(q.get('timescale'));

@@ -1,4 +1,4 @@
-/** 시드 난수 mulberry32. 같은 시드 = 같은 순서. 0 이상 1 미만 값을 돌려주는 함수를 만든다. */
+/** Seeded random number generator mulberry32. Same seed = same sequence. Makes a function that returns values from 0 up to but not including 1. */
 export type Rng = () => number;
 
 export function mulberry32(seed: number): Rng {

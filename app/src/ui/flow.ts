@@ -1,31 +1,31 @@
-/** 화면 흐름 상태 기계 (DESIGN §8.1): Attract → Countdown → Play → Result → Board → Attract. 시계는 밖에서 넣는다. */
+/** Screen flow state machine (DESIGN §8.1): Attract → Countdown → Play → Result → Board → Attract. The clock is passed in from outside. */
 import { ATTRACT_DEMO_S, PLAY_IDLE_QUIT_S, RESULT_BOARD_S, RESULT_IDLE_S } from '../core/config';
 import { backspace, canConfirm, finalName, typeLetter } from '../core/initials';
 import { decide, type BotProfile } from '../core/bot';
 import { initGame, step, type GameEvent, type GameState } from '../core/game';
 import type { Rng } from '../core/rng';
 
-/** 카운트다운은 play 화면 안의 game.status 로 나타난다 */
+/** The countdown appears as the game status inside the play screen */
 export type FlowScreen = 'attract' | 'play' | 'result' | 'board';
 
 export interface Flow {
   screen: FlowScreen;
-  /** 지금 판 (attract 에서는 이전 판 또는 빈 판) */
+  /** The current round (on attract: the previous round or an empty one) */
   game: GameState;
-  /** 지금 화면에 들어온 시각 */
+  /** Time we entered the current screen */
   since: number;
-  /** Result 를 지난 판 수 */
+  /** Number of rounds that passed through Result */
   results: number;
-  /** 결과 화면에서 지금까지 친 글자 (0~3) */
+  /** Letters typed so far on the result screen (0–3) */
   initials: string;
-  /** 결과 화면에서 마지막으로 입력한 시각 (20초 무입력 판정) */
+  /** Time of the last input on the result screen (for the 20-second idle check) */
   lastInput: number;
-  /** 눌림 150ms 표시용 */
+  /** For showing a 150 ms press */
   pressed: { key: string; at: number } | null;
-  /** 저장할 이름이 정해진 마지막 판 (index 가 점수 저장소에 넣는다). saves 가 늘면 새 것. */
+  /** The last round whose name to save is decided (index puts it into the score store). A new one when saves grows. */
   saved: { name: string; game: GameState } | null;
   saves: number;
-  /** 대기 화면 뒤에서 봇이 도는 시연 판인가 (소리·저장 없음, 아무 클릭이면 새 판) */
+  /** Whether this is a demo round with the bot playing behind the attract screen (no sound, no saving, any click starts a new round) */
   demo: boolean;
 }
 
@@ -33,17 +33,17 @@ export function initFlow(seed: number, now = 0): Flow {
   return { screen: 'attract', game: initGame(seed), since: now, results: 0, initials: '', lastInput: now, pressed: null, saved: null, saves: 0, demo: false };
 }
 
-/** 판 시작: 상태를 새로 만든다 (지난 판 값이 남지 않게). 아무 때나 불러도 새 판. */
+/** Round start: builds the state fresh (so no value from the last round stays). A new round whenever it is called. */
 export function startGame(f: Flow, seed: number, now: number): Flow {
   return { ...f, screen: 'play', game: step(initGame(seed), { type: 'TICK', now }), since: now, initials: '', lastInput: now, demo: false };
 }
 
-/** 시연 시작: 같은 게임 규칙, 결과·저장 없이 끝나면 대기로 돌아간다 */
+/** Demo start: the same game rules, no result or saving, and it returns to attract when it ends */
 export function startDemo(f: Flow, seed: number, now: number): Flow {
   return { ...startGame(f, seed, now), demo: true };
 }
 
-/** 결과 화면을 바로 보여 준다 (?state=result 검사용). 끝난 판을 넣는다. */
+/** Shows the result screen right away (for the ?state=result check). Pass a finished round. */
 export function showResult(f: Flow, game: GameState, now: number): Flow {
   return { ...f, screen: 'result', game, since: now, results: f.results + 1, initials: '', lastInput: now, pressed: null };
 }
@@ -53,7 +53,7 @@ function toResultIfDone(f: Flow, now: number): Flow {
   return f.game.status === 'done' ? showResult(f, f.game, now) : f;
 }
 
-/** 판을 버리고 대기 화면으로 (점수 저장·결과 없음). 사람이 떠났거나 탭이 숨겨졌을 때. */
+/** Drops the round and goes to the attract screen (no score saving, no result). For when the person left or the tab was hidden. */
 export function abandonPlay(f: Flow, now: number): Flow {
   if (f.screen !== 'play') return f;
   return { ...f, screen: 'attract', game: initGame(0), since: now, initials: '', lastInput: now, pressed: null, demo: false };
@@ -70,12 +70,12 @@ export function flowTick(f: Flow, now: number): Flow {
   return f;
 }
 
-/** 결과를 떠난다: 이름을 정해 saved 에 남기고 순위 화면(board)으로. 못 채웠으면 `---`. */
+/** Leaves the result: decides the name, leaves it in saved, and goes to the rank screen (board). `---` if not filled in. */
 function leaveResult(f: Flow, now: number): Flow {
   return { ...f, screen: 'board', since: now, saved: { name: finalName(f.initials), game: f.game }, saves: f.saves + 1, pressed: null };
 }
 
-/** 결과 화면의 글자판·키보드 입력. key: 'A'~'Z' · 'BACK' · 'OK'. 0.6초 안의 누름은 무시(앞 판 연타 방지). */
+/** Letter pad and keyboard input on the result screen. key: 'A'–'Z' · 'BACK' · 'OK'. Presses within 0.6 s are ignored (to stop button-mashing from the last round). */
 export function flowKey(f: Flow, key: string, now: number): Flow {
   if (f.screen !== 'result' || now - f.since < 600) return f;
   if (key === 'OK') return canConfirm(f.initials) ? leaveResult(f, now) : f;
@@ -83,16 +83,16 @@ export function flowKey(f: Flow, key: string, now: number): Flow {
   return { ...f, initials, lastInput: now, pressed: { key, at: now } };
 }
 
-/** 화면 누름. attract 는 새 판, play 는 게임으로. result 는 flowKey 로 따로 들어온다. */
+/** A screen press. attract starts a new round, play goes to the game. result comes in separately through flowKey. */
 export function flowClick(f: Flow, x: number, y: number, now: number, seed: number): Flow {
   if (f.screen === 'attract') return startGame(f, seed, now);
-  if (f.screen === 'play' && f.demo) return startGame(f, seed, now); // 시연 중 사람 클릭 = 즉시 새 판
+  if (f.screen === 'play' && f.demo) return startGame(f, seed, now); // a person's click during the demo = a new round right away
   if (f.screen === 'play') return gameClick(f, x, y, now);
-  if (f.screen === 'board') return now - f.since < 600 ? f : startGame(f, seed, now); // 순위 화면 아무 데나 누르면 새 판 (OK 두 번 눌림 방지 0.6초)
-  return f; // result 는 글자판(flowKey)만 받는다
+  if (f.screen === 'board') return now - f.since < 600 ? f : startGame(f, seed, now); // pressing anywhere on the rank screen starts a new round (0.6 s guard against a double OK press)
+  return f; // result accepts only the letter pad (flowKey)
 }
 
-/** 판 안의 클릭 (사람·봇 공통). 시연 중 봇도 이 길로 들어간다. */
+/** A click inside a round (person and bot alike). The bot during the demo goes through this path too. */
 function gameClick(f: Flow, x: number, y: number, now: number): Flow {
   const e: GameEvent = { type: 'CLICK', x, y, now };
   return toResultIfDone({ ...f, game: step(f.game, e), lastInput: now }, now);
@@ -105,7 +105,7 @@ export interface BotPlan {
   y: number;
 }
 
-/** 봇이 한 프레임에 하는 일: attract 면 시작, play 면 계획대로 클릭. 사람 입력과 같은 길(flowClick)로 들어간다. */
+/** What the bot does in one frame: on attract it starts, on play it clicks as planned. It goes through the same path as a person (flowClick). */
 export function botFrame(
   profile: BotProfile,
   f: Flow,
@@ -116,7 +116,7 @@ export function botFrame(
 ): { flow: Flow; plan: BotPlan | null } {
   if (f.screen === 'attract') return { flow: flowClick(f, 0, 0, now, seed), plan: null };
   if (f.screen === 'result') {
-    // 봇은 이름을 3글자 치고 OK (사람 입력과 같은 길)
+    // The bot types 3 letters and presses OK (the same path as a person)
     const t = now - f.since;
     if (t < 700) return { flow: f, plan: null };
     return { flow: flowKey(f, f.initials.length < 3 ? 'BOT'[f.initials.length] ?? 'B' : 'OK', now), plan: null };

@@ -1,12 +1,12 @@
-/** 운영자 메뉴 (DESIGN §4.7): Ctrl+Shift+O 로 열고 Esc·Close 로 닫는다. HTML 겹침 — 한 번 만들어 두고 보이기만 바꾼다(노드·리스너 수가 판마다 늘지 않게). */
+/** Operator menu (DESIGN §4.7): opens with Ctrl+Shift+O, closes with Esc or Close. An HTML overlay — made once and only shown or hidden (so node and listener counts do not grow per round). */
 import { scoresToCsv } from '../core/csv';
 import type { ScoreStore } from '../core/scores';
 
 export interface OperatorDeps {
   store: ScoreStore;
-  /** 켠 뒤 끝난 판 수 */
+  /** Rounds finished since it was turned on */
   games: () => number;
-  /** 오류 횟수 (M2-09 가 올린다) */
+  /** Error count (raised by M2-09) */
   errors: () => number;
   isMuted: () => boolean;
   setMuted: (m: boolean) => void;
@@ -14,12 +14,12 @@ export interface OperatorDeps {
 }
 
 export interface Operator {
-  /** 매 프레임 실제 시계(ms)로 부른다 — 최근 1분 평균 프레임 시간 */
+  /** Call every frame with the real clock (ms) — average frame time over the last minute */
   sampleFrame(realNowMs: number): void;
   isOpen(): boolean;
 }
 
-/** 최근 1분 평균 프레임 시간(ms). 표본이 없으면 0 */
+/** Average frame time (ms) over the last minute. 0 if there are no samples */
 export function avgFrameMs(samples: readonly { at: number; dt: number }[], nowMs: number, windowMs = 60_000): number {
   const recent = samples.filter((s) => nowMs - s.at <= windowMs);
   return recent.length === 0 ? 0 : recent.reduce((a, s) => a + s.dt, 0) / recent.length;

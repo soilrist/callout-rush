@@ -30,7 +30,7 @@ let newId: string | null = null;
 let newAt = 0;
 let reads = 0;
 
-/** 저장소를 다시 읽고 새로 들어온 줄을 기억한다 */
+/** Re-reads the storage and remembers the rows that just arrived */
 function reload(): void {
   store.load();
   const t = Date.now();
@@ -55,7 +55,7 @@ try {
     if (isScoresUpdated(ev.data)) reload();
   };
 } catch {
-  /* storage 이벤트·5초 읽기가 대신한다 */
+  /* the storage event and the 5-second read take over */
 }
 window.addEventListener('storage', (ev) => {
   if (ev.key === null || ev.key === SCORES_KEY) reload();

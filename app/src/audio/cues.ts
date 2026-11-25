@@ -4,14 +4,14 @@ import type { SfxId, SfxOpts } from './sfx';
 
 export interface Cue { id: SfxId; opts?: SfxOpts }
 
-/** 카운트다운에서 남은 정수 초(3·2·1). 시작 전엔 0 */
+/** Whole seconds left in the countdown (3, 2, 1). 0 before the countdown starts. */
 function secLeft(g: GameState, t: number): number {
   if (g.status !== 'countdown') return 0;
   if (g.t0 === null) return 3;
   return Math.max(0, Math.ceil((g.t0 + COUNTDOWN_MS - t) / 1000));
 }
 
-/** 같은 판의 앞뒤 상태를 비교해 지금 나야 할 소리를 돌려준다(§5.5). 다른 판이면 아무것도 없다. */
+/** Compares the before and after states of the same round and returns the sounds that should play now (§5.5). For a different round, nothing. */
 export function cuesFor(prev: GameState, next: GameState, tPrev: number, t: number): Cue[] {
   if ((prev.t0 !== null && prev.t0 !== next.t0)) return [];
   const out: Cue[] = [];

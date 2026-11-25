@@ -1,4 +1,4 @@
-/** Freight Yard 맵의 구역 12개 (DESIGN §5.1). 좌표는 맵 단위 1000×1000, 왼쪽 위가 0,0. */
+/** The 12 zones of the Freight Yard map (DESIGN §5.1). Coordinates are in map units 1000×1000, top left is 0,0. */
 
 export type ZoneId =
   | 'Z01' | 'Z02' | 'Z03' | 'Z04' | 'Z05' | 'Z06'
@@ -6,7 +6,7 @@ export type ZoneId =
 
 export interface Zone {
   id: ZoneId;
-  /** 콜 문장에 쓰는 이름 */
+  /** Name used in the call sentence */
   name: string;
   x: number;
   y: number;
@@ -29,7 +29,7 @@ export const ZONES: readonly Zone[] = [
   { id: 'Z12', name: 'South Stairs', x: 420, y: 800, w: 160, h: 140 },
 ];
 
-/** 맵 좌표 (x, y) 가 들어 있는 구역. 빈 땅·맵 밖이면 null. 경계는 왼쪽·위 포함, 오른쪽·아래 제외. */
+/** The zone that contains map point (x, y). null for empty ground or outside the map. The left and top edges are included, the right and bottom are excluded. */
 export function zoneAt(x: number, y: number): Zone | null {
   for (const z of ZONES) {
     if (x >= z.x && x < z.x + z.w && y >= z.y && y < z.y + z.h) return z;

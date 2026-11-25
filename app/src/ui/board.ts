@@ -1,4 +1,4 @@
-/** 게임 창 순위 화면 S5 (docs/reference/board.md). 무대 좌표 1920×1080. */
+/** Game-window rank screen S5 (docs/reference/board.md). Stage coordinates 1920×1080. */
 import type { ScoreEntry } from '../core/scores';
 
 const C = { bg: '#0b1220', panel: '#131c2e', zone: '#1b2a44', text: '#e8eef8', accent: '#35d0ff', gold: '#ffc53d' } as const;
@@ -9,23 +9,23 @@ export const ROW = { x: 360, y: 130, w: 1200, h: 72 } as const;
 export const YOU_Y = 862;
 
 export interface BoardInput {
-  /** 오늘 TOP 10 (순위순) */
+  /** Today's TOP 10 (in rank order) */
   rows: readonly ScoreEntry[];
-  /** 방금 낸 내 기록 id (없으면 null) */
+  /** ID of my newest record (null if none) */
   myId: string | null;
-  /** 내 오늘 순위(1부터, 없으면 0) */
+  /** My rank today (from 1, 0 if none) */
   myRank: number;
-  /** 내 기록 (10등 밖일 때 맨 아래 줄용) */
+  /** My record (for the bottom row when outside the top 10) */
   mine: ScoreEntry | null;
   now: number;
 }
 
-/** 줄 y 좌표 (n 은 0부터) */
+/** y coordinate of a row (n starts at 0) */
 export function rowY(n: number): number {
   return ROW.y + ROW.h * n;
 }
 
-/** 내 줄이 10등 밖이라 맨 아래에 따로 그려야 하나 */
+/** Whether my row is outside the top 10 and must be drawn separately at the bottom */
 export function needsYouRow(rows: readonly ScoreEntry[], myId: string | null, myRank: number): boolean {
   return myId !== null && myRank > rows.length && !rows.some((e) => e.id === myId);
 }

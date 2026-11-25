@@ -48,7 +48,7 @@ document.body.dataset['state'] = params.state ?? 'attract';
     if (!ctx) return;
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
-    // 캡처용: 클릭 없이 `at`(ms) 까지 시계만 돌린다. 판 시작 시각 0 → 플레이는 COUNTDOWN_MS 부터.
+    // For capture: no click, just run the clock up to `at` (ms). Round start time 0 → play begins at COUNTDOWN_MS.
     if (params.state === 'play' && params.at !== null) {
       drawAt(ctx, params.at, params.seed ?? 1);
       return;
@@ -76,13 +76,13 @@ function drawAt(ctx: CanvasRenderingContext2D, at: number, seed: number): void {
   if (cd && state.status === 'countdown') drawCountdown(ctx, cd);
 }
 
-/** 진짜 흐름: 대기 → 클릭 → 카운트다운 → 플레이 → 결과 → 대기. requestAnimationFrame 한 줄기가 시계를 돌린다. */
+/** The real flow: attract → click → countdown → play → result → attract. One requestAnimationFrame loop drives the clock. */
 function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, seed: number, timescale: number): void {
   const clock = (): number => performance.now() * timescale;
   const t0 = clock();
   const now = (): number => clock() - t0;
   let flow: Flow = initFlow(seed, 0);
-  /** 판마다 다른 시드: 시작 시드 + 지금까지 끝난 판 수 */
+  /** A different seed per round: start seed + rounds finished so far */
   const nextSeed = (): number => seed + flow.results;
   let history: PastCall[] = [];
   let people = 0;
@@ -90,12 +90,12 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
   const botRng = mulberry32(seed ^ 0x51ed);
   const demoBot = profileByName('regular');
   let plan: BotPlan | null = null;
-  /** 결과를 지나 대기로 돌아온 횟수 (검사용) */
+  /** Times we returned from result to attract (for checks) */
   let attracts = 0;
   if (params.state === 'play') flow = startGame(flow, nextSeed(), now());
   if (params.state === 'result') flow = showResult(flow, simulate(profileByName(params.bot ?? 'regular'), seed), now());
 
-  /** 판정이 바뀌면 지난 콜 기록·인원을 갱신하고, 새 판이면 비운다 */
+  /** When the verdict changes, update the past-call record and people count; if it is a new round, clear them */
   const track = (prevGame: GameState, next: Flow): void => {
     if (next.game.t0 !== prevGame.t0 && next.game.score === 0 && next.game.finished === 0) history = [];
     const last = next.game.last;
@@ -111,18 +111,18 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     const t = now();
     if (next.screen === 'play' && prev.screen !== 'play') { history = []; if (!next.demo) sfx.play('count'); }
     else track(prev.game, next);
-    // 효과음: 대기 화면 시연(demo)은 소리 없음(§3.4)
+    // Sound effects: the attract-screen demo has no sound (§3.4)
     if (prev.screen === 'play' && (next.screen === 'play' || next.screen === 'result') && !prev.demo) for (const c of cuesFor(prev.game, next.game, lastT, t)) sfx.play(c.id, c.opts);
     lastT = t;
     flow = next;
   };
 
-  // 탭이 숨겨지면(사람이 다른 탭으로 감) 판을 버리고 대기로
+  // When the tab is hidden (the person went to another tab), drop the round and go to attract
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) update(abandonPlay(flow, now()), flow);
   });
   window.addEventListener('pointerdown', () => sfx.unlock());
-  /** 결과 화면 순위: 판마다 한 번 계산하고 등급이 뜰 때 소리 한 번 */
+  /** Rank on the result screen: computed once per round, and one sound when the grade appears */
   let rankFor = -1;
   let rank = 0;
   let rankSounded = -1;
@@ -146,9 +146,9 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     setMuted: (m) => sfx.setMuted(m),
     onCleared: () => { mine = null; notifyScoresUpdated(); },
   });
-  /** 방금 저장한 내 기록 (순위 화면 강조용) */
+  /** The record just saved (to highlight on the rank screen) */
   let mine: ScoreEntry | null = null;
-  /** 결과를 떠나며 정해진 이름과 판 기록을 점수 저장소에 넣는다 */
+  /** On leaving the result, puts the decided name and the round record into the score store */
   const saveIfNew = (): void => {
     if (flow.saves === savedCount || !flow.saved) return;
     savedCount = flow.saves;
@@ -181,7 +181,7 @@ function startLive(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, see
     saveIfNew();
     publish();
   });
-  // 검사용 표시: 시험이 화면·점수·연속·정답 구역·끝난 판 수를 읽는다 (화면에는 안 보임).
+  // Check markers: the tests read the screen, score, streak, correct zone and finished rounds (not visible on screen).
   const publish = (): void => {
     const d = document.body.dataset;
     const g = flow.game;

@@ -1,4 +1,4 @@
-/** 안 죽는다 (M2-09): 처리 안 된 오류가 나면 횟수를 저장소에 올리고 잠시 뒤 새로 고침(= 대기 화면). 화면 꺼짐 방지는 되는 기기에서만. */
+/** Never dies (M2-09): on an unhandled error, adds to a count in storage and reloads shortly after (= attract screen). Keeping the screen awake works only on devices that support it. */
 export const HEALTH_KEY = 'calloutrush.v1.health';
 export const RELOAD_DELAY_MS = 3000;
 
@@ -10,7 +10,7 @@ export interface GuardDeps {
 
 export interface Guard {
   errors: () => number;
-  /** 오류 하나를 센다. 새로 고침 예약은 한 번만. */
+  /** Counts one error. The reload is scheduled only once. */
   report: () => void;
 }
 
@@ -31,7 +31,7 @@ export function createGuard(deps: GuardDeps): Guard {
       try {
         deps.storage.setItem(HEALTH_KEY, JSON.stringify({ errors: readErrors(deps.storage) + 1 }));
       } catch {
-        /* 저장이 막혀도 새로 고침은 한다 */
+        /* even if saving is blocked, reload anyway */
       }
       if (pending) return;
       pending = true;
@@ -40,7 +40,7 @@ export function createGuard(deps: GuardDeps): Guard {
   };
 }
 
-/** 브라우저에 연결: window 오류·약속 거부 → 횟수 +1 후 3초 뒤 새로 고침. */
+/** Hooks into the browser: window error or promise rejection → count +1, reload after 3 s. */
 export function installGuard(): Guard {
   const guard = createGuard({
     storage: window.localStorage,
@@ -52,7 +52,7 @@ export function installGuard(): Guard {
   return guard;
 }
 
-/** 화면 꺼짐 방지. 지원 안 하면 조용히 넘어간다. 탭이 다시 보이면 다시 잡는다. */
+/** Keeps the screen awake. If unsupported, passes quietly. Takes it again when the tab is visible again. */
 export function keepAwake(): void {
   const nav = navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<unknown> } };
   if (!nav.wakeLock) return;

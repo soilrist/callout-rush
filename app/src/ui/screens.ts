@@ -1,4 +1,4 @@
-/** Attract · Result · 카운트다운 숫자 그림 (docs/reference/attract.md · result.md · play.md). 무대 좌표 1920×1080. */
+/** Attract · Result · countdown number drawing (docs/reference/attract.md · result.md · play.md). Stage coordinates 1920×1080. */
 import { COUNTDOWN_MS } from '../core/config';
 import { accuracy, avgReaction, grade } from '../core/scoring';
 import type { GameState } from '../core/game';
@@ -9,7 +9,7 @@ const C = { miss: '#ff8a3d', bg: '#0b1220', panel: '#131c2e', line: '#24324d', t
 const FONT = '"Chakra Petch", system-ui, sans-serif';
 type Ctx = CanvasRenderingContext2D;
 
-/** 카운트다운 남은 ms → 맵 가운데에 보일 글자. 끝난 뒤 0.5초는 GO. 그 밖엔 null. */
+/** Countdown ms left → the text shown in the middle of the map. GO for 0.5 s after it ends. null otherwise. */
 export function countdownText(msSinceT0: number): string | null {
   if (msSinceT0 < 0) return null;
   if (msSinceT0 < COUNTDOWN_MS) return String(Math.ceil((COUNTDOWN_MS - msSinceT0) / 1000));
@@ -26,14 +26,14 @@ function text(ctx: Ctx, s: string, x: number, y: number, px: number, color: stri
   ctx.globalAlpha = 1;
 }
 
-/** 맵 가운데 큰 숫자 (3·2·1·GO). 맵 중심 = (540, 540). */
+/** Big number in the middle of the map (3, 2, 1, GO). Map center = (540, 540). */
 export function drawCountdown(ctx: Ctx, s: string): void {
   ctx.save();
   text(ctx, s, 540, 540, 320, C.accent, 'center');
   ctx.restore();
 }
 
-/** 대기 화면 오른쪽 아래 오늘 TOP 3 (docs/reference/attract.md) */
+/** Today's TOP 3 at the lower right of the attract screen (docs/reference/attract.md) */
 export function drawTop3(ctx: Ctx, rows: readonly { name: string; score: number }[]): void {
   ctx.fillStyle = C.panel;
   ctx.fillRect(1380, 780, 480, 240);
@@ -54,7 +54,7 @@ export function drawTop3(ctx: Ctx, rows: readonly { name: string; score: number 
   });
 }
 
-/** 시연 겹침: 뒤 판 위에 어두운 막 + 반투명 DEMO 표시 */
+/** Demo overlay: a dark veil over the round behind, and a semi-transparent DEMO mark */
 export function drawDemoOverlay(ctx: Ctx): void {
   ctx.save();
   ctx.globalAlpha = 0.72;
@@ -97,26 +97,26 @@ function statRow(ctx: Ctx, label: string, value: string, y: number): void {
   ctx.fillRect(984, y + 108, 852, 2);
 }
 
-/** 결과 화면 순위 글자. 1등이면 `NEW #1 TODAY`, 아니면 `#n TODAY`. 3등 안이면 금색. */
+/** Rank text on the result screen. `NEW #1 TODAY` for 1st, otherwise `#n TODAY`. Gold if in the top 3. */
 export function rankLabel(rank: number): { text: string; gold: boolean } {
   return { text: rank === 1 ? 'NEW #1 TODAY' : `#${rank} TODAY`, gold: rank <= 3 };
 }
 
-/** 점수 카운트업이 끝나 등급·순위가 뜨는 시각(ms) */
+/** Time (ms) when the score count-up ends and the grade and rank appear */
 export const COUNTUP_MS = 800;
 
 export interface ResultInput {
-  /** 오늘 순위(1부터). 0 이면 안 그린다 */
+  /** Today's rank (from 1). If 0, not drawn */
   rank: number;
   initials: string;
   pressed: { key: string; at: number } | null;
-  /** 지금 시각(ms, 눌림 150ms 판정용) */
+  /** Current time (ms, for the 150 ms press check) */
   now: number;
-  /** 무입력 제한까지 남은 비율 0~1 */
+  /** Share of the idle limit still left, 0–1 */
   idleLeft: number;
 }
 
-/** 이니셜 칸 3개 + 글자판 + OK + 남은 시간 막대 */
+/** 3 initials cells + letter pad + OK + time-left bar */
 function drawInitials(ctx: Ctx, r: ResultInput): void {
   text(ctx, 'ENTER YOUR INITIALS', 60, 622, 36, C.accent);
   const cur = Math.min(r.initials.length, INITIALS_LEN - 1);
@@ -156,7 +156,7 @@ function drawInitials(ctx: Ctx, r: ResultInput): void {
   ctx.fillRect(60, 990, 1800 * left, 16);
 }
 
-/** 결과: 왼쪽 점수·등급, 오른쪽 통계 3줄, 아래 이니셜 입력. 점수는 0.8초 동안 올라간다. */
+/** Result: score and grade on the left, 3 stat lines on the right, initials input below. The score counts up over 0.8 s. */
 export function drawResult(ctx: Ctx, g: GameState, sinceMs: number, input: ResultInput): void {
   ctx.save();
   ctx.fillStyle = C.bg;

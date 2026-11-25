@@ -4,55 +4,55 @@ import { mulberry32, type Rng } from './rng';
 import { baseOf, points } from './scoring';
 import { zoneAt, type ZoneId } from './zones';
 
-/** 이벤트는 둘뿐 (§4.2). 시계(now, ms)는 밖에서 넣는다. */
+/** Only two events (§4.2). The clock (now, ms) is passed in from outside. */
 export type GameEvent =
   | { type: 'TICK'; now: number }
   | { type: 'CLICK'; x: number; y: number; now: number };
 
-/** 방금 끝난 판정 (화면 연출용). 다음 판정이 나오면 바뀐다. */
+/** The verdict that just ended (for screen effects). Replaced when the next verdict comes. */
 export interface Judgement {
   kind: 'hit' | 'wrong' | 'slow';
-  /** hit 일 때 이번 클릭이 얻은 점수 */
+  /** Score this click earned when hit */
   points: number;
-  /** hit 일 때 반응 시간(ms) */
+  /** Reaction time (ms) when hit */
   rtMs: number;
-  /** 정답 구역 (wrong·slow 일 때 0.6초 보여 준다) */
+  /** Correct zone (shown for 0.6 s on wrong or slow) */
   revealZones: ZoneId[];
   revealUntil: number;
-  /** wrong 일 때 누른 맵 좌표 (X 표시 자리) */
+  /** Map coordinate clicked when wrong (where the X is drawn) */
   x: number;
   y: number;
-  /** hit 일 때 맞힌 구역 */
+  /** Zone that was hit when hit */
   zone: ZoneId | null;
 }
 
-/** 지금 떠 있는 콜 */
+/** The call that is up now */
 export interface ActiveCall {
   call: Call;
-  /** 이미 맞힌 구역 수 (두 곳 콜: 0 또는 1) */
+  /** Zones already hit (two-zone call: 0 or 1) */
   step: 0 | 1;
-  /** 지금 목표가 화면에 뜬(또는 앞 목표를 맞힌) 시각 — 반응 시간의 기준 */
+  /** Time the current target appeared on screen (or the previous target was hit) — the base of reaction time */
   stepStartMs: number;
-  /** 이 콜 하나의 제한 시간 T */
+  /** Time limit T of this one call */
   limitMs: number;
 }
 
 export interface GameState {
   status: 'countdown' | 'play' | 'done';
-  /** 첫 이벤트 시각 (카운트다운 시작). 아직 없으면 null */
+  /** Time of the first event (countdown start). null if none yet */
   t0: number | null;
-  /** 플레이 시작 시각 (카운트다운 끝). 아직 없으면 null */
+  /** Time play started (countdown end). null if none yet */
   playStartMs: number | null;
   score: number;
   streak: number;
   bestStreak: number;
-  /** 맞힌 목표 수 / 끝난 목표 수 (두 곳 콜은 목표 2개) */
+  /** Targets hit / targets finished (a two-zone call has 2 targets) */
   hit: number;
   finished: number;
-  /** 맞힌 클릭의 반응 시간들 */
+  /** Reaction times of the hit clicks */
   rts: number[];
   active: ActiveCall | null;
-  /** 이 시각 전까지 클릭 무시, 이후 TICK 에 다음 콜 */
+  /** Clicks are ignored before this time; the next call comes on a later TICK */
   gapUntilMs: number;
   recent: ZoneId[];
   last: Judgement | null;
@@ -78,7 +78,7 @@ export function initGame(seed: number): GameState {
   };
 }
 
-/** 플레이 시작 후 경과 ms 로 단계 번호 1~3 */
+/** Phase number 1–3 from ms elapsed since play started */
 export function phaseAt(elapsedMs: number): 1 | 2 | 3 {
   const idx = PHASES.findIndex((p) => elapsedMs >= p.fromMs && elapsedMs < p.toMs);
   return (idx < 0 ? PHASES.length : idx + 1) as 1 | 2 | 3;
@@ -97,7 +97,7 @@ function spawn(s: GameState, now: number, elapsed: number): GameState {
   };
 }
 
-/** 남은 목표를 전부 실패로 끝낸다 (연속 0, 정답 구역 공개) */
+/** Ends every remaining target as a miss (streak 0, correct zone revealed) */
 function fail(
   s: GameState,
   a: ActiveCall,
@@ -141,7 +141,7 @@ function onTick(s: GameState, now: number, allowSpawn = true): GameState {
   if (elapsed >= GAME_MS) return { ...cur, status: 'done', active: null };
   const a = cur.active;
   if (a) {
-    // 제한 시간이 지났으면 시간 초과. 지난 시각 기준으로 간격을 센다.
+    // If the time limit has passed, it is a timeout. The gap is counted from the time that passed.
     const deadline = a.stepStartMs + a.limitMs;
     if (now >= deadline) return fail(cur, a, 'slow', deadline, 0, 0);
     return cur;
@@ -151,12 +151,12 @@ function onTick(s: GameState, now: number, allowSpawn = true): GameState {
 }
 
 function onClick(s: GameState, e: Extract<GameEvent, { type: 'CLICK' }>): GameState {
-  // 먼저 시계를 맞춘다: 시간 초과·60초 끝·카운트다운 끝이 클릭보다 앞선다. 새 콜은 TICK 만 띄운다
-  // (콜이 안 뜬 프레임의 클릭이 방금 뜬 콜의 오답이 되지 않게).
+  // Set the clock first: timeout, the 60-second end and the countdown end come before the click. A new call is shown only by TICK
+  // (so a click in a frame where no call was up cannot become a wrong answer for the call that just appeared).
   const cur = onTick(s, e.now, false);
   if (cur.status !== 'play') return cur;
   const a = cur.active;
-  if (!a) return cur; // 판정 직후 간격 동안은 무시 (§4.2)
+  if (!a) return cur; // ignored during the gap right after a verdict (§4.2)
   const target = a.call.zones[a.step];
   if (target === undefined) throw new Error('목표가 없다');
   const zone = zoneAt(e.x, e.y);
@@ -189,7 +189,7 @@ function onClick(s: GameState, e: Extract<GameEvent, { type: 'CLICK' }>): GameSt
   return { ...next, active: { ...a, step: 1, stepStartMs: e.now } };
 }
 
-/** 리듀서. 같은 시드·같은 이벤트 순서면 결과가 같다. */
+/** Reducer. The same seed and the same event order give the same result. */
 export function step(state: GameState, event: GameEvent): GameState {
   return event.type === 'TICK' ? onTick(state, event.now) : onClick(state, event);
 }
