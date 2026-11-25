@@ -74,7 +74,7 @@
 - [x] M2-12 1000판 내구 실행 + 보고서 — 실행해 `docs/soak-report.md`(영어: 기기·브라우저 버전·명령·표·합격선 대비 결과·작은 SVG 그래프 1개). — 합격: DESIGN §6.4 내구 4줄 전부 통과(힙 증가 %, DOM ±0, p95 ms, 오류 0 — 잰 값을 STATUS 와 §6.4 근거 칸에). README 「Soak result」 줄도 잰 숫자 3개로 채운다. 하나라도 넘으면 `[!]` 로 두지 말고 원인을 고치는 조각 `M2-12a` 를 만들고 다시 돌린다.
 - [x] M2-13 실제 속도 60분 — `npm run soak -- --minutes 60 --timescale 1`(약 40판, 백그라운드로 돌리고 다음 조각을 먼저 해도 됨). 보고서에 절 하나 추가. — 합격: 60분 동안 오류 0, 프레임 p95 ≤ 20ms, 처음 5분과 마지막 5분의 힙 차이를 적는다.
 - [x] M2-14 WebStorm 검사로 고치기 한 바퀴 — `npm run inspect` 의 경고 목록 전체를 읽고 고칠 것은 고치고, 일부러 남기는 것은 프로필에서 끄고 이유를 한 줄. — 합격: 경고 수 앞·뒤를 `docs/jetbrains-usage.md` 에(예 `23 → 2`), CHECK 통과. 검사를 못 돌리는 상태면 `[!]`.
-- [ ] M2-15 Junie 에게 리뷰 맡기기 — `junie … "Review app/src/ui for leaks: timers, listeners, audio nodes, canvas state that survive a game reset. Report file:line and fix what is safe."` 결과를 검토해 반영, 꼬리말 `Tool: Junie`. — 합격: usage 문서에 한 줄(찾은 것 n · 고친 것 n) + M2-07 의 `__health()` 테스트가 그대로 통과. 못 쓰면 `[!]`.
+- [!] (JUNIE_API_KEY 대기 — 사람: https://junie.jetbrains.com/tokens) M2-15 Junie 에게 리뷰 맡기기 — `junie … "Review app/src/ui for leaks: timers, listeners, audio nodes, canvas state that survive a game reset. Report file:line and fix what is safe."` 결과를 검토해 반영, 꼬리말 `Tool: Junie`. — 합격: usage 문서에 한 줄(찾은 것 n · 고친 것 n) + M2-07 의 `__health()` 테스트가 그대로 통과. 못 쓰면 `[!]`.
 - [x] (감독 2026-11-23: 공개·배포 끝, `https://soilrist.github.io/callout-rush/` 와 `board.html` 둘 다 200 확인 — 남은 일은 주소를 README·STATUS 에 적고 합격 명령 인용) M2-16 공개 주소 — `.github/workflows/pages.yml`(Node 24, `npm ci && npm run build`, `app/dist` 를 Pages 로). 원격 저장소가 있으면 푸시하고 주소를 README·STATUS 에. — 합격: `curl -sI <주소>` 200, `<주소>board.html` 200. 원격이 없으면 워크플로 파일만 커밋하고 `[!]`(사람 할 일 5번).
 - [x] M2-17 zip — `scripts/zip.mjs`: `dist` + `serve.mjs`(Node 내장 `http` 만 쓰는 정적 서버, 포트 4173) + `start.command`·`start.bat` + `README.txt`(영어 5줄: Node 필요, 더블클릭, 주소, 보조 창 여는 법) → `제출본/callout-rush-web.zip`. — 합격: 임시 폴더에 풀어 `node serve.mjs` 로 띄우고 Playwright 로 한 판이 끝까지 됨, zip ≤ 1MB.
 - [x] M2-18 다듬기 1 — 눈 — 모든 화면 캡처 7장을 나란히 열어 보고 글자 크기·여백·색이 시트와 다른 곳, 글자가 잘리는 곳을 고친다. 1280×720·2560×1080 창에서도 한 장씩. — 합격: 다른 곳 목록(앞)과 고친 뒤 0곳(뒤)을 STATUS 에.
@@ -109,3 +109,14 @@
 - 순위표 QR(내 결과 그림 저장).
 - 색각 이상 팔레트(초록·주황 대신 모양으로 구분은 이미 함: 번쩍 vs X).
 - 터치 키오스크 전용 큰 글자판.
+
+## M4 — 감독 검수 보강 (합격: 영상 초안에 소리와 진짜 순위 저장 장면이 있고, 이름표가 꺼져도 구역이 또렷하고, 문서의 낡은 줄이 0) · ~12-20
+- [ ] M4-01 구역 윤곽 또렷하게 — `app/src/ui/map.ts` 의 구역 테두리 색을 배경 `#0b1220` 과 명도 대비 3:1 이상으로 올린다(지금 채움 약 1.3:1 — 이름표가 꺼지는 LIVE·CLUTCH 에서 밝은 부스 조명이면 거의 안 보임). 채움·글자 색은 그대로, 테두리와 안쪽 그림 선만. — 합격: 대비를 계산하는 테스트 1개(색 상수 → 비율 ≥ 3) + CHECK + LIVE 단계 캡처를 열어 구역 12개가 다 보임 + `docs/reference/play.md` 색 줄 갱신
+- [ ] M4-02 효과음 시각 기록 — 녹화 때 어떤 효과음이 몇 초에 났는지 남긴다: `sfx.ts` 의 재생 함수 한 곳에 `window.__sfxLog`(있을 때만 push, 없으면 아무 일 없음) 를 달고 `videorec.mjs` 가 켜서 `captures/tmp/video/sfx.json`(`{t, id, opts}`, t = 녹화 시작 기준 초) 을 쓴다. — 합격: CHECK + 한 판 로그에 `radio`·`hit`·`count`·`phase`·`end` 가 다 있고 콜 수와 `radio` 수가 맞음
+- [ ] M4-03 효과음 소리줄 만들기 — `sfx.json` 을 `OfflineAudioContext` 로 한 번에 그려 `captures/tmp/video/sfx.wav`(48kHz). `sfxrender.mjs` 방식과 `scheduleSfx` 를 그대로 쓴다(새 라이브러리 금지). — 합격: 최대 음량 -1 dBFS 이하·무음 아님을 `ffmpeg -af volumedetect` 출력으로 인용
+- [ ] M4-04 순위 장면 진짜로 녹화 — `videorec.mjs` 에서 결과 화면 뒤 이니셜 3글자(`ACE`)를 실제 키보드로 넣고 `OK` → 게임 창 순위와 `board.html` 창 둘 다에 새 줄이 뜨는 것까지 녹화(봇 때문에 화면이 넘어가면 결과부터 사람 입력으로). 넣은 시각·줄이 뜬 시각을 `log.json` 에. 지금 초안은 이 장면이 그림 2장이고 그 그림에 방금 낸 점수 줄이 없어서 자막 「your row appears」 와 안 맞음. — 합격: 두 창의 DOM/캔버스 데이터에 `ACE` 줄이 있는지 스크립트가 확인하고 실패면 exit 1 + 두 창 캡처를 열어 봄
+- [ ] M4-05 영상 초안 다시 조립 — `videobuild.mjs`: 장면 3 을 M4-04 녹화(왼쪽 게임 창 · 오른쪽 보조 창 나란히)로, 장면 4 는 그 뒤 실제 대기 화면으로, M4-03 소리를 장면 1~4 에 얹고(문서 카드 장면은 무음), 순위표에 심은 이름 옆 또는 자막에 `sample scores` 라고 밝힌다. 전체 165초 이하, 자막 파일 두 개와 `video-script.md` 시각표도 같이 고친다. — 합격: `ffprobe` 로 영상·소리 두 줄과 길이 인용 + 12프레임 시트를 열어 자막과 화면이 맞는지 장면마다 한 줄
+- [ ] M4-06 낡은 문장 걷어내기 — `docs/jetbrains-usage.md` 의 `Remote check: this repository has no remote yet …` 을 공개 저장소·Pages 사실로 바꾸고, `README.md`·`AI_SHOWCASE.md`·`제출본/*.md` 에서 같은 부류(아직 없음·자리표시·`TODO`·옛 테스트 수)를 `grep` 으로 훑어 고친다. Junie 커밋 수는 실제 값(0)을 그대로 둔다. — 합격: grep 출력 0 인용 + 숫자마다 원본 파일 줄 확인
+- [ ] M4-07 1분 안에 이해되나 — 처음 온 사람 눈으로 공개 주소와 같은 빌드를 1366×768 과 1920×1080 두 크기에서 켜서 대기 화면 → 한 판 → 이니셜 → 순위까지 **마우스만으로** 해 보고(Playwright 실제 클릭), 헷갈린 곳을 고친다. — 합격: 두 크기 캡처 각 4장을 열어 봄 + 잘림·겹침 0 + 고친 것 또는 "고칠 것 없음" 근거
+- [ ] M4-98 심사위원 통 점검 — 심사 기준 5칸(DESIGN §1 표)마다 "어느 파일·몇 초 장면이 증거인가" 를 표로 `docs/judge-map.md`(영어)에 쓰고, 증거가 약한 칸 하나를 골라 고친다. zip 을 다시 만들고 CHANGELOG 한 줄. — 합격: CHECK + ZIPCHECK + 표의 링크가 전부 있는 파일
+- [!] 감독: M4 검수 — 영상을 소리와 함께 보고, 통과면 push·릴리스 v1.0.1 올리고 사람 5분 보기 칸으로 넘긴다
