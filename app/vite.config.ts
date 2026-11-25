@@ -11,7 +11,7 @@ function listFiles(dir: string, root: string): string[] {
   });
 }
 
-/** 빌드가 끝나면 dist/sw.js 의 자리표시를 "저장할 파일 목록 + 버전" 으로 바꾼다 (버전 = 목록과 파일 이름의 해시 → 내용이 바뀌면 새 버전). */
+/** After the build, replaces the placeholders in dist/sw.js with the file list to cache plus a version (version = hash of the list and file names, so changed content gives a new version). */
 function precache(): Plugin {
   let outDir = 'dist';
   return {
