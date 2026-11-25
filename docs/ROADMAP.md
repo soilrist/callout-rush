@@ -129,4 +129,5 @@
 - [x] M4-105 (#0089, 길이 126.3초·시트 한국어 0) 영상 diff 카드 영어로 — 장면 6 diff 카드(약 1:48~1:54)에 한국어 주석 2줄이 보인다. 증거 파일(`docs/video-evidence/`)은 **그대로 두고**, `videobuild.mjs` 가 그릴 때만: 끝의 문맥 줄(`점수 한 건 추가…`)은 빼고, `// 깨진 JSON …` 줄은 영어로 옮겨 그리고 카드 아래에 작게 `Korean comment shown in English; raw diff in docs/video-evidence/` 라고 밝힌다. Before 카드 제목은 `Before: scores.ts as of commit 4cae2a4` 로 정확히. 길이·소리·자막 시각은 그대로. `video-script.md` 장면 줄과 `submit-checklist.md` 5번 줄·C 절 1번(주석 영어화 끝)도 사실대로 고치고 zip 을 다시 만든다. — 합격: `ffprobe` 길이가 126.3±0.2초·소리줄 있음 + 1:30~2:06 을 2초 간격으로 뽑은 시트를 열어 한국어 0 확인 + CHECK + ZIPCHECK
 - [x] M4-106 (#0090, 시험 138·CHECK·ZIPCHECK 통과, 남은 한국어 balance.test.ts:30 뿐) `app/src/core` 의 한국어 `throw new Error(...)` 글 7줄(bot.ts 29·53, calls.ts 16·26, game.ts 90·161, scoring.ts 19)을 쉬운 영어로 — 글만, 로직 0줄. 그 글을 기대하는 시험이 있으면 같이. `npm run check`·`npm run zip`(제출본 zip 새로 묶어 커밋)·`npm run zipcheck` 통과. 확인: 파이썬 `[가-힣]` 검색으로 `app/src` 에 `balance.test.ts:30` 만 남음
 - [x] M4-107 `app/public/sw.js` 의 한국어 주석 2줄과 `app/vite.config.ts` 1줄을 쉬운 영어로 — 주석만, 코드 0줄. `npm run check`·`npm run zip`(제출본 zip 새로 묶어 커밋)·`npm run zipcheck`·`npm run offline` 통과. 확인: 파이썬 `[가-힣]` 검색으로 zip 안 파일에 한국어 0줄
-- [!] 감독: M4 검수 — 영상을 소리와 함께 보고, 통과면 push·릴리스 v1.0.1 올리고 사람 5분 보기 칸으로 넘긴다
+- [x] 감독: M4 검수 — 통과 (2026-11-25, HEAD 1d84eac). 소리는 귀가 아니라 크기 측정으로만 봄
+- [!] 사람: push·릴리스 v1.0.1 공개 승인 — 승인 나면 감독이 올린다

@@ -3,6 +3,9 @@
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) · 버전: [SemVer](https://semver.org/lang/ko/) · 규칙: `docs/conventions/Versioning.md`
 
 ## [Unreleased]
+
+## [1.0.1] - 2026-11-25
+- 코드 주석·시험 이름·스크립트 출력·내부 오류 글·영상 diff 카드를 영어로, 배포 zip 을 다시 묶음 (M4-102~M4-107)
 - 영상 뒤 55초를 실제 inspect 전후 증거 카드 3장으로 바꾸고 첫 장면 5초·장면 바뀜 소리 추가, 길이 126.3초. 자막·영상 스크립트·심사표·점검표를 새 시각에 맞춤 (M4-100·M4-101)
 - 심사 기준 5칸마다 증거 파일·영상 장면을 적은 `docs/judge-map.md` 추가, 약한 칸(아이디어)에 devpost 「Why it is different」 문단 추가, zip 다시 만듦 (M4-98)
 - 처음 온 사람처럼 마우스만으로 대기 화면부터 순위까지 두 창 크기(1366×768·1920×1080)에서 해 보는 `npm run firstrun` 추가, 고칠 것 없음 확인 (M4-07)
@@ -10,6 +13,8 @@
 - 영상 녹화에서 결과 화면의 이니셜 `ACE` 를 실제 키보드로 치고 게임 창·보조 창 둘 다 새 줄을 확인 (`?hold=1` 인자, M4-04)
 - 녹화 때 기록한 효과음 시각표로 영상용 소리줄 `sfx.wav` 를 만드는 `npm run sfxtrack` 추가 (M4-03)
 - 맵 구역 테두리·그림 선을 더 밝게(배경과 대비 4.6:1) 해서 LIVE 단계에서도 12구역이 보이게 함 (M4-01)
+
+## [1.0.0] - 2026-11-23
 - GitHub 릴리스 v1.0.0 에 `callout-rush-web.zip` 첨부 (M3-10)
 - 1000판 연속 내구 실행 결과 보고서(`docs/soak-report.md`) 추가: 힙 +0.21MB, DOM 노드 변화 0, 오류 0
 - 제출용 그림 7장(`제출본/shots/`)과 다시 찍는 명령 `npm run submitshots` 추가

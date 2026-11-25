@@ -13,13 +13,13 @@ The work was cut into small slices (`M0-07`, `M2-14`, ...) listed in `docs/ROADM
 3. ran the checks and quoted the real command output into STATUS,
 4. made one commit with `Slice:` and `Loop:` trailers, and left a clean working tree.
 
-A commit hook rejects badly formed commits, and a separate check compares the quoted output with the tool log. That made "it passed" mean "the command printed this". At the time of writing the repository has 88 commits (`git log --oneline | wc -l`).
+A commit hook rejects badly formed commits, and a separate check compares the quoted output with the tool log. That made "it passed" mean "the command printed this". When 1.0.1 was reviewed the repository had 149 commits (`git rev-list --count HEAD` at `1d84eac`).
 
 ## WebStorm inspection as a gate
 
 `npm run check` ends with a headless WebStorm inspection (`app/scripts/inspect.mjs`, commit `9ce8781`). It needs no window or login and takes about 12 seconds. It is the last gate after `tsc`, ESLint, Vitest, the build and the browser tests.
 
-**Case 1: a real finding, fixed (`64ed7fd`).** The first inspection run reported 49 warnings. One was real: the doc comment of `nextCall` in `app/src/core/calls.ts` lacked its `@param rng` line. Before and after:
+**Case 1: a real finding, fixed (`64ed7fd`).** The first inspection run reported 49 warnings. One was real: the doc comment of `nextCall` in `app/src/core/calls.ts` lacked its `@param rng` line. The comments were Korean at that commit (the added line says "random function returning 0 or more and less than 1, can be seeded"); they are English now. Before and after:
 
 ```ts
  * 다음 콜을 만든다 (§4.3).
