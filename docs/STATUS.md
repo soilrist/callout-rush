@@ -5,9 +5,9 @@
 > **"지금 상태" 는 일지가 아니라 현황판** — 15줄 이내, 덧붙이지 말고 바뀐 줄만 고쳐 쓴다 (25줄을 넘으면 루프 커밋이 거절된다). 한 일은 아래 바퀴 기록에. 감독이 직접 한 일도 `## #감독 · 날짜 · 요지` 덩어리로 아래에.
 
 ## 지금 상태 (루프가 매 바퀴 고쳐 씀, 감독이 바로잡을 수 있음)
-- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17·M2-18·M2-19·M2-20·M2-98 끝 · M2-12 끝(#0054) · M2-13 끝(#0064) · M2-16 끝(#0068, 공개 주소 200) · M3-01~M3-10·M3-98 끝(릴리스 v1.0.0 #0071)(M3-04 영상 초안 #0058, 소리 없음) · M4 감독 검수 보강 진행(M4-01 끝 #0074 · M4-02 끝 #0075 · M4-03 끝 #0076 · M4-04 끝 #0077 · M4-05 끝 #0078 · M4-06 끝 #0079 · M4-07 끝 #0080 · M4-98 끝 #0081 · M4-99 끝 #0083 · M4-100 끝 #0084 · M4-101 끝 #0085 · M4-103 끝 #0086 · M4-104 끝 #0087 · M4-104b 끝 #0088)
+- 마일스톤: M0 뼈대 끝(사람 5분 보기만 남음) · M1 한 판 완성 진행 중 — M1-98 끝(M1-13 건너뜀) · M2 진행 중 — M2-01~M2-11·M2-14·M2-17·M2-18·M2-19·M2-20·M2-98 끝 · M2-12 끝(#0054) · M2-13 끝(#0064) · M2-16 끝(#0068, 공개 주소 200) · M3-01~M3-10·M3-98 끝(릴리스 v1.0.0 #0071)(M3-04 영상 초안 #0058, 소리 없음) · M4 감독 검수 보강 진행(M4-01 끝 #0074 · M4-02 끝 #0075 · M4-03 끝 #0076 · M4-04 끝 #0077 · M4-05 끝 #0078 · M4-06 끝 #0079 · M4-07 끝 #0080 · M4-98 끝 #0081 · M4-99 끝 #0083 · M4-100 끝 #0084 · M4-101 끝 #0085 · M4-103 끝 #0086 · M4-104 끝 #0087 · M4-104b 끝 #0088 · M4-105 끝 #0089)
 - 브랜치: develop
-- 다음 조각: M4-105, 그다음 감독 M4 검수(push·v1.0.1). M2-15·M1-13 은 JUNIE_API_KEY 대기(사람 몫, 건너뜀)
+- 다음 조각: 감독 M4 검수(push·v1.0.1). M2-15·M1-13 은 JUNIE_API_KEY 대기(사람 몫, 건너뜀)
 - 막힌 것: Junie 실제 실행은 JUNIE_API_KEY 대기(사람 할 일 3번, 다른 조각은 계속). (WebStorm 헤드리스는 사람 로그인 없이 돌았음 — 사람 할 일 1번은 사실상 불필요)
 - 사람만 할 수 있는 것(`[!] 사람:`): 없음
 - 사람 답 기다리는 것: 🔴 〔n〕개 / 🟡 가정 〔n〕개 / 안 채운 숫자 〔check_conventions R12 수〕개 (0 이어야 정상)
@@ -15,6 +15,15 @@
 - 감독이 눈으로 봐야 할 것(일꾼이 `못 함 — 감독` 으로 넘긴 칸): 없음
 
 ---
+
+## #0089 · 2026-11-25 · M4-105 영상 diff 카드 영어로
+- 계획: M4-105 · ROADMAP M4 첫 `[ ]` (INBOX 루프 몫 없음) · `app/scripts/videobuild.mjs`(diff 카드), `제출본/video-script.md`, `제출본/submit-checklist.md`. 증거 파일은 그대로.
+- 한 것: 카드에서 `점수 한 건…` 문맥 줄 제외, `깨진 JSON…` 주석은 `// Broken JSON or not an array: same recovery path` 로 그림, 카드 아래 `Korean comment shown in English; raw diff in docs/video-evidence/` 작은 글, Before 카드 제목 `Before: scores.ts as of commit 4cae2a4`. 한국어가 남으면 빌드가 멈추는 검사 한 줄. `npm run videobuild` → `VIDEOBUILD exit 0, expected length 126.3s`. zip 은 바이트만 달라져 되돌림(`git checkout`).
+- 커밋: (아래 커밋)
+- 검사: 1층 통과 — `Tests  138 passed (138)`, `INSPECT ok: 0 errors, 0 warnings` / 2층 통과 — `ZIPCHECK ok: unpacked zip 68612 bytes and served with serve.mjs, bot 1 games to the end, board.html 200, parent-path request 403, console errors 0` · `ffprobe` 길이 `126.300000`, 스트림 video·audio / 3층 통과 — 90~126초 2초 간격 시트 `captures/tmp/m4105/sheet.png` 와 diff 카드 `captures/tmp/m4105/diff.png` 를 열어 봄: 한국어 0, 카드 아래 안내 글 보임, 자막 시각 그대로
+- 점검한 규칙: Verification, GitCommit, Autonomy
+- 가정한 것(🟡): 없음. 물은 것(🔴): 없음. INBOX 처리: 해당 없음
+- 다음: 감독 M4 검수
 
 ## #0088 · 2026-11-25 · M4-104b scripts 글 영어로
 - 계획: M4-104b · ROADMAP M4 첫 `[ ]` (INBOX 루프 몫 없음) · `app/scripts` 27개 파일(balance.ts 포함)의 주석·출력 글을 영어로. `INSPECT ok`·`E2E ok` 같은 열쇠 글자는 그대로.

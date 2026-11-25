@@ -26,6 +26,10 @@ const s6len = dur.e1 + dur.e2 + dur.e3;
 const s3 = T.s2, s5 = s3 + dur.b, s6 = s5 + dur.s5, s7 = s6 + s6len, end = s7 + dur.s7;
 const ev = (f) => readFileSync(resolve(root, 'docs/video-evidence', f), 'utf8').trimEnd();
 
+// The card shows the saved diff with its two Korean comment lines handled: the trailing context line is dropped, the added comment is drawn in English (the evidence file itself is untouched)
+const diffEn = ev('scores-4cae2a4..727b0c9.diff').split('\n').filter((l) => !l.includes('점수 한 건')).map((l) => (l.includes('깨진 JSON') ? l.replace(/\/\/.*$/, '// Broken JSON or not an array: same recovery path') : l)).join('\n');
+if (/[가-힣]/.test(diffEn)) throw new Error('Korean left in diff card');
+
 const caps = [
   [0.4, 4.6, 'At an esports booth the line is long, the Wi-Fi is bad, and the machine runs all day.'],
   [5.5, 9, 'Read the call. Click the spot.'],
@@ -50,8 +54,8 @@ const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const cards = {
   'card-title': `<div class="c" style="text-align:center;padding-top:300px"><h1 style="font-size:130px">CALLOUT RUSH</h1><p class="m" style="font-size:54px">At an esports booth: long line, bad Wi-Fi, all-day machine.</p></div>`,
   'card-soak': `<div class="c" style="padding-top:60px"><h1>1000 rounds in one page, no reload</h1><p class="m">docs/soak-report.md · Apple M2 Max · Playwright Chromium · timescale 10</p><div style="display:flex;gap:50px;align-items:flex-start"><table style="font-size:32px"><tr><th>Check</th><th>Measured</th></tr><tr><td>JS heap, round 50 to 1000</td><td>1.93 to 2.14 MB = +0.21 MB</td></tr><tr><td>DOM nodes between rounds</td><td>16 at all 20 samples</td></tr><tr><td>Errors</td><td>0</td></tr><tr><td>Game work per frame (p95)</td><td>1.5 ms</td></tr></table><img src="data:image/svg+xml;base64,${readFileSync(resolve(root, 'docs/soak-heap.svg')).toString('base64')}" width="760" style="margin-top:10px"></div><p class="m" style="font-size:28px">docs/soak-heap.svg — heap after forced GC, orange line = pass limit</p></div>`,
-  'card-ev1': `<div class="c" style="padding-top:90px"><h1>Before: commit 4cae2a4</h1><p class="m">$ cd app && npm run inspect (WebStorm headless inspection, real output saved in docs/video-evidence/)</p><pre>${esc(ev('inspect-before-4cae2a4.txt'))}</pre></div>`,
-  'card-ev2': `<div class="d"><pre>${esc(ev('scores-4cae2a4..727b0c9.diff'))}</pre></div>`,
+  'card-ev1': `<div class="c" style="padding-top:90px"><h1>Before: scores.ts as of commit 4cae2a4</h1><p class="m">$ cd app && npm run inspect (WebStorm headless inspection, real output saved in docs/video-evidence/)</p><pre>${esc(ev('inspect-before-4cae2a4.txt'))}</pre></div>`,
+  'card-ev2': `<div class="d"><pre>${esc(diffEn)}</pre><p class="m" style="font-size:22px;margin:4px 20px">Korean comment shown in English; raw diff in docs/video-evidence/</p></div>`,
   'card-ev3': `<div class="c" style="padding-top:90px"><h1>After: commit 727b0c9</h1><p class="m">$ cd app && npm run inspect</p><pre>${esc(ev('inspect-after-727b0c9.txt'))}</pre><p class="m" style="margin-top:40px">Junie CLI 0 commits · JetBrains Air 0 commits (docs/jetbrains-usage.md)</p></div>`,
   'card-end': `<div class="c" style="text-align:center;padding-top:260px"><h1 style="font-size:110px">CALLOUT RUSH</h1><p class="m" style="font-size:44px">soilrist.github.io/callout-rush · github.com/soilrist/callout-rush</p><p class="m" style="font-size:44px">MIT License · Built for the Cloud9 x JetBrains hackathon</p></div>`,
 };

@@ -33,7 +33,7 @@
 | 2 | 루트에 오픈소스 LICENSE | `head -1 LICENSE` | ✔ `MIT License` |
 | 3 | About 에 라이선스 표시 | GitHub 저장소 오른쪽 About 에 `MIT license` 가 보임 | ✔ GitHub API `spdx_id: MIT` |
 | 4 | `.idea`/`.junie`/`.air` 커밋 | `git ls-files .idea .junie .air` | ✔ `.idea/` 9개 + `.junie/AGENTS.md`. `.air/` 는 Air 가 폴더를 만들지 않아 없음(M0-09 기록) |
-| 5 | 영어 제출물 | `git grep -c -P '[가-힣]' -- README.md AI_SHOWCASE.md` 가 `제출본/` 경로 글자 말고는 0 | 부분 ✔ — README 는 경로 `제출본/…` 만, AI_SHOWCASE 는 경로와 소스 인용 2줄. **소스 주석·테스트 이름에 한국어가 남아 있음**(`app/src/audio/sfx.ts` 등 파일 4곳 이상) → 🟡 아래 C 절 1번 |
+| 5 | 영어 제출물 | `git grep -c -P '[가-힣]' -- README.md AI_SHOWCASE.md` 가 `제출본/` 경로 글자 말고는 0 | 부분 ✔ — README 는 경로 `제출본/…` 만, AI_SHOWCASE 는 경로와 소스 인용 2줄. 소스 주석·테스트 이름·스크립트 글은 영어로 옮김(M4-103~105, `app/src`·`app/scripts` 에 남은 한국어는 `제출본` 경로뿐). 영상 diff 카드의 한국어 주석 2줄은 카드에서만 뺌·영어로 그리고 카드에 밝힘 |
 | 6 | 영상 3분 미만 | `ffprobe -v error -show_entries format=duration -of csv=p=0 <영상>` < 180 | 초안 있음 — `ffprobe` 126.3초(#0084). 최종 영상은 사람이 올림 |
 | 7 | 영상에 만든 기기의 실제 화면 | 영상 장면 표의 모든 화면이 브라우저 녹화 | 초안은 브라우저 녹화(#0078). 최종은 사람이 확인 |
 | 8 | 저작권 음악 없음 | `git ls-files \| grep -iE '\.(mp3\|wav\|ogg)$' \| wc -l` | ✔ `0` (소리는 Web Audio 로 코드 합성) |
@@ -43,5 +43,5 @@
 | 12 | 한 판 시작→플레이→점수 화면 + 반복 사용 증명 | `cd app && npm run check` 마지막 줄 + `docs/soak-report.md` | ✔ `docs/soak-report.md` 있음(M2-12) |
 
 ## C. 사람이 정해 줄 것 (🟡 가정)
-1. 소스 주석·테스트 이름의 한국어: 규정 「영어 아니면 번역 필수」는 설명·영상 기준이라 소스 주석은 허용으로 본다. 불안하면 "주석 영어화" 조각을 루프에게 시킨다(INBOX 지시).
+1. 소스 주석·테스트 이름의 한국어: 영어화 끝(M4-103~105). 증거 파일 `docs/video-evidence/scores-4cae2a4..727b0c9.diff` 는 당시 커밋의 실제 diff 라 한국어 주석 2줄이 원문 그대로 남는다(영상 카드는 영어로 그림).
 2. 쓴 도구 체크: Junie·Air 는 실제 실행 0회라 체크하지 않는 쪽으로 적었다(꾸며 쓰지 않는다 — ROADMAP 공통 규칙).
