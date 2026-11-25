@@ -20,7 +20,7 @@
 | Downloadable build | `제출본/callout-rush-web.zip` (약 66KB) | 파일 있음. 릴리스에 올릴지는 사람이 정함 |
 | Screenshots / image gallery | `제출본/shots/0-cover.png`(표지) → `1-attract.png` → `2-play-stage1.png` → `3-play-stage3.png` → `4-result.png` → `5-board.png` → `6-operator.png` | 파일 있음. 7장 |
 | Bonus: Best AI-Powered Workflow Story URL | 저장소의 `AI_SHOWCASE.md` 직접 주소: `<저장소 주소>/blob/develop/AI_SHOWCASE.md` | 파일 있음(M3-07). 저장소 공개 뒤 주소 확인 |
-| JetBrains tools used (체크) | 사실대로: WebStorm(헤드리스 검사 13회). Junie·Air 는 `docs/jetbrains-usage.md` 합계가 0이면 체크하지 않는다 | 합계표 확인 후 |
+| JetBrains tools used (체크) | 사실대로: WebStorm(`npm run check` 안의 헤드리스 검사 — 횟수는 세지 않고 「경고 50건 중 진짜 2건 수정」으로 적음). Junie·Air 는 `docs/jetbrains-usage.md` 합계가 0이면 체크하지 않는다 | 합계표 확인 후 |
 | Team | 1명(개인) | |
 
 ## B. 규정 점검 12줄 (제출 직전에 명령을 다시 돌려 결과를 갱신)
@@ -33,7 +33,7 @@
 | 2 | 루트에 오픈소스 LICENSE | `head -1 LICENSE` | ✔ `MIT License` |
 | 3 | About 에 라이선스 표시 | GitHub 저장소 오른쪽 About 에 `MIT license` 가 보임 | ✔ GitHub API `spdx_id: MIT` |
 | 4 | `.idea`/`.junie`/`.air` 커밋 | `git ls-files .idea .junie .air` | ✔ `.idea/` 9개 + `.junie/AGENTS.md`. `.air/` 는 Air 가 폴더를 만들지 않아 없음(M0-09 기록) |
-| 5 | 영어 제출물 | `git grep -c -P '[가-힣]' -- README.md AI_SHOWCASE.md` 가 `제출본/` 경로 글자 말고는 0 | 부분 ✔ — README 는 경로 `제출본/…` 만, AI_SHOWCASE 는 경로와 소스 인용 2줄. **소스 주석·테스트 이름에 한국어가 남아 있음**(`app/src/audio/sfx.ts` 등 파일 4곳 이상) → 🟡 아래 C-1 |
+| 5 | 영어 제출물 | `git grep -c -P '[가-힣]' -- README.md AI_SHOWCASE.md` 가 `제출본/` 경로 글자 말고는 0 | 부분 ✔ — README 는 경로 `제출본/…` 만, AI_SHOWCASE 는 경로와 소스 인용 2줄. **소스 주석·테스트 이름에 한국어가 남아 있음**(`app/src/audio/sfx.ts` 등 파일 4곳 이상) → 🟡 아래 C 절 1번 |
 | 6 | 영상 3분 미만 | `ffprobe -v error -show_entries format=duration -of csv=p=0 <영상>` < 180 | 초안 있음 — `ffprobe` 126.3초(#0084). 최종 영상은 사람이 올림 |
 | 7 | 영상에 만든 기기의 실제 화면 | 영상 장면 표의 모든 화면이 브라우저 녹화 | 초안은 브라우저 녹화(#0078). 최종은 사람이 확인 |
 | 8 | 저작권 음악 없음 | `git ls-files \| grep -iE '\.(mp3\|wav\|ogg)$' \| wc -l` | ✔ `0` (소리는 Web Audio 로 코드 합성) |

@@ -4,7 +4,7 @@ Rules source: official hackathon rules section 6 (checked 2026-11-21). Stage 1 i
 
 | # | Criterion | Evidence (file) | Video scene | Strength |
 |---|---|---|---|---|
-| 0 | Stage 1: fits the topic + uses JetBrains tools reasonably | `docs/jetbrains-usage.md` (counts and commands), `.idea/`, `.junie/AGENTS.md`, `app/scripts/inspect.mjs` | 1:30-1:58 | Medium. WebStorm ran 13 times as a gate; Junie and Air made 0 commits (stated openly) |
+| 0 | Stage 1: fits the topic + uses JetBrains tools reasonably | `docs/jetbrains-usage.md` (counts and commands), `.idea/`, `.junie/AGENTS.md`, `app/scripts/inspect.mjs` | 1:30-1:58 | Medium. WebStorm headless inspection is part of the `npm run check` gate (50 warnings read: 2 real and fixed, 48 false positives); Junie and Air made 0 commits (stated openly) |
 | 1 | Technological Implementation | `app/src/core/game.ts` (pure rules) + 24 test files, `docs/soak-report.md`, `docs/soak-heap.svg`, `app/scripts/zipcheck.mjs` | 1:30-1:44 and 1:44-1:58 | Strong for working code, medium for JetBrains depth |
 | 2 | Design (finished product experience) | `제출본/shots/1-attract.png`, `2-play-stage1.png`, `4-result.png`, `제출본/shots/5-board.png`, `app/scripts/firstrun.mjs` (mouse-only run at two window sizes), `docs/reference/play.md` (palette) | 0:05-1:30 | Strong: one unbroken loop from attract screen to leaderboard to next round |
 | 3 | Potential Impact | `제출본/devpost.md` (Inspiration: three booth problems), `docs/soak-report.md`, `제출본/shots/6-operator.png`, `제출본/shots/5-board.png` | 0:00-0:05, 1:08-1:44 | Strong: each problem answered with a number (95 s per person, offline board, 1000 rounds) |
