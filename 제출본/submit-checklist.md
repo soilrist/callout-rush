@@ -14,7 +14,7 @@
 | Built with | TypeScript, Vite, Canvas, Web Audio, Vitest, Playwright, WebStorm, Junie, JetBrains Air | 실제로 쓴 것만: Junie·Air 는 usage 문서에서 실행 0회 → 쓴 도구 체크는 usage 문서의 합계표대로(M3-05 에서 정함) |
 | About / 설명 | `제출본/devpost.md` 전체 | 파일 있음(M3-05) |
 | Methodology | `제출본/methodology.md` | 파일 있음(M3-06). 칸이 따로 없으면 설명 끝에 붙임 |
-| Demo video URL | YouTube 공개 주소 | 사람 — 초안 `제출본/demo-draft.mp4`(150초)를 사람이 YouTube 에 올려 주소를 붙임 |
+| Demo video URL | YouTube 공개 주소 | 사람 — 초안 `제출본/demo-draft.mp4`(126.3초)를 사람이 YouTube 에 올려 주소를 붙임 |
 | Public code repository | GitHub 공개 저장소 주소 | `https://github.com/soilrist/callout-rush` (공개) |
 | Working build / demo link | GitHub Pages 주소 (`<주소>/` 와 `<주소>/board.html`) | `https://soilrist.github.io/callout-rush/` 와 `board.html` 둘 다 200. 심사 끝(한국 2027-02-04 08:00)까지 무료·로그인 없이 |
 | Downloadable build | `제출본/callout-rush-web.zip` (약 66KB) | 파일 있음. 릴리스에 올릴지는 사람이 정함 |
@@ -34,7 +34,7 @@
 | 3 | About 에 라이선스 표시 | GitHub 저장소 오른쪽 About 에 `MIT license` 가 보임 | ✔ GitHub API `spdx_id: MIT` |
 | 4 | `.idea`/`.junie`/`.air` 커밋 | `git ls-files .idea .junie .air` | ✔ `.idea/` 9개 + `.junie/AGENTS.md`. `.air/` 는 Air 가 폴더를 만들지 않아 없음(M0-09 기록) |
 | 5 | 영어 제출물 | `git grep -c -P '[가-힣]' -- README.md AI_SHOWCASE.md` 가 `제출본/` 경로 글자 말고는 0 | 부분 ✔ — README 는 경로 `제출본/…` 만, AI_SHOWCASE 는 경로와 소스 인용 2줄. **소스 주석·테스트 이름에 한국어가 남아 있음**(`app/src/audio/sfx.ts` 등 파일 4곳 이상) → 🟡 아래 C-1 |
-| 6 | 영상 3분 미만 | `ffprobe -v error -show_entries format=duration -of csv=p=0 <영상>` < 180 | 초안 있음 — `ffprobe` 150.3초(#0078). 최종 영상은 사람이 올림 |
+| 6 | 영상 3분 미만 | `ffprobe -v error -show_entries format=duration -of csv=p=0 <영상>` < 180 | 초안 있음 — `ffprobe` 126.3초(#0084). 최종 영상은 사람이 올림 |
 | 7 | 영상에 만든 기기의 실제 화면 | 영상 장면 표의 모든 화면이 브라우저 녹화 | 초안은 브라우저 녹화(#0078). 최종은 사람이 확인 |
 | 8 | 저작권 음악 없음 | `git ls-files \| grep -iE '\.(mp3\|wav\|ogg)$' \| wc -l` | ✔ `0` (소리는 Web Audio 로 코드 합성) |
 | 9 | 제3자 상표·다른 게임 이름 없음 | `git grep -n -i -E -f scripts/forbidden.txt -- app/src app/public README.md AI_SHOWCASE.md 제출본` 와 `grep -rn -i 'valorant\|riot' app/src README.md AI_SHOWCASE.md` | ✔ 둘 다 0건(종료 코드 1 / 출력 없음). 제출 직전에 `devpost.md`·`methodology.md` 포함해 다시 |
