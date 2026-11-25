@@ -31,6 +31,7 @@
     "session": "node scripts/session.mjs",
     "submitshots": "node scripts/submitshots.mjs",
     "videorec": "node scripts/videorec.mjs",
+    "sfxtrack": "node scripts/sfxtrack.mjs",
     "videobuild": "node scripts/videobuild.mjs",
     "fxshot": "node scripts/fxshot.mjs",
     "sfxrender": "node scripts/sfxrender.mjs",
