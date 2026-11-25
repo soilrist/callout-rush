@@ -3,6 +3,7 @@
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) · 버전: [SemVer](https://semver.org/lang/ko/) · 규칙: `docs/conventions/Versioning.md`
 
 ## [Unreleased]
+- 영상 녹화에서 결과 화면의 이니셜 `ACE` 를 실제 키보드로 치고 게임 창·보조 창 둘 다 새 줄을 확인 (`?hold=1` 인자, M4-04)
 - 녹화 때 기록한 효과음 시각표로 영상용 소리줄 `sfx.wav` 를 만드는 `npm run sfxtrack` 추가 (M4-03)
 - 맵 구역 테두리·그림 선을 더 밝게(배경과 대비 4.6:1) 해서 LIVE 단계에서도 12구역이 보이게 함 (M4-01)
 - GitHub 릴리스 v1.0.0 에 `callout-rush-web.zip` 첨부 (M3-10)
