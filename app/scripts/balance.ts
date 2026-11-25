@@ -1,4 +1,4 @@
-/** 봇 3종 × N판 시뮬 → 점수 분포·콜 수·정확도 (DESIGN §6.2·§6.3). 실행: npm run balance [-- 판수] */
+/** 3 bots × N games sim → score spread, call count, accuracy (DESIGN §6.2·§6.3). Run: npm run balance [-- games] */
 import { BOT_PROFILES, simulate } from '../src/core/bot';
 
 const games = Number(process.argv[2] ?? 1000);
@@ -21,7 +21,7 @@ for (const p of BOT_PROFILES) {
   acc.sort((a, b) => a - b);
   medians[p.name] = med(scores);
   console.log(
-    `${p.name}: 점수 중앙값 ${med(scores)} / 10% ${pct(scores, 10)} / 90% ${pct(scores, 90)} / 콜(목표) 중앙값 ${med(finished)} / 정확도 중앙값 ${med(acc).toFixed(1)}%`,
+    `${p.name}: score median ${med(scores)} / 10% ${pct(scores, 10)} / 90% ${pct(scores, 90)} / calls (target) median ${med(finished)} / accuracy median ${med(acc).toFixed(1)}%`,
   );
 }
 console.log(`JSON ${JSON.stringify({ games, medians })}`);

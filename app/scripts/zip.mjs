@@ -1,6 +1,6 @@
-// 사용: npm run zip  — 배포용 zip 을 만든다 → ../제출본/callout-rush-web.zip
-// dist 는 건드리지 않는다(다른 검사가 쓰는 중일 수 있음): 임시 폴더에 새로 빌드해 묶는다.
-// 출력: `ZIP ok: <경로> <바이트>` (1MB 넘거나 실패하면 exit 1)
+// Usage: npm run zip  — build the distribution zip → ../제출본/callout-rush-web.zip
+// Do not touch dist (another check may be using it): build fresh in a temp folder and zip that.
+// Output: `ZIP ok: <path> <bytes>` (exit 1 if over 1MB or on failure)
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -19,7 +19,7 @@ try {
   rmSync(out, { force: true });
   execFileSync('zip', ['-r', '-X', out, 'callout-rush'], { cwd: work, stdio: 'pipe' });
   const size = statSync(out).size;
-  if (size > 1024 * 1024) throw new Error(`zip ${size} 바이트 > 1MB`);
+  if (size > 1024 * 1024) throw new Error(`zip ${size} bytes > 1MB`);
   console.log(`ZIP ok: ${out} ${size}`);
 } catch (e) {
   console.error(e);

@@ -1,5 +1,5 @@
-// 사용: npm run videorec — 영상 초안 재료(M3-04): ?bot=pro&seed=7 실제 속도 한 판 + 결과·순위표·다음 사람·대기 화면을 1920×1080 webm 으로 녹화.
-// 출력: captures/tmp/video/main.webm, board.webm, log.json (화면 바뀐 시각). git 에는 안 올린다.
+// Usage: npm run videorec — raw material for the draft video (M3-04): one real-speed game with ?bot=pro&seed=7 + result, rank board, next person and attract screen recorded as 1920×1080 webm.
+// Output: captures/tmp/video/main.webm, board.webm, log.json (screen-change times). Not committed to git.
 import { spawn } from 'node:child_process';
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -13,9 +13,9 @@ const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--stric
 let code = 0;
 try {
   await new Promise((ok, no) => {
-    const t = setTimeout(() => no(new Error('preview 시간 초과')), 20000);
+    const t = setTimeout(() => no(new Error('preview timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => no(new Error('preview 꺼짐')));
+    server.on('exit', () => no(new Error('preview exited')));
   });
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, recordVideo: { dir: out, size: { width: 1920, height: 1080 } } });
@@ -39,7 +39,7 @@ try {
   const t0 = Date.now();
   const t0abs = t0;
   await page.goto(`http://localhost:${PORT}/index.html?state=attract&seed=5`);
-  await page.waitForTimeout(10000); // 장면 1: 대기 화면
+  await page.waitForTimeout(10000); // Scene 1: attract screen
   const tPlayPage = (Date.now() - t0) / 1000;
   await page.goto(`http://localhost:${PORT}/index.html?bot=pro&timescale=1&seed=7&hold=1`);
   const log = [];
@@ -53,25 +53,25 @@ try {
     if (s !== last) { log.push({ t: +el.toFixed(1), screen: s }); last = s; }
     if (s === 'result' && !resultAt) {
       resultAt = el;
-      await page.waitForTimeout(2500); // 카운트업 + 잠금, 화면 읽을 시간
+      await page.waitForTimeout(2500); // count-up + lock, time to read the screen
       const rows0 = Number(await board.evaluate(() => document.body.dataset.boardRows));
       for (const k of ['a', 'c', 'e']) { await page.keyboard.press(k); await page.waitForTimeout(450); }
       const initials = await page.evaluate(() => document.body.dataset.initials);
-      if (initials !== 'ACE') fail(`치는 중 initials=${initials}`);
+      if (initials !== 'ACE') fail(`while typing initials=${initials}`);
       await page.waitForTimeout(900);
       const tType = (Date.now() - t0) / 1000;
       await page.mouse.click(480, 890); // OK
       const tOk = (Date.now() - t0) / 1000;
-      await page.waitForFunction(() => document.body.dataset.lastName === 'ACE', null, { timeout: 3000 }).catch(() => fail('게임 창 lastName 이 ACE 아님'));
-      await board.waitForFunction((n) => Number(document.body.dataset.boardRows) > n, rows0, { timeout: 4000 }).catch(() => fail('보조 창 줄이 안 늘어남'));
+      await page.waitForFunction(() => document.body.dataset.lastName === 'ACE', null, { timeout: 3000 }).catch(() => fail('game window lastName is not ACE'));
+      await board.waitForFunction((n) => Number(document.body.dataset.boardRows) > n, rows0, { timeout: 4000 }).catch(() => fail('side window rows did not grow'));
       const tRow = (Date.now() - t0) / 1000;
       const game = await page.evaluate(() => ({ name: document.body.dataset.lastName, scores: JSON.parse(globalThis.localStorage.getItem('calloutrush.v1.scores') ?? '[]').filter((e) => e.name === 'ACE').length }));
       const side = await board.evaluate(() => ({ rows: Number(document.body.dataset.boardRows), scores: JSON.parse(globalThis.localStorage.getItem('calloutrush.v1.scores') ?? '[]').filter((e) => e.name === 'ACE').length }));
-      if (game.scores < 1 || side.scores < 1) fail(`저장소에 ACE 줄 없음 game=${game.scores} board=${side.scores}`);
+      if (game.scores < 1 || side.scores < 1) fail(`no ACE row in storage game=${game.scores} board=${side.scores}`);
       typed = { tType: +tType.toFixed(1), tOk: +tOk.toFixed(1), tRowShown: +tRow.toFixed(1), game, board: side };
       await page.screenshot({ path: resolve(out, 'ace-game.png') });
       await board.screenshot({ path: resolve(out, 'ace-board.png') });
-      // 보조 창 새 줄 강조 + 결과 화면 무입력 20초 뒤 실제 대기 화면으로 돌아오는 것까지 계속 녹화(장면 4)
+      // Keep recording through the new-row highlight in the side window and the return to the real attract screen after 20s of no input on the result screen (scene 4)
       const tEnd = (Date.now() - t0) / 1000 + 26;
       while ((Date.now() - t0) / 1000 < tEnd) {
         const s2 = await page.evaluate(() => document.body.dataset.screen);
@@ -83,7 +83,7 @@ try {
     }
     await page.waitForTimeout(200);
   }
-  if (!typed) fail('결과 화면에 못 옴');
+  if (!typed) fail('did not reach the result screen');
   await ctx.close();
   await browser.close();
   const sfxOut = sfx.map((e) => ({ t: +((e.ms - t0abs) / 1000).toFixed(3), id: e.id, opts: e.opts ?? {} }));

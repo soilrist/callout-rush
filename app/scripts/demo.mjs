@@ -1,5 +1,5 @@
-// 사용: npm run demo — 대기 화면 시연(M2-06): timescale=30 으로 20초 뒤 시연 시작 → 시연 중 점수 저장 0건 → 클릭하면 Countdown. 캡처 captures/M2-06-*.png
-// 출력: `DEMO 줄 N → 시연 시작 …, 시연 중 저장 0, 클릭 뒤 …, 콘솔 오류 0` (실패하면 exit 1)
+// Usage: npm run demo — attract-screen demo (M2-06): with timescale=30 the demo starts after 20s → 0 scores saved during the demo → a click goes to Countdown. Captures captures/M2-06-*.png
+// Output: `DEMO rows N → demo started …, saved during demo 0, after click …, console errors 0` (exit 1 on failure)
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -10,12 +10,12 @@ const dir = resolve(process.cwd(), '..', 'captures');
 mkdirSync(dir, { recursive: true });
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe' });
 let code = 0;
-const fail = (m) => { console.error(`DEMO 실패: ${m}`); code = 1; };
+const fail = (m) => { console.error(`DEMO failed: ${m}`); code = 1; };
 try {
   await new Promise((ok, no) => {
-    const t = setTimeout(() => no(new Error('preview 시간 초과')), 20000);
+    const t = setTimeout(() => no(new Error('preview timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => no(new Error('preview 꺼짐')));
+    server.on('exit', () => no(new Error('preview exited')));
   });
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
@@ -42,12 +42,12 @@ try {
   const mid = await saved();
   await page.mouse.click(900, 500);
   const after = await page.evaluate(() => ({ demo: document.body.dataset.demo, status: document.body.dataset.status, screen: document.body.dataset.screen }));
-  // 배속 30 이라 클릭 뒤 몇 프레임 만에 카운트다운(3초)이 지날 수 있다 → 시연이 아닌 진짜 판(play 화면, demo=0)인지만 본다
-  if (after.demo !== '0' || after.screen !== 'play') fail(`클릭 뒤 demo=${after.demo} screen=${after.screen}`);
+  // At 30x speed the countdown (3s) can pass within a few frames after the click → only check that it is a real game (play screen, demo=0), not the demo
+  if (after.demo !== '0' || after.screen !== 'play') fail(`after click demo=${after.demo} screen=${after.screen}`);
   await page.close();
-  if (mid !== before) fail(`시연 중 저장 ${before} → ${mid}`);
-  if (errors.length) fail(`콘솔 오류 ${errors.length}: ${errors[0]}`);
-  // 시연이 끝까지 가면 결과 없이 대기로: 새 페이지에서 기다린다
+  if (mid !== before) fail(`saved during demo ${before} → ${mid}`);
+  if (errors.length) fail(`console errors ${errors.length}: ${errors[0]}`);
+  // If the demo runs to the end it returns to attract with no result: wait on a new page
   const p2 = await ctx.newPage();
   p2.on('pageerror', (e) => errors.push(String(e)));
   await p2.goto(`http://localhost:${PORT}/index.html?timescale=30&seed=6`);
@@ -55,8 +55,8 @@ try {
   await p2.waitForFunction(() => document.body.dataset.demo === '1', null, { timeout: 5000 });
   await p2.waitForFunction(() => document.body.dataset.demo === '0' && document.body.dataset.screen === 'attract', null, { timeout: 10000 });
   const results = await p2.evaluate(() => document.body.dataset.results);
-  if (results !== '0') fail(`시연이 끝났는데 결과 ${results}`);
-  if ((await saved(p2)) !== before2) fail('시연 뒤 저장이 늘었다');
+  if (results !== '0') fail(`demo ended but results ${results}`);
+  if ((await saved(p2)) !== before2) fail('saves grew after the demo');
   if (code === 0) console.log(`DEMO ok: demo_started=true, saved_during_demo=${mid - before}, click_during_demo_starts_new_game=true, results_after_demo=${results}, console_errors=${errors.length}`);
   await browser.close();
 } catch (e) {

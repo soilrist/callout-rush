@@ -1,4 +1,4 @@
-// 사용: npm run hand — 실제 속도(timescale=1)로 맞힌 직후·콜이 바뀐 직후 화면을 찍는다(captures/M2-19/). HAND_DIST=<dist> 로 다른 빌드 폴더 사용. 영상 captures/tmp/M2-19.webm. 마지막 줄 `HAND ...`
+// Usage: npm run hand — at real speed (timescale=1), capture the screen right after a hit and right after the call changes (captures/M2-19/). HAND_DIST=<dist> uses another build folder. Video captures/tmp/M2-19.webm. Last line `HAND ...`
 import { spawn } from 'node:child_process';
 import { mkdirSync, readdirSync, renameSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -12,9 +12,9 @@ const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--stric
 let code = 0;
 try {
   await new Promise((ok, fail) => {
-    const t = setTimeout(() => fail(new Error('preview 서버 시간 초과')), 20000);
+    const t = setTimeout(() => fail(new Error('preview server timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => fail(new Error('preview 서버가 꺼졌다')));
+    server.on('exit', () => fail(new Error('preview server exited')));
   });
   const browser = await chromium.launch();
   const tmp = resolve(process.cwd(), '..', 'captures/tmp');
@@ -44,7 +44,7 @@ try {
   const vid = readdirSync(tmp).filter((f) => f.endsWith('.webm')).map((f) => resolve(tmp, f)).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
   if (vid) renameSync(vid, resolve(tmp, 'M2-19.webm'));
   await browser.close();
-  console.log('HAND 맞힘 ' + first + ', 클릭→첫 그림 ' + dHit + 'ms, 둘째 그림 ' + dHit2 + 'ms, 클릭→다음 콜 ' + dNext + 'ms, 콜 바뀐 뒤 그림까지 ' + dShot + 'ms, 오류 ' + errors.length);
+  console.log('HAND hit ' + first + ', click→first frame ' + dHit + 'ms, second frame ' + dHit2 + 'ms, click→next call ' + dNext + 'ms, call change→frame ' + dShot + 'ms, errors ' + errors.length);
 } catch (e) {
   console.error(e);
   code = 1;

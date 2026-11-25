@@ -1,4 +1,4 @@
-// 사용: npm run submitshots — 제출용 그림 7장(제출본/shots/): 대기·플레이 단계 1·단계 3(두 곳 콜)·결과·보조 순위표·운영자 메뉴 + 대표 그림(3:2). 시드 고정 (M3-02)
+// Usage: npm run submitshots — 7 submission pictures (제출본/shots/): attract, play stage 1, stage 3 (two-place call), result, side rank board, operator menu + cover picture (3:2). Fixed seed (M3-02)
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -11,9 +11,9 @@ const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--stric
 let code = 0;
 try {
   await new Promise((ok, no) => {
-    const t = setTimeout(() => no(new Error('preview 시간 초과')), 20000);
+    const t = setTimeout(() => no(new Error('preview timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => no(new Error('preview 꺼짐')));
+    server.on('exit', () => no(new Error('preview exited')));
   });
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
@@ -46,7 +46,7 @@ try {
     await p.keyboard.press('Control+Shift+O');
     await p.waitForFunction(() => document.body.dataset.operator === '1');
   });
-  // 대표 그림 3:2 (1800×1200): 제목 + 단계 3 그림
+  // Cover picture 3:2 (1800×1200): title + stage 3 picture
   const cover = await ctx.newPage();
   await cover.setViewportSize({ width: 1800, height: 1200 });
   const { readFileSync } = await import('node:fs');
@@ -56,7 +56,7 @@ try {
     <div style="font-size:46px;color:#9fb3c8;margin-top:12px">A 60-second booth game for your whole line</div></div>
     <img src="data:image/png;base64,${b64}" style="position:absolute;left:150px;top:340px;width:1500px;height:844px;border-radius:18px;box-shadow:0 20px 60px #000a;object-fit:cover"></body>`);
   await cover.screenshot({ path: resolve(dir, '0-cover.png') });
-  console.log(`SUBMITSHOTS ok: 7장, 콘솔 오류 ${errors.length}`);
+  console.log(`SUBMITSHOTS ok: 7 pictures, console errors ${errors.length}`);
   if (errors.length) { console.error(errors.join(' | ')); code = 1; }
   await browser.close();
 } catch (e) { console.error(e); code = 1; } finally { server.kill(); }

@@ -1,4 +1,4 @@
-// 사용: npm run boardwin — 창 두 개: 게임 창에서 한 판 끝 → 보조 창(board.html)에 새 줄이 1000ms 안에 나타나는지 + 캡처 (captures/M2-05-*.png)
+// Usage: npm run boardwin — two windows: finish a game in the game window → check a new row shows in the side window (board.html) within 1000ms + capture (captures/M2-05-*.png)
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -9,12 +9,12 @@ const dir = resolve(process.cwd(), '..', 'captures');
 mkdirSync(dir, { recursive: true });
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe' });
 let code = 0;
-const fail = (m) => { console.error(`BOARDWIN 실패: ${m}`); code = 1; };
+const fail = (m) => { console.error(`BOARDWIN failed: ${m}`); code = 1; };
 try {
   await new Promise((ok, no) => {
-    const t = setTimeout(() => no(new Error('preview 시간 초과')), 20000);
+    const t = setTimeout(() => no(new Error('preview timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => no(new Error('preview 꺼짐')));
+    server.on('exit', () => no(new Error('preview exited')));
   });
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
@@ -40,7 +40,7 @@ try {
   await game.waitForTimeout(1200);
   for (const [c, r] of [[7, 2], [4, 0], [3, 0]]) await game.mouse.click(984 + 96 * c + 42, 640 + 96 * r + 42);
   const t0 = await game.evaluate(() => Date.now());
-  await game.mouse.click(480, 890); // OK → 저장
+  await game.mouse.click(480, 890); // OK → save
   await board.waitForFunction((n) => Number(document.body.dataset.boardRows) > n, before, { timeout: 4000 });
   const t1 = Number(await board.evaluate(() => document.body.dataset.boardNewAt));
   const delay = t1 - t0;
@@ -49,8 +49,8 @@ try {
   await board.waitForTimeout(3500);
   await board.screenshot({ path: resolve(dir, 'M2-05-boardwin-after.png') });
   const reads = Number(await board.evaluate(() => document.body.dataset.boardReads));
-  if (!(delay >= 0 && delay <= 1000)) fail(`지연 ${delay}ms`);
-  console.log(`BOARDWIN 줄 ${before} → 늘어남, 지연 ${delay} ms, 읽은 횟수 ${reads}, 콘솔 오류 ${errors.length}, 종료코드 ${code}`);
+  if (!(delay >= 0 && delay <= 1000)) fail(`delay ${delay}ms`);
+  console.log(`BOARDWIN rows ${before} → grew, delay ${delay} ms, reads ${reads}, console errors ${errors.length}, exit code ${code}`);
   if (errors.length) fail(errors.join(' | '));
   await browser.close();
 } catch (e) { console.error(e); code = 1; } finally { server.kill(); }

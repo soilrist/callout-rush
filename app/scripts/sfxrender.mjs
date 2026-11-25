@@ -1,5 +1,5 @@
-// 사용: npm run sfxrender — 여덟 소리를 브라우저 OfflineAudioContext 로 실제로 렌더해 최대값·길이를 잰다.
-// 출력: `SFX ok: ...` (하나라도 어긋나면 exit 1)
+// Usage: npm run sfxrender — actually render the eight sounds with the browser OfflineAudioContext and measure peak and length.
+// Output: `SFX ok: ...` (exit 1 if any one is off)
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 import { chromium } from 'playwright';
@@ -26,9 +26,9 @@ try {
   }, js);
   for (const r of rows) {
     const ok = r.peak > 0.05 && Math.abs(r.lenMs - r.ms) <= 20;
-    console.log(`${r.id}: 최대 ${r.peak.toFixed(3)} 길이 ${r.lenMs.toFixed(0)}ms (표 ${r.ms}ms) ${ok ? 'ok' : 'FAIL'}`);
+    console.log(`${r.id}: peak ${r.peak.toFixed(3)} length ${r.lenMs.toFixed(0)}ms (table ${r.ms}ms) ${ok ? 'ok' : 'FAIL'}`);
     if (!ok) code = 1;
   }
-  if (code === 0) console.log(`SFX ok: ${rows.length}개 소리 렌더 최대값 > 0.05, 길이 표 ±20ms`);
+  if (code === 0) console.log(`SFX ok: ${rows.length} sounds rendered, peak > 0.05, length within table ±20ms`);
 } catch (e) { console.error(e); code = 1; } finally { await browser.close(); }
 process.exit(code);

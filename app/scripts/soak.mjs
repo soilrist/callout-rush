@@ -1,6 +1,6 @@
-// 사용: npm run soak -- --games 1000 --timescale 30 [--minutes N] [--every 50] [--out ../logs/soak.csv] (M2-11)
-// 봇이 대기 화면→플레이→결과→이니셜→순위→대기를 계속 돈다. N판(기본 50)마다 강제 GC 뒤 JS 힙·DOM 노드·프레임 p95·저장 크기·콘솔 오류를 CSV 한 줄로.
-// 출력: `SOAK ok: …` (끝까지 못 돌면 exit 1). 판정(합격선)은 M2-12 에서 CSV 로 한다.
+// Usage: npm run soak -- --games 1000 --timescale 30 [--minutes N] [--every 50] [--out ../logs/soak.csv] (M2-11)
+// The bot keeps looping attract → play → result → initials → rank → attract. Every N games (default 50), after a forced GC, write JS heap, DOM nodes, frame p95, storage size and console errors as one CSV line.
+// Output: `SOAK ok: …` (exit 1 if it cannot run to the end). The verdict (pass line) is made from the CSV in M2-12.
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync, appendFileSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -8,21 +8,21 @@ import { chromium } from 'playwright';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
 const games = Number(arg('games', 50));
-const minutes = Number(arg('minutes', 0)); // 0 이면 판 수로 끝낸다
+const minutes = Number(arg('minutes', 0)); // if 0, stop by game count
 const timescale = Number(arg('timescale', 30));
 const every = Number(arg('every', 50));
 const W = Number(arg('width', 960));
 const out = arg('out', '../logs/soak.csv');
 const PORT = 4181;
-// npx 를 거치면 server.kill() 이 vite 자식을 못 죽여 포트가 남는다 → node 로 vite 를 직접 띄운다.
+// Going through npx, server.kill() cannot kill the vite child and the port stays open → start vite directly with node.
 const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'pipe' });
 let code = 0;
-const fail = (m) => { console.error(`SOAK 실패: ${m}`); code = 1; };
+const fail = (m) => { console.error(`SOAK failed: ${m}`); code = 1; };
 try {
   await new Promise((ok, no) => {
-    const t = setTimeout(() => no(new Error('preview 시간 초과')), 20000);
+    const t = setTimeout(() => no(new Error('preview timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => no(new Error('preview 꺼짐')));
+    server.on('exit', () => no(new Error('preview exited')));
   });
   mkdirSync(dirname(out), { recursive: true });
   const header = 'games,elapsed_s,heap_mb,dom_nodes,listeners,timers,frame_p95_ms,storage_kb,console_errors,work_p95_ms\n';
@@ -33,11 +33,11 @@ try {
   const page = await ctx.newPage();
   page.on('console', (m) => { if (m.type() === 'error') errors++; });
   page.on('pageerror', () => { errors++; });
-  // 프레임 간격(ms)을 쌓아 둔다 — 한 구간(50판)마다 읽고 비운다.
+  // Accumulate frame intervals (ms) — read and clear every block (50 games).
   await page.addInitScript(() => {
     const w = globalThis;
     w.__frames = [];
-    // 게임이 프레임마다 쓰는 일(rAF 콜백 안에서 쓴 시간)을 프레임 시각별로 합쳐 쌓는다. 간격(__frames)은 기기·헤드리스 한계가 섞이고, 이 값은 우리 코드 몫만 본다 (M2-12a).
+    // Sum the work the game does per frame (time spent inside the rAF callback) by frame time. The interval (__frames) mixes in device and headless limits; this value shows only our code's share (M2-12a).
     w.__work = [];
     const raf = w.requestAnimationFrame.bind(w);
     let curT = -1;
@@ -50,9 +50,9 @@ try {
   await cdp.send('HeapProfiler.enable');
   await page.goto(`http://localhost:${PORT}/index.html?bot=regular&timescale=${timescale}&seed=7`);
   await page.waitForFunction(() => typeof globalThis.__health === 'function');
-  // 이 기기의 헤드리스 크롬이 초당 몇 프레임을 내는지 먼저 잰다. 봇은 프레임마다 움직이므로 fps 가 낮으면 --timescale 30 에서 결과 화면(20초÷배속)을 못 지나 판이 안 끝난다.
+  // First measure how many frames per second headless Chrome gives on this machine. The bot moves every frame, so with low fps at --timescale 30 it cannot get past the result screen (20s ÷ speed) and the game never ends.
   const fps = await page.evaluate(() => new Promise((ok) => { const g = globalThis; let c = 0; const s = g.performance.now(); const l = () => { c++; if (g.performance.now() - s >= 2000) ok(c / 2); else g.requestAnimationFrame(l); }; g.requestAnimationFrame(l); }));
-  console.log(`fps=${fps.toFixed(1)} timescale=${timescale}${fps < 30 && timescale > 15 ? ' — 경고: fps 가 낮아 배속 30 은 판이 안 끝날 수 있다 (10 으로 낮출 것)' : ''}`);
+  console.log(`fps=${fps.toFixed(1)} timescale=${timescale}${fps < 30 && timescale > 15 ? ' — warning: fps is low so games may not finish at 30x (lower it to 10)' : ''}`);
   const t0 = Date.now();
   const sample = async (n) => {
     await cdp.send('HeapProfiler.collectGarbage');
@@ -76,16 +76,16 @@ try {
   let n = 0;
   const endAt = minutes > 0 ? t0 + minutes * 60000 : Infinity;
   while (Date.now() < endAt && (minutes > 0 || n < games)) {
-    // 순위 화면(board)에 들어선 프레임에서 잰다 — 판마다 같은 지점이라 비교가 된다.
+    // Measure on the frame entering the rank screen (board) — the same point every game, so it is comparable.
     const target = Math.min(next, minutes > 0 ? Infinity : games);
     await page.waitForFunction((k) => Number(document.body.dataset.results) >= k && document.body.dataset.screen === 'board', target, { timeout: 1800000, polling: 'raf' });
     n = await done();
     await sample(n);
     next = n + every;
   }
-  if (errors) fail(`콘솔 오류 ${errors}`);
+  if (errors) fail(`console errors ${errors}`);
   const secs = (Date.now() - t0) / 1000;
-  if (!code) console.log(`SOAK ok: ${n}판 ${secs.toFixed(0)}초 (판당 ${(secs / n).toFixed(2)}초 → 1000판 예상 ${(secs / n * 1000 / 60).toFixed(0)}분), CSV ${out}, console_errors=${errors}`);
+  if (!code) console.log(`SOAK ok: ${n} games ${secs.toFixed(0)}s (${(secs / n).toFixed(2)}s per game → 1000 games est. ${(secs / n * 1000 / 60).toFixed(0)} min), CSV ${out}, console_errors=${errors}`);
   await browser.close();
 } catch (e) { fail(String(e)); } finally { server.kill(); }
 process.exit(code);

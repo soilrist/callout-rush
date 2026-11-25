@@ -1,4 +1,4 @@
-// 사용: npm run polish — 화면 7장을 1920×1080·1280×720·2560×1080 창으로 찍는다(captures/M2-18/). 마지막 줄 `POLISH ...`
+// Usage: npm run polish — capture 7 screens at 1920×1080, 1280×720 and 2560×1080 (captures/M2-18/). Last line `POLISH ...`
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -21,9 +21,9 @@ const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--stric
 let code = 0;
 try {
   await new Promise((ok, fail) => {
-    const t = setTimeout(() => fail(new Error('preview 서버 시간 초과')), 20000);
+    const t = setTimeout(() => fail(new Error('preview server timed out')), 20000);
     server.stdout.on('data', (d) => { if (String(d).includes('localhost') || String(d).includes('127.0.0.1')) { clearTimeout(t); ok(); } });
-    server.on('exit', () => fail(new Error('preview 서버가 꺼졌다')));
+    server.on('exit', () => fail(new Error('preview server exited')));
   });
   const browser = await chromium.launch();
   let n = 0;
@@ -42,7 +42,7 @@ try {
     }
   }
   await browser.close();
-  console.log(`POLISH 캡처 ${n}장, 페이지 오류 ${errors.length}`);
+  console.log(`POLISH captures ${n}, page errors ${errors.length}`);
 } catch (e) {
   console.error(e);
   code = 1;

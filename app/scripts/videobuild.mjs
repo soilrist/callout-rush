@@ -1,4 +1,4 @@
-// 사용: npm run videorec && npm run videobuild — 영상 초안 조립(M3-04): 녹화 webm + 그림 + 카드 + 자막(투명 PNG 겹치기, 이 ffmpeg 에는 drawtext 가 없다) → 제출본/demo-draft.mp4 + demo-draft.srt
+// Usage: npm run videorec && npm run videobuild — assemble the draft video (M3-04): recorded webm + pictures + cards + captions (transparent PNG overlay; this ffmpeg has no drawtext) → 제출본/demo-draft.mp4 + demo-draft.srt
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -11,17 +11,17 @@ const work = resolve(tmp, 'build');
 mkdirSync(work, { recursive: true });
 const meta = JSON.parse(readFileSync(resolve(tmp, 'log.json'), 'utf8'));
 const resultAt = meta.log.find((l) => l.screen === 'result').t;
-// 큰 쪽 webm = 메인 화면(board 보다 용량이 크다), 작은 쪽 = 보조 순위 창
+// Larger webm = main screen (bigger than board), smaller = side rank window
 const vids = readdirSync(tmp).filter((f) => f.endsWith('.webm')).map((f) => resolve(tmp, f));
 const bySize = vids.map((f) => ({ f, size: readFileSync(f).length })).sort((a, b) => b.size - a.size);
 const main = bySize[0].f;
 const side = bySize[1].f;
 const dlen = (f) => Number(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f], { encoding: 'utf8' }).stdout);
-const sideShift = Math.max(0, dlen(side) - dlen(main)); // 두 창은 같은 순간에 닫혀 끝이 맞는다 → 시작 차이만큼 보조 창을 늦게 시작
+const sideShift = Math.max(0, dlen(side) - dlen(main)); // Both windows close at the same moment so the ends line up → start the side window later by the start difference
 const W = 1920, H = 1080;
-const OFF = 5; // 녹화 앞 5초(대기 화면)를 덜어 첫 장면을 5초로 (M4-100)
-const T = { s2: resultAt - OFF }; // s2 끝 = 결과 화면 나온 시각(자른 뒤 기준)
-const dur = { b: 22, s5: 14, e1: 4, e2: 6.5, e3: 3.5, s7: 8 }; // b = 결과·순위·다음 판 (두 창 나란히, 녹화 이어서)
+const OFF = 5; // Trim the first 5s of the recording (attract screen) so the first scene is 5s (M4-100)
+const T = { s2: resultAt - OFF }; // s2 end = time the result screen appears (after trimming)
+const dur = { b: 22, s5: 14, e1: 4, e2: 6.5, e3: 3.5, s7: 8 }; // b = result, rank, next game (two windows side by side, continuing the recording)
 const s6len = dur.e1 + dur.e2 + dur.e3;
 const s3 = T.s2, s5 = s3 + dur.b, s6 = s5 + dur.s5, s7 = s6 + s6len, end = s7 + dur.s7;
 const ev = (f) => readFileSync(resolve(root, 'docs/video-evidence', f), 'utf8').trimEnd();
@@ -61,7 +61,7 @@ for (const [n, html] of Object.entries(cards)) {
   await pg.setContent(`<style>${css}</style>${html}`);
   await pg.screenshot({ path: resolve(work, `${n}.png`) });
 }
-// 장면 바뀜 소리: 게임이 쓰는 합성음(sfx.ts)만 OfflineAudioContext 로 렌더해 한 트랙으로 (새 파일·음악 없음)
+// Scene-change sounds: render only the synth sounds the game uses (sfx.ts) with OfflineAudioContext into one track (no new files or music)
 const cues = [[0.4, 'ui'], [s5 + 0.3, 'phase'], [s5 + 7, 'ui'], [s6 + 0.3, 'ui'], [s6 + dur.e1 + 0.2, 'ui'], [s6 + dur.e1 + dur.e2 + 0.2, 'phase'], [s7 + 0.3, 'rank']];
 const sfxJs = tsc.transpileModule(readFileSync(resolve(root, 'app/src/audio/sfx.ts'), 'utf8'), { compilerOptions: { module: tsc.ModuleKind.ESNext, target: tsc.ScriptTarget.ES2022 } }).outputText;
 {
@@ -103,12 +103,12 @@ const inputs = [
 ].flat();
 const nIn = 9;
 const capIn = caps.flatMap((_, i) => ['-loop', '1', '-framerate', '30', '-t', String(end), '-i', resolve(work, `cap${i}.png`)]);
-// 화면은 960px 높이로 줄여 위에 두고, 아래 120px 띠에 자막을 둔다(자막이 게임 화면을 가리지 않게)
-const cardSc = `pad=${W}:${H}:0:0,setsar=1,fps=30,format=yuv420p`; // 카드는 줄이지 않고 위 960px 에 그린다(자막 띠는 아래 120px)
+// Shrink the screen to 960px high at the top and put captions in the 120px strip below (so captions do not cover the game screen)
+const cardSc = `pad=${W}:${H}:0:0,setsar=1,fps=30,format=yuv420p`; // Cards are not shrunk; drawn in the top 960px (caption strip is the bottom 120px)
 const sc = `scale=-2:960,pad=${W}:${H}:(ow-iw)/2:0,setsar=1,fps=30,format=yuv420p`;
 const fc = [
   `[0:v]trim=${OFF}:${resultAt},setpts=PTS-STARTPTS,${sc}[a]`,
-  // 장면 3·4: 같은 녹화를 이어서, 왼쪽 게임 창 · 오른쪽 보조 순위 창을 나란히 (각 950x534)
+  // Scenes 3·4: continue the same recording, game window on the left and side rank window on the right (950x534 each)
   `[0:v]trim=${resultAt}:${resultAt + dur.b},setpts=PTS-STARTPTS,scale=950:534,setsar=1,fps=30[g]`,
   `[1:v]trim=${resultAt + sideShift}:${resultAt + sideShift + dur.b},setpts=PTS-STARTPTS,scale=950:534,setsar=1,fps=30[s]`,
   `color=c=0x0b0f17:s=${W}x${H}:r=30:d=${dur.b}[bg]`,
@@ -126,5 +126,5 @@ caps.forEach((c, i) => {
 const outFile = resolve(root, '제출본/demo-draft.mp4');
 const args = ['-y', '-v', 'error', ...inputs, ...capIn, '-filter_complex', fc.join(';'), '-map', `[${prev}]`, '-map', '[aout]', '-c:v', 'libx264', '-crf', '26', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k', '-t', String(end), outFile];
 const r = spawnSync('ffmpeg', args, { stdio: 'inherit' });
-console.log(`VIDEOBUILD exit ${r.status}, 예상 길이 ${end.toFixed(1)}초`);
+console.log(`VIDEOBUILD exit ${r.status}, expected length ${end.toFixed(1)}s`);
 process.exit(r.status ?? 1);
